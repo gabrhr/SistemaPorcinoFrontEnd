@@ -42,6 +42,7 @@ import DatePickerForm from 'src/components/Form/DatePickerForm';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
+import ServicioStatusDetalle from 'src/components/ServicioStatusDetalle';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { formatDate } from 'src/utils/dataFormat';
@@ -75,6 +76,7 @@ function ServicioCerdaDetalle() {
   const [verracos, setVerracos] = useState([]);
   const [locationState, setLocationState] = useState({});
   const [loading, setLoading] = useState(false);
+  const [loadingItem, setLoadingItem] = useState(false);
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -88,6 +90,7 @@ function ServicioCerdaDetalle() {
   // get servicio by id
   const getItemById = useCallback(
     async (reqObj) => {
+      setLoadingItem(true)
       try {
         const response = await certifyAxios.post(
           cerdaServicioFindByIdAPI,
@@ -145,11 +148,13 @@ function ServicioCerdaDetalle() {
               }
             }
             setItem(response.data.loteCerdaServicio);
+            setLoadingItem(false)
           }
         }
       } catch (err) {
         console.error(err);
         setItem({});
+        setLoadingItem(false)
         if (err.response) {
           console.log(err.response);
         } else {
@@ -322,7 +327,7 @@ function ServicioCerdaDetalle() {
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({ id: reqObj.id, granjaId: user.granjaId});
         enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha terminado con la gestación',
+          await response.data.userMsg ?? 'Se ha terminado con la gestación',
           { variant: 'success' }
         );
         closeTerminarGestModal()
@@ -343,7 +348,7 @@ function ServicioCerdaDetalle() {
     try {
       const response = await certifyAxios.post(servicioFalloRegisterAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
-        getItemById({ id: reqObj.loteCerdaServicioId, granjaId: user.granjaId});
+        await getItemById({ id: reqObj.loteCerdaServicioId, granjaId: user.granjaId});
         enqueueSnackbar(response.data.userMsg?? "Se ha registrado fallo satisfactoriamente", {variant:"success"})
       }
       closeFalloModal()
@@ -447,6 +452,7 @@ function ServicioCerdaDetalle() {
                     <CircularProgress size="1rem" color="white" />
                   ) : null
                 }
+                disabled={loading}
                 variant="contained"
                 size="small"
                 color="primary"
@@ -496,7 +502,12 @@ function ServicioCerdaDetalle() {
           borderRadius: 2
         }}
       >
-        {item !== undefined && generalItem !== undefined && (
+        {loadingItem 
+          && <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
+                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
+          </div> 
+        }
+        {!loadingItem && (item !== undefined && generalItem !== undefined) && (
           <div>
             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
               <Tab eventKey={1} title="General">
@@ -563,7 +574,8 @@ function ServicioCerdaDetalle() {
                     innerRef={generalForm}
                     enableReinitialize
                     initialValues={{
-                      verracoId: (item && item?.verraco && item?.verraco?.id) || -1,
+                      verracoId:
+                        (item && item?.verraco && item?.verraco?.id) || -1,
                       tipoServicio: (item && item.tipoServicio) || 'none',
                       fechaPrimeraInseminacion:
                         (item && item.fechaPrimeraInseminacion) || null,
@@ -625,7 +637,9 @@ function ServicioCerdaDetalle() {
                                 handleBlur={handleBlur}
                                 disabled={!editActive || !enableGeneralTab}
                               >
-                                {verracos !== null && verracos !== undefined && (verracos[0] !== null) &&
+                                {verracos !== null &&
+                                  verracos !== undefined &&
+                                  verracos[0] !== null &&
                                   verracos.map((type) => (
                                     <MenuItem key={type.id} value={type.id}>
                                       {type.codigo}
@@ -716,7 +730,9 @@ function ServicioCerdaDetalle() {
                       <Typography>No presenta ningun Fallo</Typography>
                       {showAction && (
                         <Button
-                          onClick={() => {setFalloModal(true)}}
+                          onClick={() => {
+                            setFalloModal(true);
+                          }}
                           variant="outlined"
                           size="small"
                           color="primary"
@@ -728,11 +744,7 @@ function ServicioCerdaDetalle() {
                     </div>
                   )}
                   {item && item.fechaFallo !== null && (
-                    <Grid
-                      container
-                      justifyContent="center"
-                      spacing={1}
-                    >
+                    <Grid container justifyContent="center" spacing={1}>
                       <Grid item xs={12} sm={12} md={12} mt={0}>
                         <Typography gutterBottom>
                           <b style={{ color: '#4a3fa5' }}>Fecha de fallo:</b>{' '}
@@ -787,182 +799,244 @@ function ServicioCerdaDetalle() {
                       <form noValidate onSubmit={handleSubmit}>
                         <Grid
                           container
-                          justifyContent="center"
-                          spacing={3}
+                          justifyContent="normal"
+                          spacing={2}
                           mb={3}
                           mt="0.5rem"
                         >
-                          <SubtitleForm
-                            subtitle="Verificación de Primera Recela"
-                            description={`Recomendación: Verificación probable ${
-                              generalItem.diasMinRecela || 0
-                            } días tras el servicio`}
-                          />
+                          <Grid item xs={12} md={0.5} sm={0.5}>
+                            <ServicioStatusDetalle
+                              disabled={disablePrimeraVer}
+                              fecha={item && item?.fechaPrimeraRecela}
+                              resultado={item?.resultadoPrimeraRecela}
+                            />
+                          </Grid>
                           <Grid
                             container
                             item
                             xs={12}
-                            sm={12}
-                            md={12}
-                            spacing={3}
+                            md={10.5}
+                            sm={10.5}
+                            spacing={2}
                           >
-                            <Grid item xs={12} sm={12} md={4}>
-                              <DatePicker
-                                value={
-                                  generalItem?.fechaPrimeraRecelaProbable ||
-                                  null
-                                }
-                                label="Fecha probable"
-                                disabled
-                                onChange={() => {}}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    placeholder="dd/mm/yyyy"
-                                    name="primerRecelaProbabel"
-                                  />
-                                )}
-                              />
-                            </Grid>
-                            {/* Fecha real verificación */}
-                            <Grid item xs={12} sm={12} md={4}>
-                              <DatePickerForm
-                                inputName="fechaPrimeraRecela"
-                                value={values.fechaPrimeraRecela}
-                                label="Fecha real de verificación"
-                                // disableFuture
-                                setFieldValue={setFieldValue}
-                                errors={errors}
-                                touched={touched}
-                                disabled={!editActive || disablePrimeraVer}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={4}>
-                              <FormControl
-                                sx={{ marginLeft: 3 }}
-                                disabled={!editActive || disablePrimeraVer}
-                              >
-                                <FormLabel id="radio-primera">
-                                  Resultado: ¿Presenta celo?
-                                </FormLabel>
-                                <RadioGroup
-                                  aria-labelledby="radio-primera"
-                                  value={values.resultadoPrimeraRecela}
-                                  name="resultadoPrimeraRecela"
-                                  onChange={handleChange}
-                                  row
+                            <SubtitleForm
+                              subtitle="Verificación de Primera Recela"
+                              description={`Recomendación: Verificación probable ${
+                                generalItem.diasMinRecela || 0
+                              } días tras el servicio`}
+                            />
+                            <Grid
+                              container
+                              item
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              spacing={3}
+                            >
+                              <Grid item xs={12} sm={12} md={4}>
+                                <DatePicker
+                                  value={
+                                    generalItem?.fechaPrimeraRecelaProbable ||
+                                    null
+                                  }
+                                  label="Fecha probable"
+                                  disabled
+                                  onChange={() => {}}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="outlined"
+                                      size="small"
+                                      fullWidth
+                                      placeholder="dd/mm/yyyy"
+                                      name="primerRecelaProbabel"
+                                    />
+                                  )}
+                                />
+                              </Grid>
+                              {/* Fecha real verificación */}
+                              <Grid item xs={12} sm={12} md={4}>
+                                <DatePickerForm
+                                  inputName="fechaPrimeraRecela"
+                                  value={values.fechaPrimeraRecela}
+                                  label="Fecha real de verificación"
+                                  // disableFuture
+                                  setFieldValue={setFieldValue}
+                                  errors={errors}
+                                  touched={touched}
+                                  disabled={!editActive || disablePrimeraVer}
+                                />
+                              </Grid>
+                              <Grid item xs={12} sm={12} md={4}>
+                                <FormControl
+                                  sx={{ marginLeft: 3 }}
+                                  disabled={!editActive || disablePrimeraVer}
                                 >
-                                  <FormControlLabel
-                                    value={1}
-                                    control={<Radio />}
-                                    label="Sí"
-                                  />
-                                  <FormControlLabel
-                                    value={0}
-                                    control={<Radio />}
-                                    label="No"
-                                  />
-                                </RadioGroup>
-                              </FormControl>
-                            </Grid>
-                            <Grid item xs={12}>
-
-                              {(editActive && values.resultadoPrimeraRecela === "1") && (
-                                <Alert severity="error">
-                                  Si la cerda presenta celo, se registrará como fallo reproductivo al guardar los cambios.
-                                </Alert>
-                              )}
+                                  <FormLabel id="radio-primera">
+                                    Resultado: ¿Presenta celo?
+                                  </FormLabel>
+                                  <RadioGroup
+                                    aria-labelledby="radio-primera"
+                                    value={values.resultadoPrimeraRecela}
+                                    name="resultadoPrimeraRecela"
+                                    onChange={handleChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value={1}
+                                      control={<Radio />}
+                                      label="Sí"
+                                    />
+                                    <FormControlLabel
+                                      value={0}
+                                      control={<Radio />}
+                                      label="No"
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                              <Grid item xs={12}>
+                                {editActive &&
+                                  values.resultadoPrimeraRecela === '1' && (
+                                    <Alert severity="error">
+                                      Si la cerda presenta celo, se registrará
+                                      como fallo reproductivo al guardar los
+                                      cambios.
+                                    </Alert>
+                                  )}
+                              </Grid>
                             </Grid>
                           </Grid>
-                          <SubtitleForm
-                            subtitle="Verificación de Segunda Recela"
-                            description={`Recomendación: Verificación probable ${
-                              (generalItem?.diasMinRecela &&
-                                generalItem?.diasMinRecela * 2) ||
-                              0
-                            } días tras el servicio`}
-                          />
+                        </Grid>
+                          <Grid
+                          container
+                          justifyContent="normal"
+                          spacing={2}
+                          mb={3}
+                          mt="0.5rem"
+                        >
+                          <Grid item xs={12} md={0.5} sm={0.5}>
+                            <ServicioStatusDetalle
+                              disabled={disableSegundaVer}
+                              fecha={item?.fechaSegundaRecela}
+                              resultado={item?.resultadoSegundaRecela}
+                            />
+                          </Grid>
                           <Grid
                             container
                             item
                             xs={12}
-                            sm={12}
-                            md={12}
-                            spacing={4}
+                            md={10.5}
+                            sm={10.5}
+                            spacing={2}
                           >
-                            <Grid item xs={12} sm={12} md={4}>
-                              <DatePicker
-                                value={
-                                  generalItem?.fechaSegundaRecelaProbable ||
-                                  null
-                                }
-                                label="Fecha probable"
-                                onChange={() => {}}
-                                disabled
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    placeholder="dd/mm/yyyy"
-                                    name="segundaRecelaProbable"
-                                  />
-                                )}
-                              />
-                            </Grid>
-                            {/* Fecha real verificación */}
-                            <Grid item xs={12} sm={12} md={4}>
-                              <DatePickerForm
-                                inputName="fechaSegundaRecela"
-                                value={values.fechaSegundaRecela}
-                                label="Fecha real de verificación"
-                                // disableFuture
-                                setFieldValue={setFieldValue}
-                                errors={errors}
-                                touched={touched}
-                                disabled={!editActive || disableSegundaVer}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={4}>
-                              <FormControl
-                                sx={{ marginLeft: 3 }}
-                                disabled={!editActive || disableSegundaVer}
-                              >
-                                <FormLabel id="radio-segundo">
-                                  Resultado: ¿Presenta celo?
-                                </FormLabel>
-                                <RadioGroup
-                                  aria-labelledby="radio-segundo"
-                                  value={values.resultadoSegundaRecela}
-                                  name="resultadoSegundaRecela"
-                                  onChange={handleChange}
-                                  row
+                            <SubtitleForm
+                              subtitle="Verificación de Segunda Recela"
+                              description={`Recomendación: Verificación probable ${
+                                (generalItem?.diasMinRecela &&
+                                  generalItem?.diasMinRecela * 2) ||
+                                0
+                              } días tras el servicio`}
+                            />
+                            <Grid
+                              container
+                              item
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              spacing={4}
+                            >
+                              <Grid item xs={12} sm={12} md={4}>
+                                <DatePicker
+                                  value={
+                                    generalItem?.fechaSegundaRecelaProbable ||
+                                    null
+                                  }
+                                  label="Fecha probable"
+                                  onChange={() => {}}
+                                  disabled
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="outlined"
+                                      size="small"
+                                      fullWidth
+                                      placeholder="dd/mm/yyyy"
+                                      name="segundaRecelaProbable"
+                                    />
+                                  )}
+                                />
+                              </Grid>
+                              {/* Fecha real verificación */}
+                              <Grid item xs={12} sm={12} md={4}>
+                                <DatePickerForm
+                                  inputName="fechaSegundaRecela"
+                                  value={values.fechaSegundaRecela}
+                                  label="Fecha real de verificación"
+                                  // disableFuture
+                                  setFieldValue={setFieldValue}
+                                  errors={errors}
+                                  touched={touched}
+                                  disabled={!editActive || disableSegundaVer}
+                                />
+                              </Grid>
+                              <Grid item xs={12} sm={12} md={4}>
+                                <FormControl
+                                  sx={{ marginLeft: 3 }}
+                                  disabled={!editActive || disableSegundaVer}
                                 >
-                                  <FormControlLabel
-                                    value={1}
-                                    control={<Radio />}
-                                    label="Sí"
-                                  />
-                                  <FormControlLabel
-                                    value={0}
-                                    control={<Radio />}
-                                    label="No"
-                                  />
-                                </RadioGroup>
-                              </FormControl>
-                            </Grid>
-                            <Grid item xs={12}>
-                              {(editActive && values.resultadoSegundaRecela === "1") && (
-                                <Alert severity="error">
-                                  Si la cerda presenta celo, se registrará como fallo reproductivo al guardar los cambios.
-                                </Alert>
-                              )}
+                                  <FormLabel id="radio-segundo">
+                                    Resultado: ¿Presenta celo?
+                                  </FormLabel>
+                                  <RadioGroup
+                                    aria-labelledby="radio-segundo"
+                                    value={values.resultadoSegundaRecela}
+                                    name="resultadoSegundaRecela"
+                                    onChange={handleChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value={1}
+                                      control={<Radio />}
+                                      label="Sí"
+                                    />
+                                    <FormControlLabel
+                                      value={0}
+                                      control={<Radio />}
+                                      label="No"
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                              <Grid item xs={12}>
+                                {editActive &&
+                                  values.resultadoSegundaRecela === '1' && (
+                                    <Alert severity="error">
+                                      Si la cerda presenta celo, se registrará
+                                      como fallo reproductivo al guardar los
+                                      cambios.
+                                    </Alert>
+                                  )}
+                              </Grid>
                             </Grid>
                           </Grid>
+                        </Grid>
+                        <Grid
+                          container
+                          justifyContent="normal"
+                          spacing={2}
+                          mb={3}
+                          mt="0.5rem"
+                        >
+                          <Grid item xs={12} md={0.5} sm={0.5}>
+                            <ServicioStatusDetalle
+                              disabled={disableTerceraVer}
+                              fecha={item?.fechaVerGestacion}
+                              resultado={item?.resultadoVerGestacion}
+                              gest
+                            />
+                          </Grid>
+                          <Grid container item xs={12} md={10.5} sm={10.5} spacing={2}>
                           <SubtitleForm
                             subtitle="Verificación de Gestación"
                             description="Se verifica de manera visual o mediante ecografías la gestación de la cerda."
@@ -1042,12 +1116,16 @@ function ServicioCerdaDetalle() {
                               </FormControl>
                             </Grid>
                             <Grid item>
-                              {(editActive && values.resultadoVerGestacion === "0") && (
-                                <Alert severity="error">
-                                  Si la cerda no presenta signos visuales, se registrará como fallo reproductivo al guardar los cambios.
-                                </Alert>
-                              )}
+                              {editActive &&
+                                values.resultadoVerGestacion === '0' && (
+                                  <Alert severity="error">
+                                    Si la cerda no presenta signos visuales, se
+                                    registrará como fallo reproductivo al
+                                    guardar los cambios.
+                                  </Alert>
+                                )}
                             </Grid>
+                          </Grid>
                           </Grid>
                         </Grid>
                       </form>
@@ -1066,7 +1144,9 @@ function ServicioCerdaDetalle() {
                         (item && item.fechaSalaMaternindad) || null
                     }}
                     validationSchema={Yup.object().shape({
-                      fechaSalaMaternindad: Yup.string().nullable("La fecha es requerida.").required("La fecha es requerida.")
+                      fechaSalaMaternindad: Yup.string()
+                        .nullable('La fecha es requerida.')
+                        .required('La fecha es requerida.')
                     })}
                   >
                     {({
@@ -1193,7 +1273,9 @@ function ServicioCerdaDetalle() {
                   <Grid container justifyContent="center">
                     {showAction && (
                       <Button
-                        onClick={() => {setTerminarGestModal(true)}}
+                        onClick={() => {
+                          setTerminarGestModal(true);
+                        }}
                         variant="outlined"
                         size="small"
                         color="primary"
@@ -1209,21 +1291,25 @@ function ServicioCerdaDetalle() {
           </div>
         )}
       </DialogContent>
-      {terminarGestModal &&
-      <TerminarGestacionModal
-        open={terminarGestModal}
-        modalClose={closeTerminarGestModal}
-        loteCerdaServicioId={item.id}
-        handleAction={terminarGestacion}
-      />        
-      }
-      {falloModal && <AddFalloModal
-        open={falloModal}
-        modalClose={closeFalloModal}
-        texto={`Ingrese los motivos para el fallo de la cerda ${item?.loteCerda?.cerda?.codigo || ""}`}
-        loteCerdaServicioId={item.id}
-        handleAction={registerFallo}
-      />}
+      {terminarGestModal && (
+        <TerminarGestacionModal
+          open={terminarGestModal}
+          modalClose={closeTerminarGestModal}
+          loteCerdaServicioId={item.id}
+          handleAction={terminarGestacion}
+        />
+      )}
+      {falloModal && (
+        <AddFalloModal
+          open={falloModal}
+          modalClose={closeFalloModal}
+          texto={`Ingrese los motivos para el fallo de la cerda ${
+            item?.loteCerda?.cerda?.codigo || ''
+          }`}
+          loteCerdaServicioId={item.id}
+          handleAction={registerFallo}
+        />
+      )}
     </>
   );
 }
