@@ -10,7 +10,7 @@ import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { cerdaDeleteAPI, cerdaDescartarAPI, cerdaQueryAPI } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
-import certifyAxios from 'src/utils/spAxios';
+import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import Results from './Results';
 
@@ -55,6 +55,7 @@ function LineasGeneticasListado() {
           }
           setLoading(false)
         } catch (err) {
+          setLoading(false)
           
           if (err.response) {
             console.log(err.response);
@@ -92,7 +93,7 @@ function LineasGeneticasListado() {
         }
       } catch (error) {
         console.error(error)
-        enqueueSnackbar("No se ha podido eliminar. Inténtelo de nuevo", {variant:"error"})
+        showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
       }
       afterDelete()
     }
@@ -107,7 +108,7 @@ function LineasGeneticasListado() {
         }
       } catch (error) {
         console.error(error)
-        enqueueSnackbar("No se ha podido descartar. Inténtelo de nuevo", {variant:"error"})
+        showUserErrors(error, "No se ha podido descartar. Inténtelo de nuevo")
       }
       afterDelete()
     }

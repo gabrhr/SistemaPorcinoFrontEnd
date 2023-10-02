@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, Slide, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, Grid, Slide, TextField, Typography, useTheme } from "@mui/material";
 import { styled } from "@mui/system";
 import { Formik } from "formik";
 import { forwardRef } from "react";
@@ -64,7 +64,8 @@ function AddEditModal ({
             validationSchema={Yup.object().shape({
                 nombre: Yup.string().required('El nombre es requerido')
             })}
-            onSubmit={async (values, {resetForm}) => {         
+            onSubmit={async (values, {resetForm, setSubmitting}) => {         
+                setSubmitting(true)
                 const request = {
                     
                     "nombre": values.nombre,
@@ -73,11 +74,12 @@ function AddEditModal ({
                 if(item != null){
                     request.id = item.id
                 }
-                handleCompleted(request, resetForm)
+                await handleCompleted(request, resetForm)
+                setSubmitting(false)
                 
             }}
           >
-            {({ errors, touched, handleBlur, handleChange, values, handleSubmit }) => (
+            {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isValid, dirty, isSubmitting }) => (
               <form noValidate onSubmit={handleSubmit}>
                     <Grid
                         container
@@ -148,6 +150,10 @@ function AddEditModal ({
                                 ml: 1,
                                 px: 2
                             }}
+                            startIcon={
+                                isSubmitting ? <CircularProgress size="1rem"  color='white'/> : null
+                              }
+                            disabled={(!isValid || !dirty) || isSubmitting}
                             >
                             Guardar Cambios
                             </Button>

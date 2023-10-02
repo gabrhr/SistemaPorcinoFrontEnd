@@ -7,7 +7,7 @@ import {
   lineaQueryAllAPI
 } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
-import certifyAxios from 'src/utils/spAxios';
+import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import * as Yup from 'yup';
 
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
@@ -72,9 +72,7 @@ function AddCerda() {
       }
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('No se ha podido agregar. Inténtelo de nuevo', {
-        variant: 'error'
-      });
+      showUserErrors(error, "No se ha podido agregar. Inténtelo de nuevo")
     }
     navigateToMain()
   };
@@ -110,13 +108,13 @@ function AddCerda() {
             fechaIngreso: Yup.string().required('La fecha de ingreso es obligatoria'),
             peso: Yup.number().typeError('El peso debe ser un número').required('El peso es obligatorio')
           })}
-          onSubmit={async (values) => {
+          onSubmit={async (values, {setSubmitting}) => {
             const request = {
               ...values,
               granjaId: user.granjaId
             };
-            addItem(request);
-
+            await addItem(request);
+            setSubmitting(false)
           }}
         >
           {({
@@ -127,7 +125,9 @@ function AddCerda() {
             values,
             handleSubmit,
             isSubmitting,
-            setFieldValue
+            setFieldValue,
+            isValid,
+            dirty
           }) => (
             <form noValidate onSubmit={handleSubmit}>
               <PageTitleWrapper>
@@ -173,9 +173,9 @@ function AddCerda() {
                       <Button
                         type="submit"
                         startIcon={
-                          isSubmitting ? <CircularProgress size="1rem" /> : null
+                          isSubmitting ? <CircularProgress size="1rem"  color='white'/> : null
                         }
-                        disabled={Boolean(errors.submit) || isSubmitting}
+                        disabled={(!isValid || !dirty) || isSubmitting}
                         variant="contained"
                         size="small"
                         color="primary"
@@ -220,6 +220,7 @@ function AddCerda() {
                     onChange={handleChange}
                     errors={errors}
                     touched={touched}
+                    handleBlur={handleBlur}
                   >
                         <MenuItem value="Vacia">
                           Vacia
@@ -241,6 +242,7 @@ function AddCerda() {
                       errors={errors}
                       touched={touched}
                       number
+                      handleBlur={handleBlur}
                     >
                           {lineas.map((type) => (
                           <MenuItem key={type.id} value={type.id}>
@@ -276,6 +278,7 @@ function AddCerda() {
                       setFieldValue={setFieldValue} 
                       errors={errors}
                       touched={touched}
+                      handleBlur={handleBlur}
                     />
                 </Grid>
                   {/* peso */}
@@ -305,6 +308,7 @@ function AddCerda() {
                       setFieldValue={setFieldValue} 
                       errors={errors}
                       touched={touched}
+                      handleBlur={handleBlur}
                     />
                 </Grid>
               </Grid>

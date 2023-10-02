@@ -1,31 +1,31 @@
-import { useState, forwardRef } from 'react';
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-import { Link as RouterLink } from 'react-router-dom';
 import {
+  Alert,
+  Avatar,
   Box,
+  Button,
   Card,
+  Collapse,
+  Container,
+  Dialog,
+  IconButton,
   Link,
+  Slide,
   TextField,
   Typography,
-  Container,
-  Alert,
-  Slide,
-  Dialog,
-  Collapse,
-  Button,
-  Avatar,
-  IconButton,
   styled
 } from '@mui/material';
+import { Formik } from 'formik';
+import { forwardRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link as RouterLink } from 'react-router-dom';
+import * as Yup from 'yup';
 
-import useRefMounted from 'src/hooks/useRefMounted';
 import CloseIcon from '@mui/icons-material/Close';
+import useRefMounted from 'src/hooks/useRefMounted';
 
+import CheckTwoToneIcon from '@mui/icons-material/CheckTwoTone';
 import { useTranslation } from 'react-i18next';
 import Logo from 'src/components/LogoSign';
-import CheckTwoToneIcon from '@mui/icons-material/CheckTwoTone';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -139,6 +139,7 @@ function RecoverPasswordBasic() {
                 { setErrors, setStatus, setSubmitting }
               ) => {
                 try {
+                  setSubmitting(true)
                   if (isMountedRef.current) {
                     setStatus({ success: true });
                     setSubmitting(false);

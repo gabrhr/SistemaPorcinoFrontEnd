@@ -1,36 +1,35 @@
-import { useState, Children } from 'react';
+import CheckTwoToneIcon from '@mui/icons-material/CheckTwoTone';
+import ErrorIcon from '@mui/icons-material/Error';
 import {
-  Typography,
-  Container,
-  Button,
-  Card,
-  CircularProgress,
-  Grid,
-  Box,
-  Step,
-  StepLabel,
-  Stepper,
   // Link,
   Alert,
   Avatar,
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Container,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
-  // Autocomplete
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
 } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
+import { Children, useState } from 'react';
 import * as Yup from 'yup';
-import CheckTwoToneIcon from '@mui/icons-material/CheckTwoTone';
-import ErrorIcon from '@mui/icons-material/Error';
 
-import { keyCodeBack } from 'src/config';
-import { Helmet } from 'react-helmet-async';
 import { styled } from '@mui/material/styles';
-import Logo from 'src/components/LogoSign';
-import axios from 'src/utils/spAxios';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
+import Logo from 'src/components/LogoSign';
+import { keyCodeBack } from 'src/config';
 import { departamentosPeru } from 'src/utils/defaultValues';
+import axios from 'src/utils/spAxios';
 import CustomizedSelectForFormik from './CustomizedSelectForFormik';
 
 
@@ -397,7 +396,7 @@ export function FormikStepper({ children, ...props }) {
 
               <Button
                 startIcon={
-                  isSubmitting ? <CircularProgress size="1rem" /> : null
+                  isSubmitting ? <CircularProgress size="1rem"  color='white'/> : null
                 }
                 disabled={isSubmitting}
                 variant="contained"

@@ -31,7 +31,7 @@ export const departamentosPeru = [
 // Back end Code
 export const resultCodeOk = 0;
 export const resultCodeDuplicatedError = 1006;
-export const resultCodeUserError = 1006;
+export const resultCodeUserError = 1008;
 
 // Filtro de estados en tabla 
 export const allStatus = {
@@ -39,7 +39,7 @@ export const allStatus = {
     text: "Todos"
 }
 
-// Estaddos
+// Estados
 export const cerdaEstados = {
   reemplazo: 'Reemplazo',
   porservir: 'Por servir',
@@ -52,6 +52,38 @@ export const cerdaEstados = {
   vacia:'Vacia'
 }
 
+export const loteTipos = {
+  celo: "Celo",
+  servicio: "Servicio"
+}
+
+export const alimentoCategorias = {
+  cerda: "Cerda",
+  lechon: "Lechón"
+}
+
+export const loteEstado = {
+  enProceso: "En Proceso",
+  finalizado: "Finalizado"
+}
+
+export const celoEstado = loteEstado;
+
+export const servicioEstado = {
+  porServir: "Por servir",
+  enServicio: "En servicio",
+  gestacion: "Gestacion",
+  fallido: "Fallido",
+  finalizado:"Finalizado"
+}
+
+export const tiposInseminacion = {
+  inseminacion: "Inseminación Artificial",
+  monta: "Monta Natural"
+}
+
+// Obtener estados
+
 export const listEstadosCerda = () => {
   const estados = Object.values(cerdaEstados)
   const estadosList = []
@@ -62,4 +94,61 @@ export const listEstadosCerda = () => {
   })
 
   return estadosList
+}
+
+export const listTiposLote = () => {
+  const list = Object.values(loteTipos)
+  const out = []
+
+  list.forEach((value) => {
+    out.push({value, text: value})
+  })
+
+  return out
+}
+
+const generalList = (listado) => {
+  const list = Object.entries(listado)
+  const out = []
+
+  list.forEach((e) => {
+    out.push({value:e[0] , text: e[1]})
+  })
+
+  return out
+}
+
+export const listCategoriasAlimento = () => {
+  return generalList(alimentoCategorias)
+}
+
+export const listEstadoLotes = () => {
+  return generalList(loteEstado)
+}
+
+export const listEstadoCelo = () => {
+  const list = Object.values(celoEstado)
+  const out = []
+
+  list.forEach((value) => {
+    out.push({value, text: value})
+  })
+
+  return out
+}
+
+
+export const listEstadoServicio = () => {
+  const list = Object.values(servicioEstado)
+  const out = []
+
+  list.forEach((value) => {
+    out.push({value, text: value})
+  })
+
+  return out
+}
+
+export const lisTiposInseminacion = () => {
+  return generalList(tiposInseminacion)
 }

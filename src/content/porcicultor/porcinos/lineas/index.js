@@ -1,18 +1,18 @@
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
-import { Button, Grid, Typography} from '@mui/material';
-import useRefMounted from 'src/hooks/useRefMounted';
+import { Button, Grid, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
+import useAuth from 'src/hooks/useAuth';
+import useRefMounted from 'src/hooks/useRefMounted';
 import { lineaDeleteAPI, lineaQueryAPI, lineaRegisterAPI, lineaUpdateAPI } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
-import { useSnackbar } from 'notistack';
-import useAuth from 'src/hooks/useAuth';
 
-import Results from './Results';
 import AddEditModal from './AddEditModal';
+import Results from './Results';
 
 const tituloPagina = "Líneas genéticas"
 const itemSingular = "Línea genética"
@@ -56,6 +56,7 @@ function LineasGeneticasListado() {
         } catch (err) {
           setItemListado([])
           showUserErrors(err)
+          setLoading(false)
         }
     }, [isMountedRef])
 

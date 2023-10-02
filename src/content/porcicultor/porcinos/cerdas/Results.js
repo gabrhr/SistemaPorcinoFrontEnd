@@ -4,7 +4,6 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -24,6 +23,7 @@ import { getEstadoCerdaNombre } from 'src/utils/dataFormat';
 import { allStatus, listEstadosCerda } from 'src/utils/defaultValues';
 
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import TableRowsLoader from 'src/components/Table/TableRowsLoader';
 import DeleteModal from './DeleteModal';
 import DescarteModal from './DescarteModal';
 
@@ -100,6 +100,7 @@ const Results = (props) => {
 
     const reqObj = {
         "codigo": "",
+        "estado": "",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -204,29 +205,6 @@ const Results = (props) => {
           />
         </Box>
         <Divider />
-        {
-          props.loading &&
-         <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
-                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
-          </div> 
-        }
-
-        {!props.loading && paginatedObject.length === 0 &&
-          <>
-            <Typography
-              sx={{
-                py: 10
-              }}
-              variant="h3"
-              fontWeight="normal"
-              color="text.secondary"
-              align="center"
-            >
-              No se encontraron cerdas
-            </Typography>
-          </>
-        }
-        {!props.loading && paginatedObject.length !== 0 &&
           <>
             <TableContainer>
               <Table>
@@ -240,8 +218,17 @@ const Results = (props) => {
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
-                  {paginatedObject.map((element, idx) => {
+                  <TableBody>
+                {
+                  props.loading && 
+                    <TableRowsLoader 
+                      rowsNum={5} 
+                      cellsRow={["text", "status", "text", "text", "text", "action"]}
+                    />
+                  }
+                  
+                {!props.loading && paginatedObject.length !== 0 &&
+                  (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
@@ -306,10 +293,26 @@ const Results = (props) => {
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  }))
+                }
                 </TableBody>
               </Table>
             </TableContainer>
+            {!props.loading && paginatedObject.length === 0 &&
+                  <Box p={2}>
+                    <Typography
+                      sx={{
+                        py: 5
+                      }}
+                      variant="h3"
+                      fontWeight="normal"
+                      color="text.secondary"
+                      align="center"
+                    >
+                      No se encontraron cerdas
+                    </Typography>
+                  </Box>
+                }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -322,16 +325,15 @@ const Results = (props) => {
               />
           </Box>
           </>
-        }
       </Card>
       {/* Eliminar */}
-      <DeleteModal
+      {openDelete && <DeleteModal
         openConfirmDelete={openDelete}
         closeConfirmDelete={deleteModalClose}
         title={`Eliminar ${itemSingular}`}
         itemName={` la cerda ${currentItem?.nombre || "" }`}
         handleDeleteCompleted={deleteItem}
-      />
+      />}
       {/* Descartar */}
       <DescarteModal
         openConfirmDelete={openDescarte}

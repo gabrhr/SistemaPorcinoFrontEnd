@@ -58,14 +58,14 @@ function AddEditModal ({
             <Formik
             enableReinitialize
             initialValues={{
-                codigo: editMode && item && item.codigo || "",
-                lineaGeneticaId: editMode && item && item.lineaGeneticaId || -1
+                codigo: (editMode && item && item.codigo) || "",
+                lineaGeneticaId: (editMode && item && item.lineaGeneticaId) || -1
             }}
             validationSchema={Yup.object().shape({
                 codigo: Yup.string().required('El codigo es requerido'),
                 lineaGeneticaId: Yup.number().min(0, 'Seleccionar una línea').required('La línea es requerida')
             })}
-            onSubmit={async (values, {resetForm}) => {         
+            onSubmit={async (values, {resetForm, setSubmitting}) => {      
                 const request = {
                     "codigo": values.codigo,
                     "lineaGeneticaId": values.lineaGeneticaId,
@@ -74,10 +74,11 @@ function AddEditModal ({
                 if(editMode){
                     request.id = item.id
                 }
-                handleCompleted(request, resetForm)
+                await handleCompleted(request, resetForm)
+                setSubmitting(false)   
             }}
           >
-            {({ errors, touched, handleBlur, handleChange, values, handleSubmit }) => (
+            {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid }) => (
               <form noValidate onSubmit={handleSubmit}>
                     <Grid
                         container
@@ -129,6 +130,7 @@ function AddEditModal ({
                             value={values.lineaGeneticaId}
                             onChange={handleChange}
                             errors={errors}
+                            onBlur={handleBlur}
                             touched={touched}
                             number
                             >
@@ -175,6 +177,7 @@ function AddEditModal ({
                                 ml: 1,
                                 px: 2
                             }}
+                            disabled={(!isValid || !dirty) || isSubmitting}
                             >
                             Guardar Cambios
                             </Button>

@@ -1,5 +1,5 @@
-import { alpha, createTheme, lighten, darken } from '@mui/material';
 import '@mui/lab/themeAugmentation';
+import { alpha, createTheme, darken, lighten } from '@mui/material';
 import { esES } from '@mui/material/locale';
 import { esES as dpES } from '@mui/x-date-pickers';
 // import i18n from 'src/i18n/i18n';
@@ -15,7 +15,8 @@ const themeColors = {
   white: '#ffffff',
   primaryAlt: '#000C57',
   blue: '#5E65FF',
-  totalBlack: "#0c0c0d"
+  totalBlack: "#0c0c0d",
+  brown: "#B48100"
 };
 
 const colors = {
@@ -143,6 +144,12 @@ const colors = {
     light: lighten(themeColors.totalBlack, 0.3),
     main: themeColors.totalBlack,
     dark: darken(themeColors.totalBlack, 0.2)
+  },
+  brown: {
+    lighter: lighten(themeColors.brown, 0.85),
+    light: lighten(themeColors.brown, 0.3),
+    main: themeColors.brown,
+    dark: darken(themeColors.brown, 0.2)
   }
 };
 
@@ -329,6 +336,30 @@ export const AimTheme = createTheme(
         dark: colors.black.dark,
         contrastText: colors.alpha.white[100]
       },
+      proceso: {
+        light: "#FFFFF4AB",
+        main: "#FFFFF4",
+        dark: "#cbbb00",
+        contrastText: "#cbbb00",
+      },
+      finalizado: {
+        light: "#F0FFEAAB",
+        main: "#F0FFEAAB",
+        dark: "#44B400",
+        contrastText: "#44B400",
+      },
+      precebo: {
+        light: "#EAFBFFAB",
+        main: "#EAFBFFAB",
+        dark: "#0089B4",
+        contrastText: "#0089B4",
+      },
+      cebo: {
+        light: "#FFFCEAAB",
+        main: "#FFFCEAAB",
+        dark: "#B48100",
+        contrastText: "#B48100"
+      },
       text: {
         primary: colors.alpha.black[100],
         secondary: colors.alpha.black[70],
@@ -372,6 +403,15 @@ export const AimTheme = createTheme(
             '&.MuiBackdrop-invisible': {
               backgroundColor: 'transparent'
             }
+          }
+        }
+      },
+      MuiGrid: {
+        styleOverrides:{
+          root:{
+            '&.MuiGrid-item': {
+              paddingTop: "25px"
+            }            
           }
         }
       },

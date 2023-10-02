@@ -1,9 +1,11 @@
-import PropTypes from 'prop-types';
 import { Box, styled } from '@mui/material';
+import PropTypes from 'prop-types';
 
 const PageTitle = styled(Box)(
   ({ theme }) => `
         padding: ${theme.spacing(4)};
+        padding-top: ${theme.spacing(2)};
+        padding-bottom: ${theme.spacing(2)};
 `
 );
 

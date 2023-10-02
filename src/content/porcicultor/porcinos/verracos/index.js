@@ -1,18 +1,18 @@
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
-import { Button, Grid, Typography} from '@mui/material';
-import useRefMounted from 'src/hooks/useRefMounted';
+import { Button, Grid, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
+import useAuth from 'src/hooks/useAuth';
+import useRefMounted from 'src/hooks/useRefMounted';
 import { lineaQueryAllAPI, verracoDeleteAPI, verracoQueryAPI, verracoRegisterAPI, verracoUpdateAPI } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
-import { useSnackbar } from 'notistack';
-import useAuth from 'src/hooks/useAuth';
 
-import Results from './Results';
 import AddEditModal from './AddEditModal';
+import Results from './Results';
 
 const tituloPagina = "Verracos"
 const itemSingular = "Verraco"
@@ -38,7 +38,6 @@ function LineasGeneticasListado() {
     }
     
     const getListado = useCallback(async (reqObj) => {
-      setLoading(true)
         try {
           const response = await certifyAxios.post(verracoQueryAPI, reqObj);
           if (isMountedRef.current) {
@@ -55,7 +54,7 @@ function LineasGeneticasListado() {
           }
           setLoading(false)
         } catch (err) {
-          
+          setLoading(false)
           if (err.response) {
             console.log(err.response);
           } else if (err.request) {
@@ -69,8 +68,9 @@ function LineasGeneticasListado() {
 
     useEffect(() => {
         const reqObj = defaultObj;
-        getLineas()
+        setLoading(true)
         getListado(reqObj);
+        getLineas()
       }, [getListado]);
     
       const onPageParamsChange = (reqObj) => {
@@ -173,7 +173,6 @@ function LineasGeneticasListado() {
                 </Grid>
                 </Grid>
             </PageTitleWrapper>
-            { lineas !== undefined &&
             <Grid
                 sx={{
                     px: 4,
@@ -198,9 +197,10 @@ function LineasGeneticasListado() {
                             lineas={lineas}
                         />
                 </Grid>
-            </Grid>}
+            </Grid>
 
             {/* Modal Add */}
+            {openAdd && 
             <AddEditModal
               openConfirmModal={openAdd}
               closeConfirmModal={addModalOpenHandle}
@@ -209,7 +209,7 @@ function LineasGeneticasListado() {
               handleCompleted={addItem}
               granjaId={user.granjaId}
               lineas={lineas}
-            />
+            />}
         </>
     )
     

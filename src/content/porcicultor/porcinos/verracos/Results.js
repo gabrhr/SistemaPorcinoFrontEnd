@@ -3,7 +3,6 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -17,6 +16,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import TableRowsLoader from 'src/components/Table/TableRowsLoader';
 import AddEditModal from './AddEditModal';
 import DeleteModal from './DeleteModal';
 
@@ -166,30 +166,9 @@ const Results = (props) => {
           </Box>
         </Box>
         <Divider />
-        {
-          props.loading &&
-         <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
-                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
-          </div> 
-        }
-
-        {!props.loading && paginatedObject.length === 0 &&
-          <>
-            <Typography
-              sx={{
-                py: 10
-              }}
-              variant="h3"
-              fontWeight="normal"
-              color="text.secondary"
-              align="center"
-            >
-              No se encontraron verracos
-            </Typography>
-          </>
-        }
-        {!props.loading && paginatedObject.length !== 0 &&
-          <>
+        
+        
+         <>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -201,7 +180,15 @@ const Results = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedObject.map((element, idx) => {
+                {props.loading && 
+                    <TableRowsLoader
+                      rowsNum={5} 
+                      action
+                      cellsNum={3}
+                    />
+                }
+                {!props.loading && paginatedObject.length !== 0 &&
+                  (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
@@ -240,10 +227,26 @@ const Results = (props) => {
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  }))
+                }
                 </TableBody>
               </Table>
             </TableContainer>
+            {!props.loading && paginatedObject.length === 0 &&
+          <>
+            <Typography
+              sx={{
+                py: 10
+              }}
+              variant="h3"
+              fontWeight="normal"
+              color="text.secondary"
+              align="center"
+            >
+              No se encontraron verracos
+            </Typography>
+          </>
+        }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -256,7 +259,6 @@ const Results = (props) => {
               />
           </Box>
           </>
-        }
       </Card>
       {/* Editar */}
       <AddEditModal

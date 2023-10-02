@@ -43,3 +43,28 @@
 .mt {
     margin-top: 1rem !important;
 }
+
+
+.divider-form {
+    background: rgb(183 185 190 / 12%) !important;
+    margin-bottom: 1rem !important;
+    
+}
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #fff;
+    background-color: #0068DF;
+    border-color: none;
+    font-weight: 700;
+}
+
+.nav-tabs .nav-link:hover{
+    color: black
+}
+
+.nav-tabs .nav-link.active:hover{
+    color: white
+}
+
+.nav-tabs .nav-link{
+    color: gray
+}

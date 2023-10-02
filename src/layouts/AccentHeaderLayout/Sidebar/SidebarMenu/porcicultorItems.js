@@ -1,8 +1,8 @@
-import SavingsIcon from '@mui/icons-material/Savings';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CachedIcon from '@mui/icons-material/Cached';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import SavingsIcon from '@mui/icons-material/Savings';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
 const menuItems = [
   {

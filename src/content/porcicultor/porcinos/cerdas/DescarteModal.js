@@ -90,12 +90,14 @@ function DescarteModal({
               fechaDescarte: Yup.string().required('La fecha es requerida'),
               motivo: Yup.string().required('El motivo es requerido')
             })}
-            onSubmit={async (values) => {
+            onSubmit={async (values, {setSubmitting}) => {
+              setSubmitting(true)
               const request = {
                 ...values,
                 id: item.id
               };
-              handleDeleteCompleted(request);
+              await handleDeleteCompleted(request);
+              setSubmitting(false)
             }}
           >
             {({
@@ -106,7 +108,9 @@ function DescarteModal({
               values,
               handleSubmit,
               isSubmitting,
-              setFieldValue
+              setFieldValue,
+              isValid,
+              dirty
             }) => (
               <form noValidate onSubmit={handleSubmit}>
                 <Grid container justifyContent="center" spacing={3}>
@@ -132,6 +136,7 @@ function DescarteModal({
                       setFieldValue={setFieldValue} 
                       errors={errors}
                       touched={touched}
+                      handleBlur={handleBlur}
                     />
                   </Grid>
                 </Grid>
@@ -168,9 +173,9 @@ function DescarteModal({
                       variant="outlined"
                       type="submit"
                       startIcon={
-                        isSubmitting ? <CircularProgress size="1rem" /> : null
+                        isSubmitting ? <CircularProgress size="1rem"  color='white'/> : null
                       }
-                      disabled={Boolean(errors.submit) || isSubmitting}
+                      disabled={(!isValid || !dirty) || isSubmitting}
                       size="small"
                       sx={{
                         ml: 1,

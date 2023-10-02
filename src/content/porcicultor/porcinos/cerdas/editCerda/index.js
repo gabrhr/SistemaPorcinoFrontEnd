@@ -7,7 +7,7 @@ import {
   lineaQueryAllAPI
 } from 'src/utils/apiUrls';
 import { cerdaEstados, resultCodeOk } from 'src/utils/defaultValues';
-import certifyAxios from 'src/utils/spAxios';
+import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import * as Yup from 'yup';
 
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
@@ -25,7 +25,6 @@ import {
 import { Formik } from 'formik';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import SelectForm from 'src/components/Form/SelectForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
@@ -34,8 +33,10 @@ import { formatDate } from 'src/utils/dataFormat';
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
 import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
+import DataView from 'src/components/Form/DataView';
 import DatePickerForm from 'src/components/Form/DatePickerForm';
 import InputForm from 'src/components/Form/InputForm';
+import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 
 function EditCerda() {
   const [item, setItem] = useState(undefined);
@@ -120,9 +121,7 @@ function EditCerda() {
     } catch (error) {
       resetForm()
       console.error(error);
-      enqueueSnackbar('No se ha podido editar. Inténtelo de nuevo', {
-        variant: 'error'
-      });
+      showUserErrors(error, "No se ha podido editar. Inténtelo de nuevo")
     }
     setEditActive(false)
   };
@@ -164,7 +163,8 @@ function EditCerda() {
             fechaIngreso: Yup.string().required('La fecha de ingreso es obligatoria'),
             peso: Yup.number().typeError('El peso debe ser un número').required('El peso es obligatorio')
           })}
-          onSubmit={async (values, {resetForm}) => {
+          onSubmit={async (values, {resetForm, setSubmitting}) => {
+            setSubmitting(false)
             const request = {
               codigo: values.codigo,
               lineaGeneticaId: values.lineaGeneticaId,
@@ -175,7 +175,8 @@ function EditCerda() {
             };
             if (editActive) {
               request.id = item.id;
-              editItemById(request, resetForm);
+              await editItemById(request, resetForm);
+              setSubmitting(false)
             }
           }}
         >
@@ -188,7 +189,9 @@ function EditCerda() {
             values,
             handleSubmit,
             isSubmitting,
-            setFieldValue
+            setFieldValue,
+            isValid,
+            dirty
           }) => (
             <form noValidate onSubmit={handleSubmit}>
               <PageTitleWrapper>
@@ -236,9 +239,9 @@ function EditCerda() {
                       <Button
                         type="submit"
                         startIcon={
-                          isSubmitting ? <CircularProgress size="1rem" /> : null
+                          isSubmitting ? <CircularProgress size="1rem"  color='white'/> : null
                         }
-                        disabled={Boolean(errors.submit) || isSubmitting}
+                        disabled={(!isValid || !dirty) || isSubmitting}
                         variant="contained"
                         size="small"
                         color="primary"
@@ -282,13 +285,14 @@ function EditCerda() {
                       py: theme.spacing(3),
                       px: theme.spacing(6),
                       mx: theme.spacing(4),
+                      mb: theme.spacing(3),
                       background: "white",
                       borderRadius: 2,
                       
                   }}
               >
               {/* Form */}
-              <Grid container justifyContent="center" spacing={2}>
+              <Grid container justifyContent="center" spacing={4}>
               <Grid container item  xs={12} sm={12} md={12} spacing={4}>
                 {/* Codigo */}
                 <Grid item xs={12} sm={12} md={4}>
@@ -311,6 +315,7 @@ function EditCerda() {
                       name="lineaGeneticaId"
                       value={values.lineaGeneticaId}
                       onChange={handleChange}
+                      handleBlur={handleBlur}
                       errors={errors}
                       touched={touched}
                       number
@@ -325,16 +330,7 @@ function EditCerda() {
                 </Grid>
                 {/* Estado */}
                 <Grid item xs={12} sm={12} md={3}>
-                  <div className='contenedor-row'>
-                    <div className='left center-form'>
-                      <Typography>
-                        Estado reproductivo:
-                      </Typography>
-                    </div>
-                    <div className='right'>
-                      <CerdaEstadoChip estado = {item.estado}/>
-                    </div>
-                  </div>
+                  <DataView status label="Estado reproductivo" text={item.estado} cerda/>                  
                 </Grid>
               </Grid>
               <Grid container item  xs={12} sm={12} md={12} spacing={4}>
@@ -349,6 +345,7 @@ function EditCerda() {
                       errors={errors}
                       touched={touched}
                       disabled={!editActive}
+                      handleBlur={handleBlur}
                     />
                 </Grid>
                 {/* Fecha ingreso */}
@@ -362,6 +359,7 @@ function EditCerda() {
                       errors={errors}
                       touched={touched}
                       disabled={!editActive}
+                      handleBlur={handleBlur}
                     />
                 </Grid>
                 {/* Orden */}
@@ -395,13 +393,9 @@ function EditCerda() {
               
               </Grid>
               {/* Descarte */}
-              {item.descartada && 
+              {item.descartada === 1 && 
               <Grid container justifyContent="center" spacing={1} className='mt'>
-                <Grid item xs={12} sm={12} md={12}>
-                  <Typography variant='h6' gutterBottom>
-                    Información de Descarte
-                  </Typography>
-                </Grid>
+                <SubtitleForm subtitle='Información de Descarte'/>
                 <Grid item xs={12} sm={12} md={12}>
                   <Typography gutterBottom>
                     <b style={{color:"#4a3fa5"}}>Fecha de descarte:</b> {formatDate(item.fechaDescarte)}
@@ -409,20 +403,18 @@ function EditCerda() {
                 </Grid>
                 <Grid item xs={12} sm={12} md={12}>
                   <Typography gutterBottom>
-                  <b style={{color:"#4a3fa5"}}>Motivo:</b> {item.motivoDescarte}
+                  <b style={{color:"#4a3fa5"}}>Motivo:</b> {item.motivoDescarte || ""}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={12} md={12}>
+                  <Typography gutterBottom>
+                  <b style={{color:"#4a3fa5"}}>Fase de descarte:</b> {item.estadoDescarte || ""}
                   </Typography>
                 </Grid>
               </Grid>}
               {/* Dias no productivos */}
               <Grid container justifyContent="center" spacing={2} className='mt'>
-                <Grid item xs={12} sm={12} md={12}>
-                  <Typography variant='h6' gutterBottom>
-                    Periodo no productivo
-                  </Typography>
-                  <Typography variant='body1' gutterBottom>
-                    {getDNPText(item.estado)}
-                  </Typography>
-                </Grid>
+                <SubtitleForm subtitle='Periodo no productivo' description={getDNPText(item.estado)}/>
                 <Grid container item  xs={12} sm={12} md={12} spacing={4}>
                 <Grid item xs={12} sm={12} md={4}>
                   <Typography variant='body1' gutterBottom>

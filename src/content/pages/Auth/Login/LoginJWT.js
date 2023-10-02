@@ -4,9 +4,9 @@ import { Formik } from 'formik';
 
 import {
   Button,
+  CircularProgress,
   FormHelperText,
   TextField,
-  CircularProgress,
 } from '@mui/material';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
@@ -101,7 +101,7 @@ const LoginJWT = () => {
               mb: 3
             }}
             color="primary"
-            startIcon={isSubmitting ? <CircularProgress size="1rem" /> : null}
+            startIcon={isSubmitting ? <CircularProgress size="1rem"  color='white'/> : null}
             disabled={isSubmitting}
             type="submit"
             size="large"

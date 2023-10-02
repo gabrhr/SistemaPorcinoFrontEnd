@@ -1,16 +1,17 @@
 import { useRoutes } from 'react-router-dom';
 import router from 'src/router';
 
-import { SnackbarProvider } from 'notistack';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { SnackbarProvider } from 'notistack';
 import useAuth from 'src/hooks/useAuth';
-import "src/theme/global.css"
+import "src/theme/global.css";
 
 import { CssBaseline } from '@mui/material';
-import {es} from 'date-fns/locale'
-import ThemeProvider from './theme/ThemeProvider';
+import { es } from 'date-fns/locale';
 import AppInit from './components/AppInit';
+import ThemeProvider from './theme/ThemeProvider';
 
 function App() {
   const content = useRoutes(router);

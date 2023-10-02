@@ -8,9 +8,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { cerdaDeleteAPI, cerdaQueryAPI } from 'src/utils/apiUrls';
+import { loteDeleteAPI, loteQueryAPI } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
-import certifyAxios from 'src/utils/spAxios';
+import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import Results from './Results';
 
@@ -31,7 +31,7 @@ function LineasGeneticasListado() {
 
     const defaultObj = {
         "codigo": "",
-        "estado": "",
+        "tipo": "",
         "pageNumber": 1,
         "maxResults": 10,
         "granjaId": user.granjaId
@@ -40,7 +40,7 @@ function LineasGeneticasListado() {
     const getListado = useCallback(async (reqObj) => {
       setLoading(true)
         try {
-          const response = await certifyAxios.post(cerdaQueryAPI, reqObj);
+          const response = await certifyAxios.post(loteQueryAPI, reqObj);
           if (isMountedRef.current) {
             if(response.data.list.length === 0 && response.data.total > 0) {
               const lastPage = Math.ceil(response.data.total / reqObj.maxResults);
@@ -56,6 +56,7 @@ function LineasGeneticasListado() {
           setLoading(false)
         } catch (err) {
           
+          setLoading(false)
           if (err.response) {
             console.log(err.response);
           } else if (err.request) {
@@ -85,26 +86,21 @@ function LineasGeneticasListado() {
         const reqObj = {
           id
         }
-        const response = await certifyAxios.post(cerdaDeleteAPI, reqObj);
+        const response = await certifyAxios.post(loteDeleteAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
           enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
         }
       } catch (error) {
         console.error(error)
-        enqueueSnackbar("No se ha podido eliminar. Inténtelo de nuevo", {variant:"error"})
+        showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
       }
       afterDelete()
     }
     
-    // add 
-    const navigateToNuevo = () => {
-      navigate('/sp/porcicultor/porcinos/cerdas/nuevo');
-    };
-
     // add or edit
     const navigateToDetalle = (id) => {
-      navigate('/sp/porcicultor/porcinos/cerdas/detalle', {state:{cerdaId: id}});
+      navigate('/sp/porcicultor/porcinos/lotes/detalle', {state:{loteId: id}});
     };
 
     return(
@@ -118,13 +114,16 @@ function LineasGeneticasListado() {
                     <Typography variant="h3" gutterBottom>
                         {tituloPagina}
                     </Typography>
+                    <Typography>
+                      Conjunto de cerdas para realizar Detección de celo o Servicio
+                    </Typography>
                 </Grid>
                 <Grid item>
                     <Button
                     sx={{
                         mt: { xs: 2, sm: 0 }
                     }}
-                    onClick={navigateToNuevo}
+                    onClick={() => {navigateToDetalle(-1)}}
                     variant="contained"
                     startIcon={<AddTwoToneIcon fontSize="small" />}
                     >

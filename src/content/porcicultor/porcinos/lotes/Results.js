@@ -3,7 +3,6 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -17,13 +16,13 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import StatusTable from 'src/components/Form/StatusTable';
-import { getEstadoCerdaNombre } from 'src/utils/dataFormat';
+import TableRowsLoader from 'src/components/Table/TableRowsLoader';
+import { formatDate } from 'src/utils/dataFormat';
 import { allStatus, listEstadosCerda } from 'src/utils/defaultValues';
 import DeleteModal from './DeleteModal';
 
-const itemSingular = "Cerda"
+const itemSingular = "Lote"
 
 const statusList = listEstadosCerda()
 
@@ -44,7 +43,7 @@ const Results = (props) => {
       props.setPageNumber(0);
       const reqObj = {
         "codigo": "",
-        "estado": "",
+        "tipo": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -54,7 +53,7 @@ const Results = (props) => {
       props.setPageNumber(0);
       const reqObj = {
         "codigo": event.target.value,
-        "estado": "",
+        "tipo": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -66,7 +65,7 @@ const Results = (props) => {
   const handleChangeStatus = (value) => {
     const reqObj = {
         "codigo": "",
-        "estado": value,
+        "tipo": value,
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -80,7 +79,7 @@ const Results = (props) => {
 
     const reqObj = {
         "codigo": "",
-        "estado": "",
+        "tipo": "",
         "pageNumber": newPage + 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -95,6 +94,7 @@ const Results = (props) => {
 
     const reqObj = {
         "codigo": "",
+        "tipo":"",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -171,7 +171,7 @@ const Results = (props) => {
             <Typography component="span" variant="subtitle1">
               Mostrando:
             </Typography>{' '}
-            <b>{paginatedObject.length}</b> <b>cerda(s)</b>
+            <b>{paginatedObject.length}</b> <b>lote(s)</b> {/* change */}
           </Box>
           <StatusTable
             actionRef = {statusRef}
@@ -184,44 +184,30 @@ const Results = (props) => {
           />
         </Box>
         <Divider />
-        {
-          props.loading &&
-         <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
-                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
-          </div> 
-        }
 
-        {!props.loading && paginatedObject.length === 0 &&
-          <>
-            <Typography
-              sx={{
-                py: 10
-              }}
-              variant="h3"
-              fontWeight="normal"
-              color="text.secondary"
-              align="center"
-            >
-              No se encontraron cerdas
-            </Typography>
-          </>
-        }
-        {!props.loading && paginatedObject.length !== 0 &&
+        
           <>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Código Cerda</TableCell>
-                    <TableCell align='center'>Estado</TableCell>
-                    <TableCell align='center'>Línea genética</TableCell>
-                    <TableCell align='center'> Orden Parto</TableCell>
-                    <TableCell align='center'> Días no productivos</TableCell>
+                    <TableCell>Código Lote</TableCell>
+                    <TableCell align='center'>Tipo</TableCell>
+                    <TableCell align='center'>Fecha apertura</TableCell>
+                    <TableCell align='center'> Nro. cerdas</TableCell>
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedObject.map((element, idx) => {
+                {props.loading && 
+                    <TableRowsLoader
+                      rowsNum={5} 
+                      action
+                      cellsNum={4}
+                    />
+                }
+                {!props.loading && paginatedObject.length !== 0 &&
+                  (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
@@ -230,23 +216,18 @@ const Results = (props) => {
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
-                          {element && element.estado &&
-                            <CerdaEstadoChip estado={getEstadoCerdaNombre(element.estado) || ""}/>
-                          }
-                        </TableCell>
-                        <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.lineaGeneticaNombre || ""}
+                            {element && element.tipo || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.ordenParto || "0"}
+                            {element && formatDate(element.fechaApertura) || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.diasNoProductivos || "0"}
+                            {element && element.totalCerdas || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
@@ -261,19 +242,35 @@ const Results = (props) => {
                             >
                                 <CreateRoundedIcon/>
                             </IconButton>
-                            {element.descartada < 1 && <IconButton color="error" 
+                            <IconButton color="error" 
                                 sx={{borderRadius:30}}
                                 onClick={()=> openModal(element)}
-                            >
+                                >
                                 <DeleteRoundedIcon/>                          
-                            </IconButton>}
+                            </IconButton>
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  }))
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
+            {!props.loading && paginatedObject.length === 0 &&
+              <>
+                <Typography
+                  sx={{
+                    py: 10
+                  }}
+                  variant="h3"
+                  fontWeight="normal"
+                  color="text.secondary"
+                  align="center"
+                >
+                  No se encontraron lotes
+                </Typography>
+              </>
+            }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -286,14 +283,14 @@ const Results = (props) => {
               />
           </Box>
           </>
-        }
+        
       </Card>
       {/* Eliminar */}
       <DeleteModal
         openConfirmDelete={openDelete}
         closeConfirmDelete={deleteModalClose}
         title={`Eliminar ${itemSingular}`}
-        itemName={` la cerda ${currentItem?.nombre || "" }`}
+        itemName={` el lote ${currentItem?.nombre || "" }`}
         handleDeleteCompleted={deleteItem}
       />
     </>

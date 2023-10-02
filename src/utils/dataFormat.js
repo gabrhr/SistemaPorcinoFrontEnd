@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { servicioEstado } from './defaultValues';
 
 export const  generateRandomString = (num) => {
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -40,11 +41,21 @@ export function formatNameCapitals(names) {
     return newNames;
 }
 
-export function formatDate(date, format="DD MMM YYYY"){
+export function formatDate(date, format="DD/MM/YYYY"){
     if(date){
         return moment(date).format(format)
     }
     return ""
+}
+
+export function differenciaEntreFechas(dateStart, tipo="days", dateFin = new Date()){
+    const text = tipo ==="month"?"meses": "días"
+    if(dateStart){
+        const fecha1 = moment(dateStart);
+        const fecha2 = moment(dateFin);
+        return `${fecha2.diff(fecha1, tipo)} ${text}`
+    }
+    return "-"
 }
 
 // Cerda
@@ -53,5 +64,17 @@ export function getEstadoCerdaNombre(nombre){
     if(nombre && nombre === "Vacia"){
         return "Vacia"
     } 
+    return nombre || ""
+}
+
+
+// Servicio estados
+
+export function getEstadoServicioNombre(nombre){
+    if(nombre && nombre === servicioEstado.finalizado){
+        return "Finalizado con Parto"
+    } else if(nombre && nombre === servicioEstado.gestacion){
+        return "Gestación"
+    }
     return nombre || ""
 }

@@ -1,13 +1,16 @@
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
-import { Box, Button, Menu, MenuItem } from "@mui/material";
+import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
 import { allStatus } from 'src/utils/defaultValues';
 
 function StatusTable({actionRef,setOpenStatus,openStatus, status, 
-    setStatus, menuList, handleChange}) {
+    setStatus, menuList, handleChange, nombre= null}) {
     
     return(
         <Box>
-            <Box>
+            <Box className='center-form'>
+            <Typography component="span" variant="subtitle1">
+              {nombre && `${nombre}: \u00A0`}
+            </Typography>
             <Button
               size="small"
               variant="outlined"

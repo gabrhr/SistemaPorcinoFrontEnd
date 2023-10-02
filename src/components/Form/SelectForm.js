@@ -1,8 +1,8 @@
 import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from "@mui/material";
 
-function SelectForm({label, name, value, onChange, errors, touched, children, number= false, disabled= false}) {
+function SelectForm({label, name, value, onChange, errors, touched, children, number= false, disabled= false, handleBlur}) {
     return(
-        <FormControl sx={{ width: '100%'}}>
+        <FormControl sx={{ width: '100%'}} id={`label-${name}`}>
                 <InputLabel id={`select-label-${name}`}>
                     {label}
                 </InputLabel>
@@ -15,6 +15,7 @@ function SelectForm({label, name, value, onChange, errors, touched, children, nu
                     onChange={onChange}
                     error = {Boolean(touched[name] && errors[name])}
                     disabled={disabled}
+                    onBlur={handleBlur}
                 >
                     <MenuItem disabled value={number? -1 : "none"}>
                         <em style={{color:"gray"}}>Seleccionar</em>
