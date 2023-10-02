@@ -33,6 +33,8 @@ const Engorde = Loader(lazy(() => import('src/content/porcicultor/manejo/engorde
 // Alimentacion
 const Alimentos = Loader(lazy(() => import('src/content/porcicultor/alimentacion/alimentos')));
 const AlimentoDetalle = Loader(lazy(() => import('src/content/porcicultor/alimentacion/alimentos/addEditAlimento')));
+const AlimentoCerdaList = Loader(lazy(() => import('src/content/porcicultor/alimentacion/controlCerda')));
+const AlimentoCerdaDetalle = Loader(lazy(() => import('src/content/porcicultor/alimentacion/controlCerda/editControl')));
 
 
 // Granja
@@ -108,8 +110,14 @@ const porcicultorRoutes = [
     {path: 'alimentacion/alimentos',
      element: <Alimentos/>
     },
-    {path: 'alimentacion/alimentos/Detalle',
+    {path: 'alimentacion/alimentos/detalle',
      element: <AlimentoDetalle/>
+    },
+    {path: 'alimentacion/cerdas',
+     element: <AlimentoCerdaList/>
+    },
+    {path: 'alimentacion/cerdas/detalle',
+     element: <AlimentoCerdaDetalle/>
     },
     {
       path: 'granja/parametros',

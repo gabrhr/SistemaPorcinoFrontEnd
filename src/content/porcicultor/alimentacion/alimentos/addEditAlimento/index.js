@@ -237,13 +237,12 @@ function AddEditAlimento() {
     if(e?.compraAlimentoList && e?.compraAlimentoList?.length > 0){
       const temp = [...e.compraAlimentoList]
       if(e.cantidadActual && e.cantidadTotal){
-        let cantidadConsumida = e.cantidadTotal - e.cantidadActual
-        console.log(cantidadConsumida);
-        if(cantidadConsumida){
+        let cantidadSobrante = e.cantidadActual
+        if(cantidadSobrante){
           let index =999
           for (let i = 0; i < temp.length; i++) {
-            cantidadConsumida -=  (temp[i].cantidad || 0)
-            if (cantidadConsumida <=0) {
+            cantidadSobrante -=  (temp[i].cantidad || 0)
+            if (cantidadSobrante <=0) {
               index = i  
               break
             }
@@ -570,7 +569,8 @@ function AddEditAlimento() {
                     <Box
                       p={2}
                       display="flex"
-                      alignItems="center"
+                      alignItems="normal"
+                      flexDirection="column"
                       justifyContent="space-between"
                       mr={2}
                     >
@@ -579,6 +579,12 @@ function AddEditAlimento() {
                           Total de compras:
                         </Typography>{' '}
                         <b>{comprasList.length || 0}</b> 
+                      </Box>
+                      <Box>
+                        <Typography component="span" variant="subtitle1">
+                          Total de cantidad (kg):
+                        </Typography>{' '}
+                        <b>{item?.cantidadTotal || 0}</b> 
                       </Box>
                     </Box>
                     <Divider />

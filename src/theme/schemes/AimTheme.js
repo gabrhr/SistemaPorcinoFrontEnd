@@ -406,15 +406,7 @@ export const AimTheme = createTheme(
           }
         }
       },
-      MuiGrid: {
-        styleOverrides:{
-          root:{
-            '&.MuiGrid-item': {
-              paddingTop: "25px"
-            }            
-          }
-        }
-      },
+      
       MuiFormHelperText: {
         styleOverrides: {
           root: {

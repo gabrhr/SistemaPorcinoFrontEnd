@@ -15,12 +15,15 @@ import {
   useMediaQuery
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import StatusTable from 'src/components/Form/StatusTable';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
-import { alimentoCategorias } from 'src/utils/defaultValues';
+import { alimentoCategorias, allStatus } from 'src/utils/defaultValues';
 import DeleteModal from './DeleteModal';
 
 const itemSingular = "Alimento"
+
+const statusList = [{value:"sin", text:"Sin Stock"}]
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
@@ -28,15 +31,22 @@ const Results = (props) => {
   const [openDelete, setOpenDelete] = useState(false)
   const [loadingDelete, setLoadingDelete] = useState(false)
   const [currentItem, setCurrentItem] = useState({})
+  const statusRef = useRef(null);
+  const [openStatus, setOpenStatus] = useState(false);
+  const [status, setStatus] = useState(allStatus.text);
   const isRowBased = useMediaQuery('(min-width: 500px)');
 
   const handleQueryChange = (event) => {
     event.persist();
     setQuery(event.target.value);
+    if(status !== allStatus.text){
+      setStatus(allStatus.text)
+    }
     if(event && event.target && event.target.value === ""){
       props.setPageNumber(0);
       const reqObj = {
         "nombre": "",
+        "stock": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -46,6 +56,7 @@ const Results = (props) => {
       props.setPageNumber(0);
       const reqObj = {
         "nombre": event.target.value,
+        "stock": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -54,14 +65,26 @@ const Results = (props) => {
     } 
   };
 
+  const handleChangeStatus = (value) => {
+    const reqObj = {
+        "nombre": "",
+        "stock": value,
+        "pageNumber": 1,
+        "maxResults": limit,
+        "granjaId": props.granjaId
+    }
+    props.onPageParamsChange(reqObj);
+  }
+
   const handlePageChange = (_event, newPage) => {
     props.setPageNumber(newPage);
 
     const reqObj = {
       "nombre": "",
-        "pageNumber": newPage + 1,
-        "maxResults": limit,
-        "granjaId": props.granjaId
+      "stock": "",
+      "pageNumber": newPage + 1,
+      "maxResults": limit,
+      "granjaId": props.granjaId
     };
 
     props.onPageParamsChange(reqObj)
@@ -73,6 +96,7 @@ const Results = (props) => {
 
     const reqObj = {
         "nombre": "",
+        "stock": "",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -153,6 +177,16 @@ const Results = (props) => {
             </Typography>{' '}
             <b>{paginatedObject.length}</b> <b>alimento(s)</b> {/* change */}
           </Box>
+          <StatusTable
+            nombre="Cantidad disponible"
+            actionRef = {statusRef}
+            setOpenStatus ={setOpenStatus}
+            openStatus = {openStatus}
+            status = {status}
+            setStatus = {setStatus}
+            menuList = {statusList}
+            handleChange = {handleChangeStatus}
+          />
         </Box>
         <Divider />
 

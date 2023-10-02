@@ -1,9 +1,7 @@
-import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -17,22 +15,20 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
+import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import StatusTable from 'src/components/Form/StatusTable';
+import TableRowsLoader from 'src/components/Table/TableRowsLoader';
+import { getEstadoCerdaNombre } from 'src/utils/dataFormat';
 import { allStatus, listEstadosCerda } from 'src/utils/defaultValues';
-import DeleteModal from './DeleteModal';
-
-const itemSingular = "Engorde"
 
 const statusList = listEstadosCerda()
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
   const [query, setQuery] = useState('');
-  const [openDelete, setOpenDelete] = useState(false)
-  const [currentItem, setCurrentItem] = useState({})
+  const [status, setStatus] = useState(allStatus.text);
   const statusRef = useRef(null);
   const [openStatus, setOpenStatus] = useState(false);
-  const [status, setStatus] = useState(allStatus.text);
   const isRowBased = useMediaQuery('(min-width: 500px)');
 
   const handleQueryChange = (event) => {
@@ -80,11 +76,11 @@ const Results = (props) => {
     props.setPageNumber(newPage);
 
     const reqObj = {
-        "codigo": "",
-        "estado": "",
-        "pageNumber": newPage + 1,
-        "maxResults": limit,
-        "granjaId": props.granjaId
+      "codigo": "",
+      "estado": "",
+      "pageNumber": newPage + 1,
+      "maxResults": limit,
+      "granjaId": props.granjaId
     };
 
     props.onPageParamsChange(reqObj)
@@ -95,36 +91,18 @@ const Results = (props) => {
     props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
 
     const reqObj = {
-        "codigo": "",
-        "pageNumber": 1,
-        "maxResults": event.target.value,
-        "granjaId": props.granjaId
+      "codigo": "",
+      "estado": "",
+      "pageNumber": 1,
+      "maxResults": event.target.value,
+      "granjaId": props.granjaId
     } 
 
     props.onPageParamsChange(reqObj);
   };
 
-
-  const openModal = (item) => {
-    setCurrentItem(item)
-      setOpenDelete(true)      
-  }
-
-  const deleteModalClose = () => {
-    setCurrentItem({})
-    setOpenDelete(false)
-  }
-
- 
   const editItem = (id) => {
     props.navigateToDetalle(id)
-
-  }
-  
-  const deleteItem = () => {
-    props.deleteById(currentItem.id, () => {
-        deleteModalClose()
-    })
 
   }
 
@@ -172,7 +150,7 @@ const Results = (props) => {
             <Typography component="span" variant="subtitle1">
               Mostrando:
             </Typography>{' '}
-            <b>{paginatedObject.length}</b> <b>engorde(s)</b> {/* change */}
+            <b>{paginatedObject.length}</b> <b>cerda(s)</b> {/* change */}
           </Box>
           <StatusTable
             actionRef = {statusRef}
@@ -185,63 +163,44 @@ const Results = (props) => {
           />
         </Box>
         <Divider />
-        {
-          props.loading &&
-         <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
-                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
-          </div> 
-        }
 
-        {!props.loading && paginatedObject.length === 0 &&
-          <>
-            <Typography
-              sx={{
-                py: 10
-              }}
-              variant="h3"
-              fontWeight="normal"
-              color="text.secondary"
-              align="center"
-            >
-              No se encontraron engordes
-            </Typography>
-          </>
-        }
-        {!props.loading && paginatedObject.length !== 0 &&
+        
           <>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Código Engorde</TableCell>
-                    <TableCell align='center'>Código Corral</TableCell>
-                    <TableCell align='center'>Total Lechones</TableCell>
-                    <TableCell align='center'> Estado</TableCell>
-                    <TableCell align='center'>Acciones</TableCell>
+                    <TableCell>Código Cerda</TableCell>
+                    <TableCell align='center'>Estado Cerda</TableCell>
+                    <TableCell align='center'> Consumo diario prom.(kg)</TableCell>
+                    <TableCell align='center'>Opciones</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedObject.map((element, idx) => {
+                {props.loading && 
+                    <TableRowsLoader
+                      rowsNum={5} 
+                      action
+                      cellsNum={3}
+                    />
+                }
+                {!props.loading && paginatedObject.length !== 0 &&
+                  (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
                           <Typography noWrap>
-                            {element && element.codigo || ""}
+                            {element && element.codigoCerda || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
-                          <Typography noWrap>
-                            {element && element.lineaGeneticaNombre || ""}
-                          </Typography>
+                          {element && element.estadoCerda &&
+                            <CerdaEstadoChip estado={getEstadoCerdaNombre(element.estadoCerda) || ""}/>
+                          }
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.ordenParto || "0"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align='center'>
-                          <Typography noWrap>
-                            {element && element.diasNoProductivos || "0"}
+                            {element && element.consumoDiarioProm || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
@@ -254,21 +213,31 @@ const Results = (props) => {
                                 }}
                                 color='primary'
                             >
-                                <CreateRoundedIcon/>
+                                <AssignmentRoundedIcon/>
                             </IconButton>
-                            {element.descartada < 1 && <IconButton color="error" 
-                                sx={{borderRadius:30}}
-                                onClick={()=> openModal(element)}
-                            >
-                                <DeleteRoundedIcon/>                          
-                            </IconButton>}
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  }))
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
+            {!props.loading && paginatedObject.length === 0 &&
+              <>
+                <Typography
+                  sx={{
+                    py: 10
+                  }}
+                  variant="h3"
+                  fontWeight="normal"
+                  color="text.secondary"
+                  align="center"
+                >
+                  No se encontraron lotes
+                </Typography>
+              </>
+            }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -281,16 +250,8 @@ const Results = (props) => {
               />
           </Box>
           </>
-        }
+        
       </Card>
-      {/* Eliminar */}
-      <DeleteModal
-        openConfirmDelete={openDelete}
-        closeConfirmDelete={deleteModalClose}
-        title={`Eliminar ${itemSingular}`}
-        itemName={` el engorde ${currentItem?.nombre || "" }`}
-        handleDeleteCompleted={deleteItem}
-      />
     </>
   );
 };

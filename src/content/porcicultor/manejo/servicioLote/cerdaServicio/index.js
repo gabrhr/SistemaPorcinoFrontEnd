@@ -374,7 +374,7 @@ function ServicioCerdaDetalle() {
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
-          <Grid item xs={12} md={12} sm={12} mb={0}>
+          <Grid item xs={12} md={12} sm={12} mb={2}>
             <Breadcrumbs aria-label="breadcrumb">
               <Link underline="hover" color="inherit" onClick={navigateToMain}>
                 Listado de Servicios
@@ -792,9 +792,6 @@ function ServicioCerdaDetalle() {
                           mb={3}
                           mt="0.5rem"
                         >
-                          {disablePrimeraVer?"primera t":"p f"}
-                          {disableSegundaVer?"s t":"s f"}
-                          {disableTerceraVer?"t t":"t f"}
                           <SubtitleForm
                             subtitle="Verificación de Primera Recela"
                             description={`Recomendación: Verificación probable ${

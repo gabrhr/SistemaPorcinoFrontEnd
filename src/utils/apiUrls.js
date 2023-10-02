@@ -106,6 +106,7 @@ export const paramatroUpdateAPI = `${urlParametros}update`
 // Alimento
 const urlAlimento = "alimento/"
 export const alimentoQueryAPI = `${urlAlimento}query`
+export const alimentoQueryAllAPI = `${urlAlimento}query-all`
 export const alimentoRegisterAPI = `${urlAlimento}register`
 export const alimentoUpdateAPI = `${urlAlimento}update`
 export const alimentoDeleteAPI = `${urlAlimento}delete`
@@ -114,3 +115,9 @@ export const alimentoFindByIdAPI = `${urlAlimento}find`
 // Alimento compras
 export const compraRegisterAPI = `${urlAlimento}compra/register`
 export const compraDeleteAPI = `${urlAlimento}compra/delete`
+
+// Alimentacion - Control cerdas
+export const controlCerdasQueryAPI = `${urlAlimento}controlCerda/query`
+export const controlCerdasRegisterAPI = `${urlAlimento}controlCerda/register`
+export const controlCerdasDeleteAPI = `${urlAlimento}controlCerda/delete`
+export const controlCerdasFindByIdAPI = `${urlAlimento}controlCerda/find`

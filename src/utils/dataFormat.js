@@ -62,7 +62,7 @@ export function differenciaEntreFechas(dateStart, tipo="days", dateFin = new Dat
 
 export function getEstadoCerdaNombre(nombre){
     if(nombre && nombre === "Vacia"){
-        return "Vacia"
+        return "Vacía"
     } 
     return nombre || ""
 }

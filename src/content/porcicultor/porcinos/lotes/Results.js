@@ -39,6 +39,9 @@ const Results = (props) => {
   const handleQueryChange = (event) => {
     event.persist();
     setQuery(event.target.value);
+    if(status !== allStatus.text){
+      setStatus(allStatus.text)
+    }
     if(event && event.target && event.target.value === ""){
       props.setPageNumber(0);
       const reqObj = {

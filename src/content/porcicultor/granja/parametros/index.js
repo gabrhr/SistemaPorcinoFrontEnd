@@ -250,7 +250,7 @@ function EditParametros() {
                   <InputForm
                       inputName="diasMinRecela"
                       value={values.diasMinRecela}
-                      label=""
+                      label=" "
                       handleChange={handleChange}
                       errors={errors}
                       touched={touched}
@@ -272,7 +272,7 @@ function EditParametros() {
                   <InputForm
                       inputName="diasDeteccionGestacion"
                       value={values.diasDeteccionGestacion}
-                      label=""
+                      label=" "
                       handleChange={handleChange}
                       errors={errors}
                       touched={touched}
@@ -290,7 +290,7 @@ function EditParametros() {
                 <InputForm
                       inputName="diasPasoSalaMaterna"
                       value={values.diasPasoSalaMaterna}
-                      label=""
+                      label=" "
                       handleChange={handleChange}
                       errors={errors}
                       touched={touched}
@@ -308,7 +308,7 @@ function EditParametros() {
                   <InputForm
                       inputName="diasPartoProbable"
                       value={values.diasPartoProbable}
-                      label=""
+                      label=" "
                       handleChange={handleChange}
                       errors={errors}
                       touched={touched}
@@ -330,7 +330,7 @@ function EditParametros() {
                   <InputForm
                     inputName="diasMinDestete"
                     value={values.diasMinDestete}
-                    label=""
+                    label=" "
                     handleChange={handleChange}
                     errors={errors}
                     touched={touched}
@@ -348,7 +348,7 @@ function EditParametros() {
                   <InputForm
                     inputName="diasMaxDestete"
                     value={values.diasMaxDestete}
-                    label=""
+                    label=" "
                     handleChange={handleChange}
                     errors={errors}
                     touched={touched}
@@ -370,7 +370,7 @@ function EditParametros() {
                   <InputForm
                     inputName="diasFinPrecebo"
                     value={values.diasFinPrecebo}
-                    label=""
+                    label=" "
                     handleChange={handleChange}
                     errors={errors}
                     touched={touched}
@@ -392,7 +392,7 @@ function EditParametros() {
                   <InputForm
                     inputName="diasFinCebo"
                     value={values.diasFinCebo}
-                    label=""
+                    label=" "
                     handleChange={handleChange}
                     errors={errors}
                     touched={touched}

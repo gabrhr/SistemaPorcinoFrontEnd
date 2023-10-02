@@ -55,6 +55,9 @@ const Results = (props) => {
   const handleQueryChange = (event) => {
     event.persist();
     setQuery(event.target.value);
+    if(status !== allStatus.text){
+      setStatus(allStatus.text)
+    }
     if (event && event.target && event.target.value === '') {
       setListFiltered(props.itemListado);
     } else if (event?.target?.value && event.target.value.length >= 1) {
