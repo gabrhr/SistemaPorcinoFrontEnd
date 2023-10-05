@@ -82,6 +82,12 @@ export const tiposInseminacion = {
   monta: "Monta Natural"
 }
 
+export const engordeEstado = {
+  precebo: "Precebo",
+  finalizado: "Finalizado",
+  cebo: "Cebo"
+}
+
 // Obtener estados
 
 export const listEstadosCerda = () => {
@@ -151,4 +157,15 @@ export const listEstadoServicio = () => {
 
 export const lisTiposInseminacion = () => {
   return generalList(tiposInseminacion)
+}
+
+export const listEstadoEngorde = () => {
+  const list = Object.values(engordeEstado)
+  const out = []
+
+  list.forEach((value) => {
+    out.push({value, text: value})
+  })
+
+  return out
 }

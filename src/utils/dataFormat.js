@@ -78,3 +78,10 @@ export function getEstadoServicioNombre(nombre){
     }
     return nombre || ""
 }
+
+export function getEstadoMaternidadNombre(nombre){
+    if(nombre && nombre === servicioEstado.gestacion){
+        return "Gestación"
+    }
+    return nombre || ""
+}

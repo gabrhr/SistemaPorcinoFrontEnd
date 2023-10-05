@@ -28,7 +28,11 @@ const ServicioLoteDetalle = Loader(lazy(() => import('src/content/porcicultor/ma
 const ServicioLoteCerdaDetalle = Loader(lazy(() => import('src/content/porcicultor/manejo/servicioLote/cerdaServicio')));
 
 const Maternidad = Loader(lazy(() => import('src/content/porcicultor/manejo/maternidad')));
+const MaternidadLoteDetalle = Loader(lazy(() => import('src/content/porcicultor/manejo/maternidadLote')));
+const MaternidadLoteCerdaDetalle = Loader(lazy(() => import('src/content/porcicultor/manejo/maternidadLote/maternidadCerda')));
+
 const Engorde = Loader(lazy(() => import('src/content/porcicultor/manejo/engorde')));
+const EngordeDetalle = Loader(lazy(() => import('src/content/porcicultor/manejo/engorde/addEditEngorde')));
 
 // Alimentacion
 const Alimentos = Loader(lazy(() => import('src/content/porcicultor/alimentacion/alimentos')));
@@ -104,8 +108,20 @@ const porcicultorRoutes = [
       element: <Maternidad />
     },
     {
+      path: 'manejo/maternidad/lote-detalle',
+      element: <MaternidadLoteDetalle />
+    },
+    {
+      path: 'manejo/maternidad/lote-detalle/cerda-maternidad',
+      element: <MaternidadLoteCerdaDetalle />
+    },
+    {
       path: 'manejo/engorde',
       element: <Engorde />
+    },
+    {
+      path: 'manejo/engorde/detalle',
+      element: <EngordeDetalle />
     },
     {path: 'alimentacion/alimentos',
      element: <Alimentos/>

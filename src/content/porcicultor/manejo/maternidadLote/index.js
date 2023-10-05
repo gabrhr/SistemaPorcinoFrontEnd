@@ -1,37 +1,37 @@
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
-import { Grid, Typography } from '@mui/material';
+import { Breadcrumbs, Grid, IconButton, Link, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
-import { maternidadLoteDeleteAPI, maternidadLoteQueryAPI } from 'src/utils/apiUrls';
+import { maternidadLoteQueryAPI, servicioFalloRegisterAPI } from 'src/utils/apiUrls';
 import Results from './Results';
 
-const tituloPagina = "Detalle de Maternidad del Lote"
+const tituloPagina = "Detalle de Servicio del Lote"
+
+const mainUrl = "/sp/porcicultor/manejo/servicio"
 
 function LineasGeneticasListado() {
     const [itemListado, setItemListado] = useState([])
+    const [itemName, setItemName] = useState(null)
+    const [loteInfo, setLoteInfo] = useState(null)
     const [numberOfResults, setNumberOfResults] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [pageNumber, setPageNumber] = useState(0);
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
     const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
+    const location = useLocation();
     const navigate = useNavigate();
 
     const defaultObj = {
-        "codigo": "",
-        "estado": "",
-        "pageNumber": 1,
-        "maxResults": 10,
         "granjaId": user.granjaId
     }
     
@@ -40,16 +40,9 @@ function LineasGeneticasListado() {
         try {
           const response = await certifyAxios.post(maternidadLoteQueryAPI, reqObj);
           if (isMountedRef.current) {
-            if(response.data.list.length === 0 && response.data.total > 0) {
-              const lastPage = Math.ceil(response.data.total / reqObj.maxResults);
-              reqObj.pageNumber = lastPage;
-              setPageNumber(lastPage - 1);
-              getListado(reqObj);
-            }
-            else {
               setItemListado(response.data.list);
+              setLoteInfo(response.data.lote)
               setNumberOfResults(response.data.total);
-            }
           }
           setLoading(false)
         } catch (err) {
@@ -66,38 +59,45 @@ function LineasGeneticasListado() {
     }, [isMountedRef])
 
     useEffect(() => {
-        const reqObj = defaultObj;
+      if (location && location.state && location.state.loteId !== -1) {
+        let reqObj = defaultObj;
+        reqObj.loteId = location.state.loteId
+        setItemName(location?.state?.loteNombre || "")
         getListado(reqObj);
-      }, [getListado]);
+      } else {
+        setItemListado([])
+      }        
+    }, [getListado]);
     
-      const onPageParamsChange = (reqObj) => {
-        if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
-          setPageSize(reqObj.maxResults) // "limit" en Results.js
-        }
-        getListado(reqObj)
-      }    
 
-    // delete
-    const deleteItemById = async (id, afterDelete) => {
+    // registrar fallo
+    const registerFalloById = async (reqObj, afterDelete) => {
       try {
-        const reqObj = {
-          id
-        }
-        const response = await certifyAxios.post(maternidadLoteDeleteAPI, reqObj);
+        const response = await certifyAxios.post(servicioFalloRegisterAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
+          defaultObj.loteId = loteInfo.id
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
+          enqueueSnackbar(response.data.userMsg?? "Se ha registrado fallo satisfactoriamente", {variant:"success"})
         }
       } catch (error) {
-        console.error(error)
-        showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
+        showUserErrors(error, "No se ha podido agregar fallo. Inténtelo de nuevo")
       }
       afterDelete()
     }
     
     // add or edit
     const navigateToDetalle = (id) => {
-      navigate('/sp/porcicultor/porcinos/celo/detalle', {state:{celoId: id}});
+      navigate('/sp/porcicultor/manejo/maternidad/lote-detalle/cerda-maternidad', {
+        state:{
+          maternidadId: id, 
+          loteId: location.state.loteId, 
+          loteNombre: itemName
+        }
+      });
+    };
+
+    const navigateToMain = () => {
+      navigate(mainUrl);
     };
 
     return(
@@ -106,12 +106,28 @@ function LineasGeneticasListado() {
                 <title>{tituloPagina}</title>
             </Helmet>
             <PageTitleWrapper>
-                <Grid container justifyContent="space-between" alignItems="center">
+                <Grid container alignItems="center">
+                <Grid item xs={12} md={12} sm={12} mb={2}>
+                  <Breadcrumbs aria-label="breadcrumb">
+                    <Link underline="hover" color="inherit" onClick={navigateToMain}>
+                      Listado de Maternidades
+                    </Link>
+                    <Typography color="text.primary">Maternidad del Lote</Typography>
+                  </Breadcrumbs>
+                </Grid>
+                <Grid item xs={2} md={0.5} sm={0.5}>
+                    <IconButton size="small" onClick={navigateToMain}>
+                      <KeyboardArrowLeftRoundedIcon />
+                    </IconButton>
+                  </Grid>
                 <Grid item>
                     <Typography variant="h3" gutterBottom>
                         {tituloPagina}
+                        {` ${itemName || ""}`}
                     </Typography>
                 </Grid>
+                {/* Lote info cuadro */}
+                {loteInfo?.totalCerdas}
                 </Grid>
             </PageTitleWrapper>
             <Grid
@@ -127,11 +143,8 @@ function LineasGeneticasListado() {
                         <Results
                             itemListado={itemListado} 
                             getListado={getListado}
-                            onPageParamsChange={onPageParamsChange}
                             numberOfResults={numberOfResults}
-                            pageNumber={pageNumber}
-                            setPageNumber={setPageNumber}
-                            deleteById={deleteItemById}
+                            registerFalloById={registerFalloById}
                             navigateToDetalle={navigateToDetalle}
                             granjaId={user.granjaId}
                             loading={loading}

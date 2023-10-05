@@ -148,8 +148,8 @@ function ServicioCerdaDetalle() {
               }
             }
             setItem(response.data.loteCerdaServicio);
-            setLoadingItem(false)
           }
+          setLoadingItem(false)
         }
       } catch (err) {
         console.error(err);
@@ -895,16 +895,15 @@ function ServicioCerdaDetalle() {
                                   </RadioGroup>
                                 </FormControl>
                               </Grid>
-                              <Grid item xs={12}>
-                                {editActive &&
-                                  values.resultadoPrimeraRecela === '1' && (
+                              {editActive &&
+                                  values.resultadoPrimeraRecela === '1' &&
+                                  <Grid item xs={12}>
                                     <Alert severity="error">
                                       Si la cerda presenta celo, se registrará
                                       como fallo reproductivo al guardar los
                                       cambios.
                                     </Alert>
-                                  )}
-                              </Grid>
+                              </Grid>}
                             </Grid>
                           </Grid>
                         </Grid>
@@ -1008,16 +1007,15 @@ function ServicioCerdaDetalle() {
                                   </RadioGroup>
                                 </FormControl>
                               </Grid>
-                              <Grid item xs={12}>
-                                {editActive &&
-                                  values.resultadoSegundaRecela === '1' && (
+                              {editActive &&
+                                  values.resultadoSegundaRecela === '1' &&
+                                  <Grid item xs={12}>
                                     <Alert severity="error">
                                       Si la cerda presenta celo, se registrará
                                       como fallo reproductivo al guardar los
                                       cambios.
                                     </Alert>
-                                  )}
-                              </Grid>
+                              </Grid>}
                             </Grid>
                           </Grid>
                         </Grid>
@@ -1205,7 +1203,7 @@ function ServicioCerdaDetalle() {
                                 inputName="fechaSalaMaternindad"
                                 value={values.fechaSalaMaternindad}
                                 label="Fecha real"
-                                // disableFuture
+                                disableFuture
                                 setFieldValue={setFieldValue}
                                 errors={errors}
                                 touched={touched}

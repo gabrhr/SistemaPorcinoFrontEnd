@@ -266,7 +266,7 @@ const Results = (props) => {
                   color="text.secondary"
                   align="center"
                 >
-                  No se encontraron lotes
+                  No se encontraron alimentos
                 </Typography>
               </>
             }

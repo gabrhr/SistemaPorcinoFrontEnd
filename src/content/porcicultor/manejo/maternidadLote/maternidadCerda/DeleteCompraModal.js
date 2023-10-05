@@ -14,7 +14,7 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-function DeleteModal ({
+function DeleteCompraModal ({
     openConfirmDelete, 
     closeConfirmDelete,
     title,
@@ -58,7 +58,7 @@ function DeleteModal ({
                 color="text.secondary"
                 variant="h4"
             >
-                {`¿Seguro que desea eliminar ${itemName}?`}
+                {`¿Seguro que desea ${itemName}?`}
             </Typography>
             <Typography
                 width="100%"
@@ -100,7 +100,7 @@ function DeleteModal ({
             </Grid>
             <Grid item>
                 <Button
-                color="secondary"
+                color="primary"
                 variant="outlined"
                 onClick={handleDeleteCompleted}
                 size="small"
@@ -109,7 +109,7 @@ function DeleteModal ({
                     px: 2
                 }}
                 >
-                Aceptar
+                Confirmar
                 </Button>
             </Grid>
             </Grid>
@@ -118,4 +118,4 @@ function DeleteModal ({
     )
 }
 
-export default DeleteModal;
+export default DeleteCompraModal;

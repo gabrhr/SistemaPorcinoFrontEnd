@@ -158,6 +158,9 @@ function LineasGeneticasListado() {
                     <Typography variant="h3" gutterBottom>
                         {tituloPagina}
                     </Typography>
+                    <Typography>
+                      Porcino dedicados a la reproducción
+                    </Typography>
                 </Grid>
                 <Grid item>
                     <Button

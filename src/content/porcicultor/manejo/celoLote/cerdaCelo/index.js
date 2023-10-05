@@ -15,6 +15,7 @@ import {
   Box,
   Breadcrumbs,
   Button,
+  CircularProgress,
   DialogContent,
   Divider,
   Grid,
@@ -135,11 +136,11 @@ function AddEditAlimento() {
           response.data.userMsg ?? 'Se modificó satisfactoriamente',
           { variant: 'success' }
         );
+        navigateToLoteList()
       }
-      closeAptaModal();
     } catch (error) {
       console.error(error);
-      closeAptaModal()
+      navigateToLoteList()
       showUserErrors(error, "No se ha podido marcar como apta. Inténtelo de nuevo")
     }
   };
@@ -227,7 +228,7 @@ function AddEditAlimento() {
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
-          <Grid item xs={12} md={12} sm={12} mb={0}>
+          <Grid item xs={12} md={12} sm={12} mb={2}>
             <Breadcrumbs aria-label="breadcrumb">
               <Link underline="hover" color="inherit" href={mainUrl}>
                 Listado de Celos
@@ -266,6 +267,22 @@ function AddEditAlimento() {
           borderRadius: 2
         }}
       >
+        {(loading || item === undefined) && 
+          <div
+          style={{
+            display: 'grid',
+            justifyContent: 'center',
+            paddingTop: '6rem',
+            paddingBottom: '6rem'
+          }}
+        >
+          <CircularProgress
+            color="secondary"
+            sx={{ mb: '1rem', mx: '10rem' }}
+          />
+        </div>
+
+        }
         {(!loading && item !== undefined) && <>
           {/* Cerda datos */}
           <Grid container justifyContent="center" spacing={3} mb={4}>
@@ -316,7 +333,7 @@ function AddEditAlimento() {
                 <DataView
                   label="Fecha de último servicio "
                   text={
-                    (item?.cerda && item?.cerda?.fechaUltimoServicio) ||
+                    (item?.cerda && item?.cerda?.fechaUltimoServicio && formatDate(item?.cerda?.fechaUltimoServicio)) ||
                     'Sin servicio'
                   }
                 />

@@ -41,7 +41,7 @@ import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { listTiposLote, loteEstado, loteTipos, resultCodeOk } from 'src/utils/defaultValues';
+import { listTiposLote, loteTipos, resultCodeOk } from 'src/utils/defaultValues';
 import AddCerdaModal from './AddCerdaModal';
 
 const tipos = listTiposLote()
@@ -75,7 +75,7 @@ function AddEditLote() {
             setItem(response.data);
             setCerdasLote(response.data.cerdas)
             setTipoSelected(response.data.tipo)
-            if(response?.data?.estado && response?.data?.estado === loteEstado.enProceso){
+            if(response?.data?.estado && response?.data?.estado !== "Pendiente"){
               setShowAction(false);
             } 
           }

@@ -14,7 +14,7 @@ import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import { engordeDeleteAPI, engordeQueryAPI } from 'src/utils/apiUrls';
 import Results from './Results';
 
-const tituloPagina = "Engorde"
+const tituloPagina = "Engordes"
 const itemSingular = "Engorde"
 
 function LineasGeneticasListado() {
@@ -56,6 +56,7 @@ function LineasGeneticasListado() {
           setLoading(false)
         } catch (err) {
           
+          setLoading(false)
           if (err.response) {
             console.log(err.response);
           } else if (err.request) {
@@ -99,7 +100,7 @@ function LineasGeneticasListado() {
     
     // add or edit
     const navigateToDetalle = (id) => {
-      navigate('/sp/porcicultor/porcinos/celos/detalle', {state:{celoId: id}});
+      navigate('/sp/porcicultor/manejo/engorde/detalle', {state:{engordeId: id}});
     };
 
     return(
@@ -112,6 +113,9 @@ function LineasGeneticasListado() {
                 <Grid item>
                     <Typography variant="h3" gutterBottom>
                         {tituloPagina}
+                    </Typography>
+                    <Typography>
+                      Conjunto de lechones para engorde
                     </Typography>
                 </Grid>
                 <Grid item>

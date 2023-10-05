@@ -1022,7 +1022,9 @@ export const AimTheme = createTheme(
           toolbar: {
             '& .MuiIconButton-root': {
               padding: 8
-            }
+            },
+            display:"flex",
+            alignItems: "baseline"
           },
           select: {
             '&:focus': {

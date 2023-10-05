@@ -77,24 +77,30 @@ export const servicioFalloRegisterAPI = `${urlServicio}fallo/register`
 export const cerdaServicioFindByIdAPI = `${urlServicio}find`
 
 // Meternidad
-const urlMaternidad = "servicio/"
+const urlMaternidad = "maternidad/"
 export const maternidadQueryAPI = `${urlMaternidad}query`
-export const maternidadRegisterAPI = `${urlMaternidad}register`
-export const maternidadUpdateAPI = `${urlMaternidad}update`
-export const maternidadDeleteAPI = `${urlMaternidad}delete`
+export const maternidadLoteQueryAPI = `${urlMaternidad}loteDetalle`
 
 // Maternidad Lote
-export const maternidadLoteQueryAPI = `${urlMaternidad}query`
-export const maternidadLoteRegisterAPI = `${urlMaternidad}register`
-export const maternidadLoteUpdateAPI = `${urlMaternidad}update`
-export const maternidadLoteDeleteAPI = `${urlMaternidad}delete`
+export const maternidadFindByIdAPI = `${urlMaternidad}find`
+export const maternidadUpdateAPI = `${urlMaternidad}update`
+export const mLechonRegisterAPI = `${urlMaternidad}lechon/register`
+export const mLechonDeleteAPI = `${urlMaternidad}lechon/delete`
+export const mLechonDescartarAPI = `${urlMaternidad}lechon/descartar`
+export const maternidadTerminarAPI = `${urlMaternidad}terminar`
+export const pesosDesteteRegisterAPI = `${urlMaternidad}pesosDestete/register`
 
 // Engorde
-const urlEngorde = "servicio/"
+const urlEngorde = "engorde/"
 export const engordeQueryAPI = `${urlEngorde}query`
+export const engordeFindByIdAPI = `${urlEngorde}find`
 export const engordeRegisterAPI = `${urlEngorde}register`
 export const engordeUpdateAPI = `${urlEngorde}update`
+export const camadaToAddAPI = `${urlEngorde}camadaToAdd`
 export const engordeDeleteAPI = `${urlEngorde}delete`
+export const preceboTerminarAPI = `${urlEngorde}precebo/terminar`
+export const ceboTerminarAPI = `${urlEngorde}cebo/terminar`
+export const pesosRegisterAPI = `${urlEngorde}peso/register`
 
 
 // Granja Parametros

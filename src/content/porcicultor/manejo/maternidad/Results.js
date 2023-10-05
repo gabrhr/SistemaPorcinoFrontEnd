@@ -1,5 +1,4 @@
-import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
@@ -18,18 +17,16 @@ import {
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import StatusTable from 'src/components/Form/StatusTable';
-import { allStatus, listEstadosCerda } from 'src/utils/defaultValues';
-import DeleteModal from './DeleteModal';
+import LoteEstadoChip from 'src/components/LoteEstadoChip';
+import { formatDate } from 'src/utils/dataFormat';
+import { allStatus, listEstadoLotes } from 'src/utils/defaultValues';
 
-const itemSingular = "Maternidad"
 
-const statusList = listEstadosCerda()
+const statusList = listEstadoLotes()
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
   const [query, setQuery] = useState('');
-  const [openDelete, setOpenDelete] = useState(false)
-  const [currentItem, setCurrentItem] = useState({})
   const statusRef = useRef(null);
   const [openStatus, setOpenStatus] = useState(false);
   const [status, setStatus] = useState(allStatus.text);
@@ -103,28 +100,9 @@ const Results = (props) => {
 
     props.onPageParamsChange(reqObj);
   };
-
-
-  const openModal = (item) => {
-    setCurrentItem(item)
-      setOpenDelete(true)      
-  }
-
-  const deleteModalClose = () => {
-    setCurrentItem({})
-    setOpenDelete(false)
-  }
-
  
-  const editItem = (id) => {
-    props.navigateToDetalle(id)
-
-  }
-  
-  const deleteItem = () => {
-    props.deleteById(currentItem.id, () => {
-        deleteModalClose()
-    })
+  const editItem = (e) => {
+    props.navigateToDetalle(e.id || -1 , e.codigo || "")
 
   }
 
@@ -152,7 +130,7 @@ const Results = (props) => {
                 }}
                 size='small'
                 onChange={handleQueryChange}
-                placeholder="Busque por código"
+                placeholder="Busque por código de lote"
                 value={query}
                 variant="outlined"
               />
@@ -182,6 +160,7 @@ const Results = (props) => {
             setStatus = {setStatus}
             menuList = {statusList}
             handleChange = {handleChangeStatus}
+            nombre="Estado Lote"
           />
         </Box>
         <Divider />
@@ -214,10 +193,10 @@ const Results = (props) => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Código Lote</TableCell>
-                    <TableCell align='center'>Fecha Aperturas</TableCell>
                     <TableCell align='center'>Total Cerdas</TableCell>
-                    <TableCell align='center'> Cerdas paridas</TableCell>
-                    <TableCell align='center'> estado</TableCell>
+                    <TableCell align='center'>Cerdas Paridas</TableCell>
+                    <TableCell align='center'>Fecha Apertura</TableCell>
+                    <TableCell align='center'> Estado Lote</TableCell>
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -227,47 +206,43 @@ const Results = (props) => {
                       <TableRow hover key={idx}>
                         <TableCell>
                           <Typography noWrap>
-                          {element && element.codigo || ""}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography noWrap>
                             {element && element.codigo || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.lineaGeneticaNombre || ""}
+                            {element && element.totalCerdas || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.ordenParto || "0"}
+                            {element && element.totalParidas || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.diasNoProductivos || "0"}
+                            {element && element.fechaApertura && 
+                            formatDate(element.fechaApertura) || "0"}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align='center'>
+                          <Typography noWrap>
+                            <LoteEstadoChip
+                            estado={element && element.estado || ""}
+                            />
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                             {/* Actions */}
                             <IconButton  
-                                onClick={()=> {editItem(element.id)}}
+                                onClick={()=> {editItem(element)}}
                                 sx={{
                                     borderRadius:30, 
                                     marginRight:"15px"
                                 }}
-                                color='primary'
                             >
-                                <CreateRoundedIcon/>
+                                <ArrowForwardIosRoundedIcon/>
                             </IconButton>
-                            {element.descartada < 1 && <IconButton color="error" 
-                                sx={{borderRadius:30}}
-                                onClick={()=> openModal(element)}
-                            >
-                                <DeleteRoundedIcon/>                          
-                            </IconButton>}
                         </TableCell>
                       </TableRow>
                     );
@@ -289,14 +264,6 @@ const Results = (props) => {
           </>
         }
       </Card>
-      {/* Eliminar */}
-      <DeleteModal
-        openConfirmDelete={openDelete}
-        closeConfirmDelete={deleteModalClose}
-        title={`Eliminar ${itemSingular}`}
-        itemName={` la maternidad ${currentItem?.nombre || "" }`}
-        handleDeleteCompleted={deleteItem}
-      />
     </>
   );
 };

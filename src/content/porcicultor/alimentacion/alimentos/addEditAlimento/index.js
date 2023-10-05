@@ -242,7 +242,7 @@ function AddEditAlimento() {
           let index =999
           for (let i = 0; i < temp.length; i++) {
             cantidadSobrante -=  (temp[i].cantidad || 0)
-            if (cantidadSobrante <=0) {
+            if (cantidadSobrante <0) {
               index = i  
               break
             }

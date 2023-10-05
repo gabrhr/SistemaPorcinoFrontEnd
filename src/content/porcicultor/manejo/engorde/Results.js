@@ -3,7 +3,6 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -18,12 +17,14 @@ import {
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import StatusTable from 'src/components/Form/StatusTable';
-import { allStatus, listEstadosCerda } from 'src/utils/defaultValues';
+import LoteEstadoChip from 'src/components/LoteEstadoChip';
+import TableRowsLoader from 'src/components/Table/TableRowsLoader';
+import { allStatus, listEstadoEngorde } from 'src/utils/defaultValues';
 import DeleteModal from './DeleteModal';
 
 const itemSingular = "Engorde"
 
-const statusList = listEstadosCerda()
+const statusList = listEstadoEngorde()
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
@@ -96,6 +97,7 @@ const Results = (props) => {
 
     const reqObj = {
         "codigo": "",
+        "estado": "",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -185,29 +187,6 @@ const Results = (props) => {
           />
         </Box>
         <Divider />
-        {
-          props.loading &&
-         <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
-                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
-          </div> 
-        }
-
-        {!props.loading && paginatedObject.length === 0 &&
-          <>
-            <Typography
-              sx={{
-                py: 10
-              }}
-              variant="h3"
-              fontWeight="normal"
-              color="text.secondary"
-              align="center"
-            >
-              No se encontraron engordes
-            </Typography>
-          </>
-        }
-        {!props.loading && paginatedObject.length !== 0 &&
           <>
             <TableContainer>
               <Table>
@@ -221,28 +200,36 @@ const Results = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedObject.map((element, idx) => {
+                {props.loading && 
+                    <TableRowsLoader
+                      rowsNum={5} 
+                      action
+                      cellsNum={4}
+                    />
+                }
+                {!props.loading && paginatedObject.length !== 0 &&
+                  (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
                           <Typography noWrap>
-                            {element && element.codigo || ""}
+                            {element && element?.codigo || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.lineaGeneticaNombre || ""}
+                            {element && element?.numCorral || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.ordenParto || "0"}
+                            {element && element?.totalLechones || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
-                          <Typography noWrap>
-                            {element && element.diasNoProductivos || "0"}
-                          </Typography>
+                        <LoteEstadoChip
+                            estado={element && element?.estado || ""}
+                            />
                         </TableCell>
                         <TableCell align='center'>
                             {/* Actions */}
@@ -256,19 +243,35 @@ const Results = (props) => {
                             >
                                 <CreateRoundedIcon/>
                             </IconButton>
-                            {element.descartada < 1 && <IconButton color="error" 
+                            <IconButton color="error" 
                                 sx={{borderRadius:30}}
                                 onClick={()=> openModal(element)}
-                            >
+                                >
                                 <DeleteRoundedIcon/>                          
-                            </IconButton>}
+                            </IconButton>
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  }))
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
+            {!props.loading && paginatedObject.length === 0 &&
+              <>
+                <Typography
+                  sx={{
+                    py: 10
+                  }}
+                  variant="h3"
+                  fontWeight="normal"
+                  color="text.secondary"
+                  align="center"
+                >
+                  No se encontraron engordes
+                </Typography>
+              </>
+            }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -281,14 +284,14 @@ const Results = (props) => {
               />
           </Box>
           </>
-        }
+        
       </Card>
       {/* Eliminar */}
       <DeleteModal
         openConfirmDelete={openDelete}
         closeConfirmDelete={deleteModalClose}
         title={`Eliminar ${itemSingular}`}
-        itemName={` el engorde ${currentItem?.nombre || "" }`}
+        itemName={` el engorde ${currentItem?.codigo || "" }`}
         handleDeleteCompleted={deleteItem}
       />
     </>

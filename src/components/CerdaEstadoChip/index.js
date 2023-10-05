@@ -6,7 +6,7 @@ function CerdaEstadoChip({ estado }) {
     vacia: '#fffbc8',
     porservir: '#FFEFC580',
     servida: '#D7EDCD80',
-    gestante: '#D5FFFF80',
+    gestante: '#a7ebeb80',
     parida: '#D8E3FF80',
     lactante: '#F2EDFF80',
     destetada: '#F8FFCF80',

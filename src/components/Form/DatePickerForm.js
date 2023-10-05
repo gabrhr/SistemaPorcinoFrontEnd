@@ -9,7 +9,7 @@ function DatePickerForm({inputName, touched, errors,
     if(time){
         return(
             <DateTimePicker
-                value={value? new Date(value) : null}
+                value={value && new Date(value)? new Date(value) : null}
                 onChange={(date) => {
                     setFieldValue(inputName, date? date.toISOString() : null)
                     handleChange()

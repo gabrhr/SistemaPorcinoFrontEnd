@@ -82,6 +82,7 @@ function LineasGeneticasListado() {
 
         const response = await certifyAxios.post(cerdaCeloDescartarAPI, reqObjCelo);
         if(response.data?.resultCode === resultCodeOk){
+          defaultObj.loteId = location.state.loteId
           getListado(defaultObj)
           enqueueSnackbar("La cerda ha sido descartada", {variant:"success"})
         }

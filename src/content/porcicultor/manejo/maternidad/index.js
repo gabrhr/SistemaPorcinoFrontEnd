@@ -7,15 +7,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { resultCodeOk } from 'src/utils/defaultValues';
-import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
+import certifyAxios from 'src/utils/spAxios';
 
-import { maternidadDeleteAPI, maternidadQueryAPI } from 'src/utils/apiUrls';
+import { maternidadQueryAPI } from 'src/utils/apiUrls';
 import Results from './Results';
 
 const tituloPagina = "Maternidad"
 
-function LineasGeneticasListado() {
+function ServicioListado() {
     const [itemListado, setItemListado] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -53,7 +52,8 @@ function LineasGeneticasListado() {
           }
           setLoading(false)
         } catch (err) {
-          
+          setItemListado([])
+          setLoading(false)
           if (err.response) {
             console.log(err.response);
           } else if (err.request) {
@@ -70,34 +70,17 @@ function LineasGeneticasListado() {
         getListado(reqObj);
       }, [getListado]);
     
-      const onPageParamsChange = (reqObj) => {
-        if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
-          setPageSize(reqObj.maxResults) // "limit" en Results.js
-        }
-        getListado(reqObj)
-      }    
-
-    // delete
-    const deleteItemById = async (id, afterDelete) => {
-      try {
-        const reqObj = {
-          id
-        }
-        const response = await certifyAxios.post(maternidadDeleteAPI, reqObj);
-        if(response.data?.resultCode === resultCodeOk){
-          getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
-        }
-      } catch (error) {
-        console.error(error)
-        showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
+    const onPageParamsChange = (reqObj) => {
+      if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
+        setPageSize(reqObj.maxResults) // "limit" en Results.js
       }
-      afterDelete()
-    }
+      getListado(reqObj)
+    }    
     
-    // add or edit
-    const navigateToDetalle = (id) => {
-      navigate('/sp/porcicultor/porcinos/celos/detalle', {state:{celoId: id}});
+    // edit
+    const navigateToDetalle = (id, nombre) => {
+      console.log(id, nombre);
+      navigate('/sp/porcicultor/manejo/maternidad/lote-detalle', {state:{loteId: id, loteNombre:nombre }});
     };
 
     return(
@@ -110,6 +93,9 @@ function LineasGeneticasListado() {
                 <Grid item>
                     <Typography variant="h3" gutterBottom>
                         {tituloPagina}
+                    </Typography>
+                    <Typography>
+                      Esta fase se realiza por lotes de Servicio que han culminado con un parto
                     </Typography>
                 </Grid>
                 </Grid>
@@ -131,7 +117,6 @@ function LineasGeneticasListado() {
                             numberOfResults={numberOfResults}
                             pageNumber={pageNumber}
                             setPageNumber={setPageNumber}
-                            deleteById={deleteItemById}
                             navigateToDetalle={navigateToDetalle}
                             granjaId={user.granjaId}
                             loading={loading}
@@ -143,4 +128,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default ServicioListado;

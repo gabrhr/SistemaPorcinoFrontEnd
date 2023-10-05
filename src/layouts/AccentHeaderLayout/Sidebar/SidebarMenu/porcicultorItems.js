@@ -1,6 +1,5 @@
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CachedIcon from '@mui/icons-material/Cached';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import SavingsIcon from '@mui/icons-material/Savings';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
@@ -54,7 +53,7 @@ const menuItems = [
           }
         ]
       },
-      {
+      /* {
         name: 'Sanidad',
         icon: LocalHospitalIcon,
         link: '',
@@ -72,7 +71,7 @@ const menuItems = [
             link: '/sp/porcicultor/sanidad/calendario'
           }
         ]
-      },
+      }, */
       {
         name: 'Alimentación',
         icon: ShoppingBasketIcon,
@@ -85,11 +84,11 @@ const menuItems = [
           {
             name: 'Control Cerdas',
             link: '/sp/porcicultor/alimentacion/cerdas'
-          },
+          }/* ,
           {
             name: 'Control Engorde',
             link: '/sp/porcicultor/alimentacion/lechones'
-          }
+          } */
         ]
       },
       {
@@ -97,18 +96,18 @@ const menuItems = [
         icon: AssignmentIcon,
         link: '',
         items: [
-          {
+          /* {
             name: 'Estadísticas',
             link: '/sp/porcicultor/granja/estadisticas'
-          },
+          }, */
           {
             name: 'Parámetros',
             link: '/sp/porcicultor/granja/parametros'
-          },
+          }/* ,
           {
             name: 'Corrales',
             link: '/sp/porcicultor/granja/corrales'
-          }
+          } */
         ]
       }
     ]
