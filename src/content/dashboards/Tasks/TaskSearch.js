@@ -1,35 +1,34 @@
-import { useRef, useState } from 'react';
+import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
+import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
+import TodayTwoToneIcon from '@mui/icons-material/TodayTwoTone';
 import {
+  Avatar,
+  AvatarGroup,
+  Box,
   Button,
   Card,
-  Grid,
-  Box,
-  FormControl,
   CardActions,
-  Typography,
-  Avatar,
-  Divider,
-  Link,
-  Rating,
-  OutlinedInput,
   Chip,
-  Tooltip,
-  AvatarGroup,
-  Pagination,
+  Divider,
+  FormControl,
+  Grid,
   InputAdornment,
+  Link,
   Menu,
   MenuItem,
+  OutlinedInput,
+  Pagination,
+  Rating,
+  Tooltip,
+  Typography,
   styled,
   useTheme
 } from '@mui/material';
+import { formatDistance, subDays, subMonths } from 'date-fns';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import { formatDistance, subMonths, subDays } from 'date-fns';
-import TodayTwoToneIcon from '@mui/icons-material/TodayTwoTone';
 import { Link as RouterLink } from 'react-router-dom';
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import Text from 'src/components/Text';
-import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 
 const OutlinedInputWrapper = styled(OutlinedInput)(
   ({ theme }) => `
@@ -41,18 +40,12 @@ const OutlinedInputWrapper = styled(OutlinedInput)(
 function TaskSearch() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
 
   const handleDelete = () => {
-    enqueueSnackbar(t('You clicked on delete!'), {
-      variant: 'error'
-    });
   };
 
   const handleClick = () => {
-    enqueueSnackbar(t('You clicked on the chip!'), {
-      variant: 'success'
-    });
+    
   };
 
   const periods = [

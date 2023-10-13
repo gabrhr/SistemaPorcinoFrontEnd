@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Breadcrumbs, Grid, IconButton, Link, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
@@ -12,6 +11,7 @@ import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import { maternidadLoteQueryAPI, servicioFalloRegisterAPI } from 'src/utils/apiUrls';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import Results from './Results';
 
 const tituloPagina = "Detalle de Servicio del Lote"
@@ -26,7 +26,6 @@ function LineasGeneticasListado() {
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -54,7 +53,7 @@ function LineasGeneticasListado() {
           } else {
             console.error('Servicio encontró un error');
           }
-          enqueueSnackbar("El servicio ha encontrado un error", {variant:"error"})
+          errorMessage("El servicio ha encontrado un error")
         }
     }, [isMountedRef])
 
@@ -77,7 +76,7 @@ function LineasGeneticasListado() {
         if(response.data?.resultCode === resultCodeOk){
           defaultObj.loteId = loteInfo.id
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha registrado fallo satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se ha registrado fallo satisfactoriamente")
         }
       } catch (error) {
         showUserErrors(error, "No se ha podido agregar fallo. Inténtelo de nuevo")

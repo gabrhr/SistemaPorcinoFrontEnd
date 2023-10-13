@@ -2,7 +2,8 @@ import { useRoutes } from 'react-router-dom';
 import router from 'src/router';
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import { SnackbarProvider } from 'notistack';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import useAuth from 'src/hooks/useAuth';
 import "src/theme/global.css";
 
@@ -21,17 +22,18 @@ function App() {
   return (
     <ThemeProvider>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={es}>
-
-        <SnackbarProvider
-          maxSnack={6}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          >
           <CssBaseline />
           {auth.isInitialized ? content : <AppInit />}
-        </SnackbarProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={7000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            theme="dark"
+            className="text-toast"
+          />
       </LocalizationProvider>
     </ThemeProvider>
   );

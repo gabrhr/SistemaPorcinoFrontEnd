@@ -1,4 +1,3 @@
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -37,6 +36,7 @@ import DataView from 'src/components/Form/DataView';
 import DatePickerForm from 'src/components/Form/DatePickerForm';
 import InputForm from 'src/components/Form/InputForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 
 function EditCerda() {
   const [item, setItem] = useState(undefined);
@@ -68,9 +68,7 @@ function EditCerda() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage("El servicio ha encontrado un error")
       }
     },
     [isMountedRef]
@@ -113,10 +111,7 @@ function EditCerda() {
           id: reqObj.id
         };
         getItemById(request);
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
       }
     } catch (error) {
       resetForm()

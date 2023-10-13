@@ -1,25 +1,23 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useSnackbar } from 'notistack';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import {
   Box,
-  ClickAwayListener,
   Button,
-  IconButton,
-  Tooltip,
   Card,
-  Zoom,
+  ClickAwayListener,
+  IconButton,
   TextField,
+  Tooltip,
   Typography,
   styled
 } from '@mui/material';
-import { useDispatch, useSelector } from 'src/store';
-import { updateList } from 'src/slices/projects_board';
-import Label from 'src/components/Label';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import Label from 'src/components/Label';
+import { updateList } from 'src/slices/projects_board';
+import { useDispatch, useSelector } from 'src/store';
 import Task from './Task';
 
 const ListColumnWrapper = styled(Card)(
@@ -62,7 +60,6 @@ const Results = ({ listId }) => {
 
   const list = useSelector((state) => listSelector(state, listId));
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
   const [name, setName] = useState(list.name);
   const [isRenaming, setRename] = useState(false);
 
@@ -86,25 +83,9 @@ const Results = ({ listId }) => {
       const update = { name };
 
       setRename(false);
-      await dispatch(updateList(list.id, update));
-      enqueueSnackbar(t('The project board has been successfully updated'), {
-        variant: 'success',
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center'
-        },
-        TransitionComponent: Zoom
-      });
+      dispatch(updateList(list.id, update));
     } catch (err) {
       console.error(err);
-      enqueueSnackbar(t('There was an error, try again later'), {
-        variant: 'error',
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center'
-        },
-        TransitionComponent: Zoom
-      });
     }
   };
 

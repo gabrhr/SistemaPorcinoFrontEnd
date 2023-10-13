@@ -1,5 +1,4 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -35,6 +34,7 @@ import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { formatDate } from 'src/utils/dataFormat';
 import { resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddControlModal from './AddControlModal';
 import DeleteControlModal from './DeleteControlModal';
 
@@ -77,9 +77,7 @@ function AddEditAlimento() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error')
       }
     },
     [isMountedRef]
@@ -132,10 +130,7 @@ function AddEditAlimento() {
           maxResults
         };
         getItemById(request);
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
       closeControlModal();
     } catch (error) {
@@ -173,10 +168,7 @@ function AddEditAlimento() {
         };
         getItemById(request);
         closeDeleteModal();
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha eliminado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg ?? 'Se ha eliminado satisfactoriamente');
       }
     } catch (error) {
       closeDeleteModal();

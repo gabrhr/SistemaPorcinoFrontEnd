@@ -1,5 +1,4 @@
 // /* eslint-disable */
-import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -28,6 +27,7 @@ import DatePickerForm from 'src/components/Form/DatePickerForm';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
 import useAuth from 'src/hooks/useAuth';
+import { successMessage } from 'src/utils/notifications';
 
 function AddCerda() {
   const [item, setItem] = useState(undefined);
@@ -65,10 +65,7 @@ function AddCerda() {
     try {
       const response = await certifyAxios.post(cerdaRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
     } catch (error) {
       console.error(error);

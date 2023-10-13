@@ -19,12 +19,12 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { enqueueSnackbar } from 'notistack';
 import { forwardRef, useEffect, useState } from 'react';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
 import { camadaToAddAPI } from 'src/utils/apiUrls';
 import { formatDate } from 'src/utils/dataFormat';
 import { resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage } from 'src/utils/notifications';
 import certifyAxios from 'src/utils/spAxios';
 
 const DialogWrapper = styled(Dialog)(
@@ -70,9 +70,7 @@ function AddCamadaModal({
       setList([]);
       setListFiltered([]);
 
-      enqueueSnackbar('No se ha podido obtener las camadas.', {
-        variant: 'error'
-      });
+      errorMessage('No se ha podido obtener las camadas')
     }
   };
 

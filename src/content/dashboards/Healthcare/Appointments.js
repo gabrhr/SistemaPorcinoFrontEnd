@@ -1,26 +1,25 @@
 import {
+  Avatar,
+  AvatarGroup,
+  Box,
   Button,
   Card,
-  Box,
   CardHeader,
-  Typography,
-  Avatar,
-  Divider,
-  Tooltip,
-  AvatarGroup,
-  ListSubheader,
-  ListItem,
   Chip,
+  Divider,
   List,
-  useTheme,
-  styled
+  ListItem,
+  ListSubheader,
+  Tooltip,
+  Typography,
+  styled,
+  useTheme
 } from '@mui/material';
+import { format, subDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 import Label from 'src/components/Label';
 import Text from 'src/components/Text';
-import { Link as RouterLink } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
-import { format, subDays } from 'date-fns';
 
 const DotLegend = styled('span')(
   ({ theme }) => `
@@ -80,18 +79,11 @@ export const BoxItemWrapper = styled(Box)(
 function Appointments() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
 
   const handleDelete = () => {
-    enqueueSnackbar(t('You clicked on delete!'), {
-      variant: 'error'
-    });
   };
 
   const handleClick = () => {
-    enqueueSnackbar(t('You clicked on the chip!'), {
-      variant: 'success'
-    });
   };
 
   return (

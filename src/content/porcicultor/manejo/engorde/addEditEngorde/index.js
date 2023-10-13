@@ -21,7 +21,6 @@ import {
   useTheme
 } from '@mui/material';
 import { Formik } from 'formik';
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { Helmet } from 'react-helmet-async';
@@ -36,6 +35,7 @@ import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { ceboTerminarAPI, engordeFindByIdAPI, engordeRegisterAPI, engordeUpdateAPI, pesosRegisterAPI, preceboTerminarAPI } from 'src/utils/apiUrls';
 import { engordeEstado, resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import * as Yup from 'yup';
 import AddCamadaModal from './AddCamadaModal';
@@ -104,9 +104,7 @@ function AddEditLote() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error');
       }
     },
     [isMountedRef]
@@ -153,10 +151,7 @@ function AddEditLote() {
     try {
       const response = await certifyAxios.post(engordeRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
       navigateToMain()
       resetStates()
@@ -174,10 +169,7 @@ function AddEditLote() {
       const response = await certifyAxios.post(engordeUpdateAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({id: reqObj.id, granjaId: user.granjaId})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
         resetStates(true)
 
       }
@@ -252,10 +244,7 @@ function AddEditLote() {
       const response = await certifyAxios.post(url, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({id: reqObj.id, granjaId: user.granjaId})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
         if(precebo){
           closePreceboModal()
         } else {
@@ -306,7 +295,7 @@ function AddEditLote() {
       if(response.data?.resultCode === resultCodeOk){
         await getItemById({id: item.id, granjaId: user.granjaId})
         setEditPesos(false)
-        enqueueSnackbar(response.data.userMsg?? "Se ha terminado satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se ha registrado satisfactoriamente")
       }
     } catch (error) {
       setEditPesos(false)

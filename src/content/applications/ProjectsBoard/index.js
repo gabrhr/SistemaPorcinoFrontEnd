@@ -1,35 +1,33 @@
-import { Fragment, useState, useEffect } from 'react';
-import { DragDropContext } from 'react-beautiful-dnd';
-import { useDispatch, useSelector } from 'src/store';
-import { getBoard, moveTask } from 'src/slices/projects_board';
-import { Helmet } from 'react-helmet-async';
-import Footer from 'src/components/Footer';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import Label from 'src/components/Label';
-import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import { styled } from '@mui/material/styles';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import {
-  Tabs,
-  Tooltip,
-  Tab,
-  CardActionArea,
-  CardContent,
-  Grid,
+  Autocomplete,
   Avatar,
   Box,
-  Autocomplete,
-  TextField,
+  Card,
+  CardActionArea,
+  CardContent,
   Chip,
   Divider,
-  Typography,
-  Card,
+  Grid,
   LinearProgress,
-  Zoom
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography
 } from '@mui/material';
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import Results from './Results';
+import { styled } from '@mui/material/styles';
+import { Fragment, useEffect, useState } from 'react';
+import { DragDropContext } from 'react-beautiful-dnd';
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
+import Footer from 'src/components/Footer';
+import Label from 'src/components/Label';
+import PageTitleWrapper from 'src/components/PageTitleWrapper';
+import { getBoard, moveTask } from 'src/slices/projects_board';
+import { useDispatch, useSelector } from 'src/store';
 import PageHeader from './PageHeader';
+import Results from './Results';
 
 const TasksWrapper = styled(Box)(
   ({ theme }) => `
@@ -201,7 +199,6 @@ function ApplicationsProjectsBoard() {
 
   const dispatch = useDispatch();
   const { lists } = useSelector((state) => state.projectsBoard);
-  const { enqueueSnackbar } = useSnackbar();
 
   const handleDragEnd = async ({ source, destination, draggableId }) => {
     try {
@@ -224,24 +221,8 @@ function ApplicationsProjectsBoard() {
         );
       }
 
-      enqueueSnackbar(t('Task has been successfully moved'), {
-        variant: 'info',
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center'
-        },
-        TransitionComponent: Zoom
-      });
     } catch (err) {
       console.error(err);
-      enqueueSnackbar(t('There was an error, try again later'), {
-        variant: 'error',
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center'
-        },
-        TransitionComponent: Zoom
-      });
     }
   };
 

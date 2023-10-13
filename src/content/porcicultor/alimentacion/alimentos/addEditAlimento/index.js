@@ -1,5 +1,4 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { alimentoFindByIdAPI, alimentoRegisterAPI, alimentoUpdateAPI, compraDeleteAPI, compraRegisterAPI } from 'src/utils/apiUrls';
@@ -38,6 +37,7 @@ import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { formatDate } from 'src/utils/dataFormat';
 import { listCategoriasAlimento, resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddCompraModal from './AddCompraModal';
 import DeleteCompraModal from './DeleteCompraModal';
 
@@ -82,9 +82,7 @@ function AddEditAlimento() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error');
       }
     },
     [isMountedRef]
@@ -120,10 +118,7 @@ function AddEditAlimento() {
     try {
       const response = await certifyAxios.post(alimentoRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
       navigateToMain()
       resetStates()
@@ -140,10 +135,7 @@ function AddEditAlimento() {
       const response = await certifyAxios.post(alimentoUpdateAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({id: reqObj.id})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
         resetStates(true)
 
       }
@@ -175,10 +167,7 @@ function AddEditAlimento() {
       const response = await certifyAxios.post(compraRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({id: item.id})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
       closeCompraModal()
     } catch (error) {
@@ -212,7 +201,7 @@ function AddEditAlimento() {
       if(response.data?.resultCode === resultCodeOk){
         getItemById({id: item.id})
         closeDeleteModal()
-        enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
       }
     } catch (error) {
       closeDeleteModal()

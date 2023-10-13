@@ -1,12 +1,12 @@
 import { Box, Button, Dialog, Grid, MenuItem, Slide, Typography, useTheme } from "@mui/material";
 import { styled } from "@mui/system";
 import { Formik } from "formik";
-import { enqueueSnackbar } from "notistack";
 import { forwardRef, useEffect, useState } from "react";
 import SelectForm from "src/components/Form/SelectForm";
 import { celoGetLotesPendientesAPI } from "src/utils/apiUrls";
 import { formatDate } from "src/utils/dataFormat";
 import { resultCodeOk } from "src/utils/defaultValues";
+import { errorMessage } from "src/utils/notifications";
 import certifyAxios from "src/utils/spAxios";
 import * as Yup from 'yup';
 
@@ -49,9 +49,7 @@ function AddModal ({
         console.error(err);
         setList([]);
 
-        enqueueSnackbar('No se ha podido obtener los lotes.', {
-            variant: 'error'
-        });
+        errorMessage('No se ha podido obtener los lotes')
         }
     };
 

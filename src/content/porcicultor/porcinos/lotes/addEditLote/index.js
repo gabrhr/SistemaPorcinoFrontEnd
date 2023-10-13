@@ -1,5 +1,4 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { loteFindByIdAPI, loteRegisterAPI, loteUpdateAPI } from 'src/utils/apiUrls';
@@ -42,6 +41,7 @@ import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { listTiposLote, loteTipos, resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddCerdaModal from './AddCerdaModal';
 
 const tipos = listTiposLote()
@@ -90,9 +90,7 @@ function AddEditLote() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error')
       }
     },
     [isMountedRef]
@@ -139,10 +137,7 @@ function AddEditLote() {
     try {
       const response = await certifyAxios.post(loteRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
       navigateToMain()
       resetStates()
@@ -160,10 +155,7 @@ function AddEditLote() {
       const response = await certifyAxios.post(loteUpdateAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({id: reqObj.id})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
         resetStates(true)
 
       }

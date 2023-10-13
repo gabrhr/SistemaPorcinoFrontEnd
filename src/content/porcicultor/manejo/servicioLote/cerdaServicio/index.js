@@ -1,4 +1,3 @@
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -35,6 +34,8 @@ import { Formik } from 'formik';
 import { Tab, Tabs } from 'react-bootstrap';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BackdropLoading from 'src/components/BackdropLoading';
+import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import DatePickerForm from 'src/components/Form/DatePickerForm';
 import DatePickerReadOnly from 'src/components/Form/DatePickerReadOnly';
@@ -50,6 +51,7 @@ import {
   resultCodeOk,
   servicioEstado
 } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import * as Yup from 'yup';
 import AddFalloModal from '../AddFalloModal';
 import TerminarGestacionModal from './TerminarGestacionModal';
@@ -75,7 +77,6 @@ function ServicioCerdaDetalle() {
   const [verracos, setVerracos] = useState([]);
   const [locationState, setLocationState] = useState({});
   const [loading, setLoading] = useState(false);
-  const [loadingItem, setLoadingItem] = useState(false);
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -89,7 +90,6 @@ function ServicioCerdaDetalle() {
   // get servicio by id
   const getItemById = useCallback(
     async (reqObj) => {
-      setLoadingItem(true)
       try {
         const response = await certifyAxios.post(
           cerdaServicioFindByIdAPI,
@@ -100,27 +100,28 @@ function ServicioCerdaDetalle() {
             setGeneralItem(response.data);
             const estado = response?.data?.loteCerdaServicio?.estado;
             if (estado !== undefined || estado !== null) {
-              const fechaSegundaInseminacion =
-                response?.data?.loteCerdaServicio?.fechaSegundaInseminacion || null;
-              const fechaPrimeraRecela =
-                response?.data?.loteCerdaServicio?.fechaPrimeraRecela || null;
-              const fechaSegundaRecela =
-                response?.data?.loteCerdaServicio?.fechaSegundaRecela || null;
-                const fechaVerGestacion =
-                response?.data?.loteCerdaServicio?.fechaVerGestacion || null;
-              if (
-                estado === servicioEstado.finalizado ||
-                estado === servicioEstado.fallido
-              ) {
+              const fechaSegundaInseminacion = response?.data?.loteCerdaServicio?.fechaSegundaInseminacion || null;
+              const fechaPrimeraRecela = response?.data?.loteCerdaServicio?.fechaPrimeraRecela || null;
+              const fechaSegundaRecela = response?.data?.loteCerdaServicio?.fechaSegundaRecela || null;
+              const fechaVerGestacion = response?.data?.loteCerdaServicio?.fechaVerGestacion || null;
+              if (estado === servicioEstado.finalizado || estado === servicioEstado.fallido) {
                 setShowAction(false);
               }
+              // flags
+              let generalTabFlag = false
+              let servicioTabFlag = false
+              let gestTabFlag = false
+              let primeraVerFlag = true
+              let segundaVerFlag = true
+              let terceraVerFlag = true
               // evaluamos flags
               if (
                 estado === servicioEstado.porServir ||
                 (estado === servicioEstado.enServicio &&
                   fechaPrimeraRecela === null)
               ) {
-                setEnableGeneralTab(true);
+                // setEnableGeneralTab(true);
+                generalTabFlag = true
                 getVerracos();
               } else {
                 const list = (response?.data?.loteCerdaServicio?.verraco !== null)? [response?.data?.loteCerdaServicio?.verraco] : []
@@ -128,40 +129,49 @@ function ServicioCerdaDetalle() {
               }
 
               if (estado === servicioEstado.enServicio) {
-                setEnableServicioTab(true);
+                // setEnableServicioTab(true);
+                servicioTabFlag = true
 
                 if(fechaSegundaInseminacion !== null && fechaSegundaRecela === null){
-                  setDisablePrimeraVer(false)
+                  // setDisablePrimeraVer(false)
+                  primeraVerFlag = false
                 }
                                 
                 if (fechaPrimeraRecela !== null && fechaVerGestacion === null) {
-                  setDisableSegundaVer(false);
+                  // setDisableSegundaVer(false);
+                  segundaVerFlag = false
                 }
                 if (fechaSegundaRecela !== null) {
-                  setDisableTerceraVer(false);
+                  // setDisableTerceraVer(false);
+                  terceraVerFlag = false
                 }
               }
 
               if (estado === servicioEstado.gestacion) {
-                setEnableGestTab(true);
+                // setEnableGestTab(true);
+                gestTabFlag = true
               }
+
+              // set flags
+              setEnableGeneralTab(generalTabFlag);
+              setEnableServicioTab(servicioTabFlag);
+              setEnableGestTab(gestTabFlag);
+              setDisablePrimeraVer(primeraVerFlag)
+              setDisableSegundaVer(segundaVerFlag);
+              setDisableTerceraVer(terceraVerFlag);
             }
             setItem(response.data.loteCerdaServicio);
           }
-          setLoadingItem(false)
         }
       } catch (err) {
         console.error(err);
         setItem({});
-        setLoadingItem(false)
         if (err.response) {
           console.log(err.response);
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage("El servicio ha encontrado un error")
       }
     },
     [isMountedRef]
@@ -208,30 +218,51 @@ function ServicioCerdaDetalle() {
     setLoading(false);
   };
 
+  const resetAllForms = () => {
+    console.log("RESET: ", item)
+    if(!loading){
+      if(generalForm?.current){
+        generalForm.current.resetForm({
+          verracoId: (item && item?.verraco && item?.verraco?.id) || -1,
+          tipoServicio: (item && item.tipoServicio) || 'none',
+          fechaPrimeraInseminacion: (item && item.fechaPrimeraInseminacion) || null,
+          fechaSegundaInseminacion: (item && item.fechaSegundaInseminacion) || null,
+          nombreInseminador: (item && item.nombreInseminador) || ''
+        })
+      }
+      if(servicioForm?.current){
+        servicioForm.current.resetForm({
+          fechaPrimeraRecela: (item && item.fechaPrimeraRecela) || null,
+          fechaSegundaRecela: (item && item.fechaSegundaRecela) || null,
+          fechaVerGestacion: (item && item.fechaVerGestacion) || null,
+          resultadoPrimeraRecela: item && item.fechaPrimeraRecela? item.resultadoPrimeraRecela: -1,
+          resultadoSegundaRecela: item && item.fechaSegundaRecela? item.resultadoSegundaRecela: -1,
+          resultadoVerGestacion: item && item.fechaVerGestacion? item.resultadoVerGestacion: -1
+        })
+      }
+      if(gestacionForm?.current){
+        gestacionForm.current.resetForm({
+          fechaSalaMaternindad:(item && item.fechaSalaMaternindad) || null
+        })
+      }
+    }
+  }
+
   // edit
   const editItemById = async (reqObj, url) => {
     try {
       setLoading(true);
       const response = await certifyAxios.post(url, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        getItemById({ id: reqObj.id, granjaId: user.granjaId});
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        console.log("antes edit")
+        await getItemById({ id: reqObj.id, granjaId: user.granjaId});
+        successMessage(response.data.userMsg ?? 'Se ha modificado satisfactoriamente');
+        console.log("luego edit")
         resetStates(true);
       }
     } catch (error) {
       resetStates(true);
-      if(generalForm?.current){
-        generalForm.current.resetForm()
-      }
-      if(servicioForm?.current){
-        servicioForm.current.resetForm()
-      }
-      if(gestacionForm?.current){
-        gestacionForm.current.resetForm()
-      }
+      resetAllForms()
       console.error(error);
       showUserErrors(error, 'No se ha podido modificar. Inténtelo de nuevo')
     }
@@ -239,11 +270,7 @@ function ServicioCerdaDetalle() {
 
   // submit
   const handleSubmitGeneral = async () => {
-    if (
-      generalForm?.current ||
-      servicioForm?.current ||
-      gestacionForm?.current
-    ) {
+    if (generalForm?.current || servicioForm?.current || gestacionForm?.current) {
       const { fechaPrimeraRecela } = servicioForm?.current?.values;
 
       if (
@@ -254,9 +281,14 @@ function ServicioCerdaDetalle() {
         // Se modifican aún solo los datos generales
         const values = generalForm.current.values;
         const isValid = generalForm.current.isValid;
-
         if(!isValid){
-          enqueueSnackbar("Debe completar los Datos de inseminación en General", {variant:"error"})
+          generalForm.current.setTouched({
+            nombreInseminador: true,
+            verracoId: true,
+            tipoServicio: true,
+            fechaPrimeraInseminacion: true
+          })
+          errorMessage("Debe completar los datos de inseminación en General")
           return;
         }
 
@@ -277,9 +309,8 @@ function ServicioCerdaDetalle() {
         // se editan los valores del segundo tab
         const values = servicioForm.current.values;
         const isValid = servicioForm.current.isValid;
-
         if(!isValid){
-          enqueueSnackbar("Debe completar las verificaciones en Servicio", {variant:"error"})
+          errorMessage("Debe completar las verificaciones en Servicio")
           return;
         }
         const reqObj = {
@@ -299,9 +330,8 @@ function ServicioCerdaDetalle() {
       } else if(gestacionForm?.current && enableGestTab) {
         const values = gestacionForm.current.values;
         const isValid = gestacionForm.current.isValid;
-
         if(!isValid){
-          enqueueSnackbar("Debe completar las verificaciones en Servicio", {variant:"error"})
+          errorMessage("Debe completar los datos en Maternidad")
           return;
         }
         const reqObj = {
@@ -324,11 +354,8 @@ function ServicioCerdaDetalle() {
     try {
       const response = await certifyAxios.post(servicioTerminarGestacionAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        getItemById({ id: reqObj.id, granjaId: user.granjaId});
-        enqueueSnackbar(
-          await response.data.userMsg ?? 'Se ha terminado con la gestación',
-          { variant: 'success' }
-        );
+        await getItemById({ id: reqObj.id, granjaId: user.granjaId});
+        successMessage(response.data.userMsg ?? 'Se ha terminado con la gestación');
         closeTerminarGestModal()
       }
     } catch (error) {
@@ -348,7 +375,7 @@ function ServicioCerdaDetalle() {
       const response = await certifyAxios.post(servicioFalloRegisterAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
         await getItemById({ id: reqObj.loteCerdaServicioId, granjaId: user.granjaId});
-        enqueueSnackbar(response.data.userMsg?? "Se ha registrado fallo satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se ha registrado fallo satisfactoriamente")
       }
       closeFalloModal()
     } catch (error) {
@@ -429,15 +456,7 @@ function ServicioCerdaDetalle() {
                 }}
                 onClick={() => {
                   if (editActive) {
-                    if (generalForm.current) {
-                      generalForm.current.resetForm();
-                    }
-                    if (servicioForm.current) {
-                      servicioForm.current.resetForm();
-                    }
-                    if (gestacionForm.current) {
-                      gestacionForm.current.resetForm();
-                    }
+                    resetAllForms()
                     setEditActive(false);
                   }
                 }}
@@ -501,22 +520,9 @@ function ServicioCerdaDetalle() {
           borderRadius: 2
         }}
       >
-        {loadingItem && (
-          <div
-            style={{
-              display: 'grid',
-              justifyContent: 'center',
-              paddingTop: '6rem',
-              paddingBottom: '6rem'
-            }}
-          >
-            <CircularProgress
-              color="secondary"
-              sx={{ mb: '1rem', mx: '10rem' }}
-            />
-          </div>
-        )}
-        {!loadingItem && item !== undefined && generalItem !== undefined && (
+        {item === undefined && <CircularLoading />}
+        <BackdropLoading open={loading}/>
+        {item !== undefined && generalItem !== undefined && (
           <div>
             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
               <Tab eventKey={1} title="General">
@@ -617,6 +623,8 @@ function ServicioCerdaDetalle() {
                       setFieldValue
                     }) => (
                       <form noValidate onSubmit={handleSubmit}>
+                        {JSON.stringify(errors)}
+                            {JSON.stringify(touched)}
                         <Grid
                           container
                           justifyContent="center"
@@ -779,7 +787,7 @@ function ServicioCerdaDetalle() {
               <Tab eventKey={2} title="Servicio">
                 <div style={{ paddingTop: '1rem' }}>
                   {showAction && (
-                    <Alert severity="primary">
+                    <Alert severity="info">
                       Si no pasa alguna de las verificaciones, se registrará el
                       fallo en el servicio de manera automática
                     </Alert>
@@ -856,7 +864,10 @@ function ServicioCerdaDetalle() {
                             >
                               <Grid item xs={12} sm={12} md={4}>
                                 <DatePickerReadOnly
-                                  value={generalItem?.fechaPrimeraRecelaProbable ||null}
+                                  value={
+                                    generalItem?.fechaPrimeraRecelaProbable ||
+                                    null
+                                  }
                                   label="Fecha probable"
                                   inputName="fechaPrimeraRecelaProbable"
                                 />
@@ -955,7 +966,10 @@ function ServicioCerdaDetalle() {
                             >
                               <Grid item xs={12} sm={12} md={4}>
                                 <DatePickerReadOnly
-                                  value={generalItem?.fechaSegundaRecelaProbable ||null}
+                                  value={
+                                    generalItem?.fechaSegundaRecelaProbable ||
+                                    null
+                                  }
                                   label="Fecha probable"
                                   inputName="fechaSegundaRecelaProbable"
                                 />
@@ -1056,7 +1070,10 @@ function ServicioCerdaDetalle() {
                             >
                               <Grid item xs={12} sm={12} md={4}>
                                 <DatePickerReadOnly
-                                  value={generalItem?.fechaVerGestacionProbable ||null}
+                                  value={
+                                    generalItem?.fechaVerGestacionProbable ||
+                                    null
+                                  }
                                   label="Fecha probable"
                                   inputName="fechaVerGestacionProbable"
                                 />
@@ -1167,7 +1184,10 @@ function ServicioCerdaDetalle() {
                           >
                             <Grid item xs={12} sm={12} md={4}>
                               <DatePickerReadOnly
-                                value={generalItem?.fechaSalaMaternindadProbable ||null}
+                                value={
+                                  generalItem?.fechaSalaMaternindadProbable ||
+                                  null
+                                }
                                 label="Fecha probable"
                                 inputName="fechaSalaMaternindadProbable"
                               />
@@ -1178,7 +1198,7 @@ function ServicioCerdaDetalle() {
                                 inputName="fechaSalaMaternindad"
                                 value={values.fechaSalaMaternindad}
                                 label="Fecha real"
-                                disableFuture
+                                // disableFuture
                                 setFieldValue={setFieldValue}
                                 errors={errors}
                                 touched={touched}
@@ -1202,7 +1222,7 @@ function ServicioCerdaDetalle() {
                           >
                             <Grid item xs={12} sm={12} md={4}>
                               <DatePickerReadOnly
-                                value={generalItem?.fechaPartoProbable ||null}
+                                value={generalItem?.fechaPartoProbable || null}
                                 label="Fecha probable"
                                 inputName="fechaPartoProbable"
                               />
@@ -1210,7 +1230,7 @@ function ServicioCerdaDetalle() {
                             {item && item?.fechaParto != null && (
                               <Grid item xs={12} sm={12} md={4}>
                                 <DatePickerReadOnly
-                                  value={item?.fechaParto ||null}
+                                  value={item?.fechaParto || null}
                                   label="Fecha real"
                                   inputName="fechaParto"
                                 />

@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Button, Grid, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
@@ -12,6 +11,7 @@ import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import { celoQueryAPI, celoRegisterAPI } from 'src/utils/apiUrls';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddModal from './AddModal';
 import Results from './Results';
 
@@ -27,7 +27,6 @@ function LineasGeneticasListado() {
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
     const navigate = useNavigate();
 
@@ -66,7 +65,7 @@ function LineasGeneticasListado() {
           } else {
             console.error('Servicio encontró un error');
           }
-          enqueueSnackbar("El servicio ha encontrado un error", {variant:"error"})
+          errorMessage("El servicio ha encontrado un error")
         }
     }, [isMountedRef])
 
@@ -88,7 +87,7 @@ function LineasGeneticasListado() {
         const response = await certifyAxios.post(celoRegisterAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se agregó satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
         }
         addModalOpenHandle()
       } catch (error) {

@@ -1,5 +1,4 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -15,7 +14,6 @@ import {
   Box,
   Breadcrumbs,
   Button,
-  CircularProgress,
   DialogContent,
   Divider,
   Grid,
@@ -35,11 +33,13 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BackdropLoading from 'src/components/BackdropLoading';
 import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
+import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { formatDate } from 'src/utils/dataFormat';
 import { celoEstado, resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddDeteccionModal from './AddDeteccionModal';
 import AptaServicioModal from './AptaServicioModal';
 import DeleteDeteccionModal from './DeleteDeteccionModal';
@@ -88,9 +88,7 @@ function AddEditAlimento() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error');
       }
     },
     [isMountedRef]
@@ -137,10 +135,7 @@ function AddEditAlimento() {
       const response = await certifyAxios.post(celoAptaServicioAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({ id: item.id });
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se modificó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg ?? 'Se modificó satisfactoriamente')
         setLoading(false)
       }
     } catch (error) {
@@ -169,10 +164,7 @@ function AddEditAlimento() {
       if (response.data?.resultCode === resultCodeOk) {
         closeDeteccionModal();
         await getItemById({ id: item.id });
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-          );
+        successMessage(response.data.userMsg ?? 'Se agregó satisfactoriamente')
         setLoading(false)
       }
     } catch (error) {
@@ -207,10 +199,7 @@ function AddEditAlimento() {
       const response = await certifyAxios.post(deteccionDeleteAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({ id: item.id });
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha eliminado satisfactoriamente',
-          { variant: 'success' }
-          );
+        successMessage(response.data.userMsg ?? 'Se ha eliminado satisfactoriamente')
         setLoading(false)
       }
     } catch (error) {
@@ -277,22 +266,7 @@ function AddEditAlimento() {
           borderRadius: 2
         }}
       >
-        {item === undefined && 
-          <div
-          style={{
-            display: 'grid',
-            justifyContent: 'center',
-            paddingTop: '6rem',
-            paddingBottom: '6rem'
-          }}
-        >
-          <CircularProgress
-            color="secondary"
-            sx={{ mb: '1rem', mx: '10rem' }}
-          />
-        </div>
-
-        }
+        {item === undefined && <CircularLoading/>}
         <BackdropLoading open={loading}/>
         {(item !== undefined) && <>
           {/* Cerda datos */}

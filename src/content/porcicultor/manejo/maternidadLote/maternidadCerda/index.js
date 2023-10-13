@@ -1,5 +1,4 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { mLechonDeleteAPI, mLechonDescartarAPI, mLechonRegisterAPI, maternidadFindByIdAPI, maternidadTerminarAPI, maternidadUpdateAPI, pesosDesteteRegisterAPI } from 'src/utils/apiUrls';
@@ -41,6 +40,7 @@ import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddCompraModal from './AddCompraModal';
 import DeleteCompraModal from './DeleteCompraModal';
 import TerminarMaternidadModal from './TerminarMaternidadModal';
@@ -108,9 +108,7 @@ function EditMaternidad() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error')
       }
     },
     [isMountedRef]
@@ -163,10 +161,7 @@ function EditMaternidad() {
       const response = await certifyAxios.post(maternidadUpdateAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         await getItemById({id: reqObj.id, granjaId: user.granjaId})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
         resetStates(true)
 
       }
@@ -194,10 +189,7 @@ function EditMaternidad() {
       const response = await certifyAxios.post(mLechonRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         getItemById({id: item.id, granjaId: user.granjaId})
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se agregó satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
       setLoading(false)
       closeCompraModal()
@@ -234,7 +226,7 @@ function EditMaternidad() {
       if(response.data?.resultCode === resultCodeOk){
         getItemById({id: item.id, granjaId: user.granjaId})
         closeDeleteModal()
-        enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
       }
     } catch (error) {
       closeDeleteModal()
@@ -266,7 +258,7 @@ function EditMaternidad() {
       if(response.data?.resultCode === resultCodeOk){
         getItemById({id: item.id, granjaId: user.granjaId})
         closeDescartarModal()
-        enqueueSnackbar(response.data.userMsg?? "Se ha descartado satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se ha descartado satisfactoriamente")
       }
     } catch (error) {
       closeDescartarModal()
@@ -289,7 +281,7 @@ function EditMaternidad() {
       if(response.data?.resultCode === resultCodeOk){
         await getItemById({id: item.id, granjaId: user.granjaId})
         closeTerminarModal()
-        enqueueSnackbar(response.data.userMsg?? "Se ha terminado satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se ha terminado satisfactoriamente")
       }
     } catch (error) {
       closeTerminarModal()
@@ -311,7 +303,7 @@ function EditMaternidad() {
       if(response.data?.resultCode === resultCodeOk){
         await getItemById({id: item.id, granjaId: user.granjaId})
         setEditPesos(false)
-        enqueueSnackbar(response.data.userMsg?? "Se ha terminado satisfactoriamente", {variant:"success"})
+        successMessage(response.data.userMsg?? "Se han registrado los pesos")
       }
     } catch (error) {
       setEditPesos(false)

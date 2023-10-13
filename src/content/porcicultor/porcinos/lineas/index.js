@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Button, Grid, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
@@ -11,6 +10,7 @@ import { lineaDeleteAPI, lineaQueryAPI, lineaRegisterAPI, lineaUpdateAPI } from 
 import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
+import { successMessage } from 'src/utils/notifications';
 import AddEditModal from './AddEditModal';
 import Results from './Results';
 
@@ -26,7 +26,6 @@ function LineasGeneticasListado() {
     const [openAdd, setOpenAdd] = useState(false)
     
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
 
     const defaultObj = {
@@ -78,7 +77,7 @@ function LineasGeneticasListado() {
         const response = await certifyAxios.post(lineaRegisterAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se agregó satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
         }
         addModalOpenHandle()
         afterAction()
@@ -93,7 +92,7 @@ function LineasGeneticasListado() {
         const response = await certifyAxios.post(lineaUpdateAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha modificado satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
         }
         afterAction()
       } catch (error) {
@@ -110,7 +109,7 @@ function LineasGeneticasListado() {
         const response = await certifyAxios.post(lineaDeleteAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
         }
       } catch (error) {
         showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")

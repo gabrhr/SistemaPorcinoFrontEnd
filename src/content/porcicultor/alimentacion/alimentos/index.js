@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Button, Grid, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
@@ -12,6 +11,7 @@ import { alimentoDeleteAPI, alimentoQueryAPI } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import Results from './Results';
 
 const tituloPagina = "Alimentos"
@@ -25,7 +25,6 @@ function AlimentosListado() {
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
     const navigate = useNavigate();
 
@@ -57,7 +56,7 @@ function AlimentosListado() {
         } catch (err) {
           
           setLoading(false)
-          enqueueSnackbar("El servicio ha encontrado un error", {variant:"error"})
+          errorMessage("El servicio ha encontrado un error")
         }
     }, [isMountedRef])
 
@@ -82,7 +81,7 @@ function AlimentosListado() {
         const response = await certifyAxios.post(alimentoDeleteAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
         }
       } catch (error) {
         console.error(error)

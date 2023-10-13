@@ -1,4 +1,3 @@
-import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -24,6 +23,7 @@ import useRefMounted from 'src/hooks/useRefMounted';
 
 import InputForm from 'src/components/Form/InputForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 
 function EditParametros() {
   const [item, setItem] = useState(undefined);
@@ -52,9 +52,7 @@ function EditParametros() {
         } else {
           console.error('Servicio encontró un error');
         }
-        enqueueSnackbar('El servicio ha encontrado un error', {
-          variant: 'error'
-        });
+        errorMessage('El servicio ha encontrado un error');
       }
     },
     [isMountedRef]
@@ -76,10 +74,7 @@ function EditParametros() {
           id: user.granjaId
         };
         getItemById(request);
-        enqueueSnackbar(
-          response.data.userMsg ?? 'Se ha modificado satisfactoriamente',
-          { variant: 'success' }
-        );
+        successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
       }
     } catch (error) {
       resetForm()

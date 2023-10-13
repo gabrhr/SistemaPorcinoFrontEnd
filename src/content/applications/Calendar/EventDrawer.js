@@ -1,33 +1,31 @@
-import PropTypes from 'prop-types';
-import { setHours, setMinutes, subDays } from 'date-fns';
-import _ from 'lodash';
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-import { useSnackbar } from 'notistack';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { styled } from '@mui/material/styles';
+import { setHours, setMinutes, subDays } from 'date-fns';
+import { Formik } from 'formik';
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import * as Yup from 'yup';
 
+import { DateTimePicker } from '@mui/lab';
 import {
+  Alert,
   Box,
-  Card,
-  TextField,
   Button,
-  IconButton,
+  Card,
+  Checkbox,
+  CircularProgress,
   Divider,
   FormControlLabel,
   Grid,
-  Alert,
-  Checkbox,
-  CircularProgress,
+  IconButton,
+  TextField,
   Tooltip,
   Typography,
-  lighten,
-  Zoom
+  lighten
 } from '@mui/material';
-import { DateTimePicker } from '@mui/lab';
-import { useDispatch } from 'src/store';
-import { createEvent, updateEvent, deleteEvent } from 'src/slices/calendar';
 import { useTranslation } from 'react-i18next';
+import { createEvent, deleteEvent, updateEvent } from 'src/slices/calendar';
+import { useDispatch } from 'src/store';
 
 const IconButtonError = styled(IconButton)(
   ({ theme }) => `
@@ -101,7 +99,6 @@ const EventDrawer = ({
   range
 }) => {
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
 
   const isCreating = !event;
 
@@ -110,14 +107,6 @@ const EventDrawer = ({
       dispatch(deleteEvent(event.id));
       onDeleteComplete();
 
-      enqueueSnackbar(t('The event has been deleted'), {
-        variant: 'error',
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center'
-        },
-        TransitionComponent: Zoom
-      });
     } catch (err) {
       console.error(err);
     }
@@ -162,14 +151,6 @@ const EventDrawer = ({
           resetForm();
           setStatus({ success: true });
           setSubmitting(false);
-          enqueueSnackbar(t('The calendar has been successfully updated!'), {
-            variant: 'success',
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center'
-            },
-            TransitionComponent: Zoom
-          });
 
           if (isCreating) {
             onAddComplete();

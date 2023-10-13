@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Button, Grid, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
@@ -12,6 +11,7 @@ import { cerdaDeleteAPI, cerdaDescartarAPI, cerdaQueryAPI } from 'src/utils/apiU
 import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import Results from './Results';
 
 const tituloPagina = "Cerdas"
@@ -25,7 +25,6 @@ function LineasGeneticasListado() {
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
     const navigate = useNavigate();
 
@@ -64,7 +63,7 @@ function LineasGeneticasListado() {
           } else {
             console.error('Servicio encontró un error');
           }
-          enqueueSnackbar("El servicio ha encontrado un error", {variant:"error"})
+          errorMessage("El servicio ha encontrado un error")
         }
     }, [isMountedRef])
 
@@ -89,7 +88,7 @@ function LineasGeneticasListado() {
         const response = await certifyAxios.post(cerdaDeleteAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar(response.data.userMsg?? "Se ha eliminado satisfactoriamente", {variant:"success"})
+          successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
         }
       } catch (error) {
         console.error(error)
@@ -104,7 +103,7 @@ function LineasGeneticasListado() {
         const response = await certifyAxios.post(cerdaDescartarAPI, reqObj);
         if(response.data?.resultCode === resultCodeOk){
           getListado(defaultObj)
-          enqueueSnackbar("La cerda ha sido descartada", {variant:"success"})
+          successMessage("La cerda ha sido descartada")
         }
       } catch (error) {
         console.error(error)

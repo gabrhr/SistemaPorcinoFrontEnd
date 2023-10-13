@@ -2,7 +2,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Breadcrumbs, Grid, IconButton, Link, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
@@ -12,6 +11,7 @@ import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import { celoLoteQueryAPI, cerdaCeloDescartarAPI } from 'src/utils/apiUrls';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import Results from './Results';
 
 const tituloPagina = "Detalle de Celo del Lote"
@@ -26,7 +26,6 @@ function LineasGeneticasListado() {
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -53,7 +52,7 @@ function LineasGeneticasListado() {
           } else {
             console.error('Servicio encontró un error');
           }
-          enqueueSnackbar("El servicio ha encontrado un error", {variant:"error"})
+          errorMessage("El servicio ha encontrado un error")
         }
     }, [isMountedRef])
 
@@ -84,7 +83,7 @@ function LineasGeneticasListado() {
         if(response.data?.resultCode === resultCodeOk){
           defaultObj.loteId = location.state.loteId
           getListado(defaultObj)
-          enqueueSnackbar("La cerda ha sido descartada", {variant:"success"})
+          successMessage("La cerda ha sido descartada")
         }
       } catch (error) {
         console.error(error)

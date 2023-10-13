@@ -19,12 +19,12 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { enqueueSnackbar } from 'notistack';
 import { forwardRef, useEffect, useState } from 'react';
 import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
 import { cerdaToAddLoteAPI } from 'src/utils/apiUrls';
 import { resultCodeOk } from 'src/utils/defaultValues';
+import { errorMessage } from 'src/utils/notifications';
 import certifyAxios from 'src/utils/spAxios';
 
 const DialogWrapper = styled(Dialog)(
@@ -82,10 +82,7 @@ function AddCerdaModal({
       console.error(err);
       setList([]);
       setListFiltered([]);
-
-      enqueueSnackbar('No se ha podido obtener las cerdas.', {
-        variant: 'error'
-      });
+      errorMessage("No se ha podido obtener el listado de cerdas")
     }
   };
 

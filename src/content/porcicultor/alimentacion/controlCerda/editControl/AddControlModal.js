@@ -1,13 +1,13 @@
 import { Box, Button, Dialog, Grid, MenuItem, Slide, Typography, useTheme } from "@mui/material";
 import { styled } from "@mui/system";
 import { Formik } from "formik";
-import { enqueueSnackbar } from "notistack";
 import { forwardRef, useEffect, useState } from "react";
 import DatePickerForm from "src/components/Form/DatePickerForm";
 import InputForm from "src/components/Form/InputForm";
 import SelectForm from "src/components/Form/SelectForm";
 import { alimentoQueryAllAPI } from "src/utils/apiUrls";
 import { resultCodeOk } from "src/utils/defaultValues";
+import { errorMessage } from "src/utils/notifications";
 import certifyAxios from "src/utils/spAxios";
 import * as Yup from 'yup';
 
@@ -48,9 +48,7 @@ function AddControlModal ({
       console.error(err);
       setList([]);
 
-      enqueueSnackbar('No se ha podido obtener los alimentos.', {
-        variant: 'error'
-      });
+      errorMessage('No se ha podido obtener los alimentos')
     }
   };
 
@@ -127,9 +125,7 @@ function AddControlModal ({
                 if(alimentoIndex !== -1){
                     const alimento = list[alimentoIndex]
                     if(alimento.cantidadActual < values.cantidadConsumida){
-                        enqueueSnackbar("La cantidad consumida no debe exceder el stock.", {
-                            variant: 'error'
-                          })
+                        errorMessage("La cantidad consumida no debe exceder el stock")
                         setSubmitting(false)   
                         return;
                     }

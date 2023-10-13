@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { enqueueSnackbar } from 'notistack';
 import { backendURL as baseUrl } from 'src/config';
 import { resultCodeDuplicatedError, resultCodeUserError } from './defaultValues';
+import { errorMessage } from './notifications';
 
 
 const certifyAxios = axios.create({
@@ -28,5 +28,5 @@ export function showUserErrors(error, defaultMessage= null){
     message = defaultMessage
   }
 
-  enqueueSnackbar(message, {variant:"error"})
+  errorMessage(message)
 }

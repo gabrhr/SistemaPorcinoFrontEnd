@@ -1,8 +1,8 @@
-import { createContext, useEffect, useReducer } from 'react';
-import axios from 'src/utils/spAxios';
 import PropTypes from 'prop-types';
-import { useSnackbar } from 'notistack';
+import { createContext, useEffect, useReducer } from 'react';
 import { keyCodeBack } from 'src/config';
+import { errorMessage } from 'src/utils/notifications';
+import axios, { showUserErrors } from 'src/utils/spAxios';
 
 const initialAuthState = {
   isAuthenticated: false,
@@ -72,7 +72,6 @@ const AuthContext = createContext({
 export const AuthProvider = (props) => {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialAuthState);
-  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const initialize = async () => {
@@ -150,7 +149,7 @@ export const AuthProvider = (props) => {
         });
         
       } else {
-        enqueueSnackbar("Credenciales invalidas")
+        errorMessage("Credenciales invalidas")
   
         dispatch({
           type: 'INITIALIZE',
@@ -161,7 +160,7 @@ export const AuthProvider = (props) => {
         });
       }
     } catch (error) {
-      enqueueSnackbar("Se ha encotrado un error en el sistema")
+      showUserErrors(error)
     }
   };
 
@@ -171,20 +170,27 @@ export const AuthProvider = (props) => {
   };
 
   const register = async (email, name, password) => {
-    const response = await axios.post('/api/account/register', {
-      email,
-      name,
-      password
-    });
-    const { accessToken, user } = response.data;
 
-    window.localStorage.setItem('accessToken', accessToken);
-    dispatch({
-      type: 'REGISTER',
-      payload: {
-        user
+    try {
+      const response = await axios.post('/api/account/register', {
+        email,
+        name,
+        password
+      });
+      if(response.status === 200 && response.data){
+        const { accessToken, user } = response.data;
+    
+        window.localStorage.setItem('accessToken', accessToken);
+        dispatch({
+          type: 'REGISTER',
+          payload: {
+            user
+          }
+        });
       }
-    });
+    } catch (error) {
+      showUserErrors(error)
+    }
   };
 
   return (

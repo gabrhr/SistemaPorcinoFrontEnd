@@ -2,7 +2,6 @@ import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
 import { Grid, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
@@ -10,6 +9,7 @@ import useRefMounted from 'src/hooks/useRefMounted';
 import { controlCerdasQueryAPI } from 'src/utils/apiUrls';
 import certifyAxios from 'src/utils/spAxios';
 
+import { errorMessage } from 'src/utils/notifications';
 import Results from './Results';
 
 const tituloPagina = "Alimentación Cerdas"
@@ -22,7 +22,6 @@ function ControlCerdasListado() {
     const [loading, setLoading] = useState(false);
 
     const isMountedRef = useRefMounted();
-    const { enqueueSnackbar } = useSnackbar();
     const {user} = useAuth();
     const navigate = useNavigate();
 
@@ -61,7 +60,7 @@ function ControlCerdasListado() {
           } else {
             console.error('Servicio encontró un error');
           }
-          enqueueSnackbar("El servicio ha encontrado un error", {variant:"error"})
+          errorMessage("El servicio ha encontrado un error")
         }
     }, [isMountedRef])
 
