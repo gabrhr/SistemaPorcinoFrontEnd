@@ -13,7 +13,6 @@ import {
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
-import { DatePicker } from '@mui/lab';
 import {
   Alert,
   Breadcrumbs,
@@ -29,7 +28,6 @@ import {
   MenuItem,
   Radio,
   RadioGroup,
-  TextField,
   Typography,
   useTheme
 } from '@mui/material';
@@ -39,6 +37,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DataView from 'src/components/Form/DataView';
 import DatePickerForm from 'src/components/Form/DatePickerForm';
+import DatePickerReadOnly from 'src/components/Form/DatePickerReadOnly';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
@@ -502,12 +501,22 @@ function ServicioCerdaDetalle() {
           borderRadius: 2
         }}
       >
-        {loadingItem 
-          && <div style={{ display: 'grid', justifyContent: 'center', paddingTop:"6rem", paddingBottom:"6rem"}}>
-                <CircularProgress color="secondary" sx={{mb: "1rem", mx:"10rem"}}/>
-          </div> 
-        }
-        {!loadingItem && (item !== undefined && generalItem !== undefined) && (
+        {loadingItem && (
+          <div
+            style={{
+              display: 'grid',
+              justifyContent: 'center',
+              paddingTop: '6rem',
+              paddingBottom: '6rem'
+            }}
+          >
+            <CircularProgress
+              color="secondary"
+              sx={{ mb: '1rem', mx: '10rem' }}
+            />
+          </div>
+        )}
+        {!loadingItem && item !== undefined && generalItem !== undefined && (
           <div>
             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
               <Tab eventKey={1} title="General">
@@ -780,12 +789,24 @@ function ServicioCerdaDetalle() {
                     innerRef={servicioForm}
                     enableReinitialize
                     initialValues={{
-                      fechaPrimeraRecela: (item && item.fechaPrimeraRecela) || null,
-                      fechaSegundaRecela: (item && item.fechaSegundaRecela) || null,
-                      fechaVerGestacion: (item && item.fechaVerGestacion) || null,
-                      resultadoPrimeraRecela: item && item.fechaPrimeraRecela? item.resultadoPrimeraRecela: -1,
-                      resultadoSegundaRecela: item && item.fechaSegundaRecela? item.resultadoSegundaRecela: -1,
-                      resultadoVerGestacion: item && item.fechaVerGestacion? item.resultadoVerGestacion: -1
+                      fechaPrimeraRecela:
+                        (item && item.fechaPrimeraRecela) || null,
+                      fechaSegundaRecela:
+                        (item && item.fechaSegundaRecela) || null,
+                      fechaVerGestacion:
+                        (item && item.fechaVerGestacion) || null,
+                      resultadoPrimeraRecela:
+                        item && item.fechaPrimeraRecela
+                          ? item.resultadoPrimeraRecela
+                          : -1,
+                      resultadoSegundaRecela:
+                        item && item.fechaSegundaRecela
+                          ? item.resultadoSegundaRecela
+                          : -1,
+                      resultadoVerGestacion:
+                        item && item.fechaVerGestacion
+                          ? item.resultadoVerGestacion
+                          : -1
                     }}
                   >
                     {({
@@ -834,24 +855,10 @@ function ServicioCerdaDetalle() {
                               spacing={3}
                             >
                               <Grid item xs={12} sm={12} md={4}>
-                                <DatePicker
-                                  value={
-                                    generalItem?.fechaPrimeraRecelaProbable ||
-                                    null
-                                  }
+                                <DatePickerReadOnly
+                                  value={generalItem?.fechaPrimeraRecelaProbable ||null}
                                   label="Fecha probable"
-                                  disabled
-                                  onChange={() => {}}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      placeholder="dd/mm/yyyy"
-                                      name="primerRecelaProbabel"
-                                    />
-                                  )}
+                                  inputName="fechaPrimeraRecelaProbable"
                                 />
                               </Grid>
                               {/* Fecha real verificación */}
@@ -896,18 +903,19 @@ function ServicioCerdaDetalle() {
                                 </FormControl>
                               </Grid>
                               {editActive &&
-                                  values.resultadoPrimeraRecela === '1' &&
+                                values.resultadoPrimeraRecela === '1' && (
                                   <Grid item xs={12}>
                                     <Alert severity="error">
                                       Si la cerda presenta celo, se registrará
                                       como fallo reproductivo al guardar los
                                       cambios.
                                     </Alert>
-                              </Grid>}
+                                  </Grid>
+                                )}
                             </Grid>
                           </Grid>
                         </Grid>
-                          <Grid
+                        <Grid
                           container
                           justifyContent="normal"
                           spacing={2}
@@ -946,24 +954,10 @@ function ServicioCerdaDetalle() {
                               spacing={4}
                             >
                               <Grid item xs={12} sm={12} md={4}>
-                                <DatePicker
-                                  value={
-                                    generalItem?.fechaSegundaRecelaProbable ||
-                                    null
-                                  }
+                                <DatePickerReadOnly
+                                  value={generalItem?.fechaSegundaRecelaProbable ||null}
                                   label="Fecha probable"
-                                  onChange={() => {}}
-                                  disabled
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      placeholder="dd/mm/yyyy"
-                                      name="segundaRecelaProbable"
-                                    />
-                                  )}
+                                  inputName="fechaSegundaRecelaProbable"
                                 />
                               </Grid>
                               {/* Fecha real verificación */}
@@ -1008,14 +1002,15 @@ function ServicioCerdaDetalle() {
                                 </FormControl>
                               </Grid>
                               {editActive &&
-                                  values.resultadoSegundaRecela === '1' &&
+                                values.resultadoSegundaRecela === '1' && (
                                   <Grid item xs={12}>
                                     <Alert severity="error">
                                       Si la cerda presenta celo, se registrará
                                       como fallo reproductivo al guardar los
                                       cambios.
                                     </Alert>
-                              </Grid>}
+                                  </Grid>
+                                )}
                             </Grid>
                           </Grid>
                         </Grid>
@@ -1034,96 +1029,90 @@ function ServicioCerdaDetalle() {
                               gest
                             />
                           </Grid>
-                          <Grid container item xs={12} md={10.5} sm={10.5} spacing={2}>
-                          <SubtitleForm
-                            subtitle="Verificación de Gestación"
-                            description="Se verifica de manera visual o mediante ecografías la gestación de la cerda."
-                            d2={`Recomendación: Verificación probable ${
-                              (generalItem?.diasDeteccionGestacion &&
-                                generalItem?.diasDeteccionGestacion) ||
-                              0
-                            } días tras el servicio`}
-                          />
                           <Grid
                             container
                             item
                             xs={12}
-                            sm={12}
-                            md={12}
-                            spacing={4}
+                            md={10.5}
+                            sm={10.5}
+                            spacing={2}
                           >
-                            <Grid item xs={12} sm={12} md={4}>
-                              <DatePicker
-                                value={
-                                  generalItem?.fechaVerGestacionProbable || null
-                                }
-                                label="Fecha probable"
-                                onChange={() => {}}
-                                disabled
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    placeholder="dd/mm/yyyy"
-                                    name="verGestacionProbable"
-                                  />
-                                )}
-                              />
-                            </Grid>
-                            {/* Fecha real verificación */}
-                            <Grid item xs={12} sm={12} md={4}>
-                              <DatePickerForm
-                                inputName="fechaVerGestacion"
-                                value={values.fechaVerGestacion}
-                                label="Fecha real de verificación"
-                                // disableFuture
-                                setFieldValue={setFieldValue}
-                                errors={errors}
-                                touched={touched}
-                                disabled={!editActive || disableTerceraVer}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={4}>
-                              <FormControl
-                                sx={{ marginLeft: 3 }}
-                                disabled={!editActive || disableTerceraVer}
-                              >
-                                <FormLabel id="radio-gest">
-                                  Resultado: ¿Presenta signos visuales?
-                                </FormLabel>
-                                <RadioGroup
-                                  aria-labelledby="radio-gest"
-                                  value={values.resultadoVerGestacion}
-                                  name="resultadoVerGestacion"
-                                  onChange={handleChange}
-                                  row
+                            <SubtitleForm
+                              subtitle="Verificación de Gestación"
+                              description="Se verifica de manera visual o mediante ecografías la gestación de la cerda."
+                              d2={`Recomendación: Verificación probable ${
+                                (generalItem?.diasDeteccionGestacion &&
+                                  generalItem?.diasDeteccionGestacion) ||
+                                0
+                              } días tras el servicio`}
+                            />
+                            <Grid
+                              container
+                              item
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              spacing={4}
+                            >
+                              <Grid item xs={12} sm={12} md={4}>
+                                <DatePickerReadOnly
+                                  value={generalItem?.fechaVerGestacionProbable ||null}
+                                  label="Fecha probable"
+                                  inputName="fechaVerGestacionProbable"
+                                />
+                              </Grid>
+                              {/* Fecha real verificación */}
+                              <Grid item xs={12} sm={12} md={4}>
+                                <DatePickerForm
+                                  inputName="fechaVerGestacion"
+                                  value={values.fechaVerGestacion}
+                                  label="Fecha real de verificación"
+                                  // disableFuture
+                                  setFieldValue={setFieldValue}
+                                  errors={errors}
+                                  touched={touched}
+                                  disabled={!editActive || disableTerceraVer}
+                                />
+                              </Grid>
+                              <Grid item xs={12} sm={12} md={4}>
+                                <FormControl
+                                  sx={{ marginLeft: 3 }}
+                                  disabled={!editActive || disableTerceraVer}
                                 >
-                                  <FormControlLabel
-                                    value={1}
-                                    control={<Radio />}
-                                    label="Sí"
-                                  />
-                                  <FormControlLabel
-                                    value={0}
-                                    control={<Radio />}
-                                    label="No"
-                                  />
-                                </RadioGroup>
-                              </FormControl>
+                                  <FormLabel id="radio-gest">
+                                    Resultado: ¿Presenta signos visuales?
+                                  </FormLabel>
+                                  <RadioGroup
+                                    aria-labelledby="radio-gest"
+                                    value={values.resultadoVerGestacion}
+                                    name="resultadoVerGestacion"
+                                    onChange={handleChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value={1}
+                                      control={<Radio />}
+                                      label="Sí"
+                                    />
+                                    <FormControlLabel
+                                      value={0}
+                                      control={<Radio />}
+                                      label="No"
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                              <Grid item>
+                                {editActive &&
+                                  values.resultadoVerGestacion === '0' && (
+                                    <Alert severity="error">
+                                      Si la cerda no presenta signos visuales,
+                                      se registrará como fallo reproductivo al
+                                      guardar los cambios.
+                                    </Alert>
+                                  )}
+                              </Grid>
                             </Grid>
-                            <Grid item>
-                              {editActive &&
-                                values.resultadoVerGestacion === '0' && (
-                                  <Alert severity="error">
-                                    Si la cerda no presenta signos visuales, se
-                                    registrará como fallo reproductivo al
-                                    guardar los cambios.
-                                  </Alert>
-                                )}
-                            </Grid>
-                          </Grid>
                           </Grid>
                         </Grid>
                       </form>
@@ -1177,24 +1166,10 @@ function ServicioCerdaDetalle() {
                             spacing={3}
                           >
                             <Grid item xs={12} sm={12} md={4}>
-                              <DatePicker
-                                value={
-                                  generalItem?.fechaSalaMaternindadProbable ||
-                                  null
-                                }
+                              <DatePickerReadOnly
+                                value={generalItem?.fechaSalaMaternindadProbable ||null}
                                 label="Fecha probable"
-                                onChange={() => {}}
-                                disabled
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    placeholder="dd/mm/yyyy"
-                                    name="salaMaternidadProbable"
-                                  />
-                                )}
+                                inputName="fechaSalaMaternindadProbable"
                               />
                             </Grid>
                             {/* Fecha real verificación */}
@@ -1226,40 +1201,18 @@ function ServicioCerdaDetalle() {
                             spacing={4}
                           >
                             <Grid item xs={12} sm={12} md={4}>
-                              <DatePicker
-                                value={generalItem?.fechaPartoProbable || null}
+                              <DatePickerReadOnly
+                                value={generalItem?.fechaPartoProbable ||null}
                                 label="Fecha probable"
-                                disabled
-                                onChange={() => {}}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    placeholder="dd/mm/yyyy"
-                                    name="partoProbable"
-                                  />
-                                )}
+                                inputName="fechaPartoProbable"
                               />
                             </Grid>
                             {item && item?.fechaParto != null && (
                               <Grid item xs={12} sm={12} md={4}>
-                                <DatePicker
-                                  value={item?.fechaParto || null}
-                                  label="Fecha Real"
-                                  disabled
-                                  onChange={() => {}}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      placeholder="dd/mm/yyyy"
-                                      name="salaMaternidadProbable"
-                                    />
-                                  )}
+                                <DatePickerReadOnly
+                                  value={item?.fechaParto ||null}
+                                  label="Fecha real"
+                                  inputName="fechaParto"
                                 />
                               </Grid>
                             )}

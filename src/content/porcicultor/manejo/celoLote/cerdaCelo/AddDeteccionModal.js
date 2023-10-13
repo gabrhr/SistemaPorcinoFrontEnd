@@ -62,8 +62,7 @@ function AddDeteccionModal ({
                 peso: Yup.number().min(0, 'Debe ser mayor a 0').required('El peso es requerido'),
                 resultadoCelo: Yup.number().required('El resultado es requerido')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     fechaDeteccion: values.fechaDeteccion,
                     peso: values.peso,
@@ -71,7 +70,6 @@ function AddDeteccionModal ({
                     loteCerdaCeloId
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid, setFieldValue }) => (

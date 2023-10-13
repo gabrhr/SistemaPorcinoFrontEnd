@@ -267,6 +267,17 @@ function EditCerda() {
                     }}
                   >
                     <Button
+                      variant="outlined"
+                      size="small"
+                      color="error"
+                      onClick={() => {
+                        setEditActive(true);
+                      }}
+                      sx={{marginRight: 1}}
+                      >
+                      Descartar Cerda
+                    </Button>
+                    <Button
                       variant="contained"
                       size="small"
                       color="primary"
@@ -436,7 +447,7 @@ function EditCerda() {
                 </Grid>
               </Grid>
               {/* Ultimo destete */}
-              { item.servicio && 
+              { item.servicio && item.servicio.id !== null && 
               <Grid container justifyContent="center" spacing={2} className='mt'>
                 <Grid item xs={12} sm={12} md={12}>
                   <Typography variant='h6' gutterBottom>

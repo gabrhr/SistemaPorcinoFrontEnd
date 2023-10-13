@@ -33,6 +33,7 @@ import {
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BackdropLoading from 'src/components/BackdropLoading';
 import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import DataView from 'src/components/Form/DataView';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
@@ -65,7 +66,6 @@ function AddEditAlimento() {
   // get lotecerdacelo by id
   const getItemById = useCallback(
     async (reqObj) => {
-      setLoading(true)
       try {
         const response = await certifyAxios.post(cerdaCeloFindByIdAPI, reqObj);
         if (isMountedRef.current) {
@@ -74,15 +74,15 @@ function AddEditAlimento() {
             setDeteccionesList(response.data.deteccionCeloList || []);
             if (response.data.estado === celoEstado.enProceso) {
               setEditActive(true);
+            } else {
+              setEditActive(false)
             }
           }
         }
-        setLoading(false)
       } catch (err) {
         console.error(err);
         setItem({});
         setDeteccionesList([]);
-        setLoading(false)
         if (err.response) {
           console.log(err.response);
         } else {
@@ -109,6 +109,9 @@ function AddEditAlimento() {
         disableStatusCerda: location.state.disableStatusCerda
       });
       getItemById(request);
+
+      
+
     } else {
       setEditActive(false);
       setItem({});
@@ -126,6 +129,8 @@ function AddEditAlimento() {
 
   const aptaParaServicio = async () => {
     try {
+      setLoading(true)
+      closeAptaModal()
       const reqObj ={
         id: item.id
       }
@@ -136,11 +141,11 @@ function AddEditAlimento() {
           response.data.userMsg ?? 'Se modificó satisfactoriamente',
           { variant: 'success' }
         );
-        navigateToLoteList()
+        setLoading(false)
       }
     } catch (error) {
+      setLoading(false)
       console.error(error);
-      navigateToLoteList()
       showUserErrors(error, "No se ha podido marcar como apta. Inténtelo de nuevo")
     }
   };
@@ -159,16 +164,19 @@ function AddEditAlimento() {
   // agregar api
   const agregarDeteccion = async (reqObj) => {
     try {
+      setLoading(true)
       const response = await certifyAxios.post(deteccionRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        getItemById({ id: item.id });
+        closeDeteccionModal();
+        await getItemById({ id: item.id });
         enqueueSnackbar(
           response.data.userMsg ?? 'Se agregó satisfactoriamente',
           { variant: 'success' }
-        );
+          );
+        setLoading(false)
       }
-      closeDeteccionModal();
     } catch (error) {
+      setLoading(false)
       console.error(error);
       showUserErrors(error, "No se ha podido agregar. Inténtelo de nuevo")
     }
@@ -191,6 +199,8 @@ function AddEditAlimento() {
   const deleteItem = async () => {
     // llamada
     try {
+      setLoading(true)
+      closeDeleteModal();
       const reqObj = {
         id: currentItem.id
       };
@@ -201,10 +211,10 @@ function AddEditAlimento() {
           response.data.userMsg ?? 'Se ha eliminado satisfactoriamente',
           { variant: 'success' }
           );
-          closeDeleteModal();
+        setLoading(false)
       }
     } catch (error) {
-      closeDeleteModal();
+      setLoading(false)
       console.error(error);
       showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
     }
@@ -267,7 +277,7 @@ function AddEditAlimento() {
           borderRadius: 2
         }}
       >
-        {(loading || item === undefined) && 
+        {item === undefined && 
           <div
           style={{
             display: 'grid',
@@ -283,7 +293,8 @@ function AddEditAlimento() {
         </div>
 
         }
-        {(!loading && item !== undefined) && <>
+        <BackdropLoading open={loading}/>
+        {(item !== undefined) && <>
           {/* Cerda datos */}
           <Grid container justifyContent="center" spacing={3} mb={4}>
             <SubtitleForm subtitle="Datos de Cerda" />
@@ -470,7 +481,7 @@ function AddEditAlimento() {
           closeConfirmDelete={closeDeleteModal}
           title="Eliminar Detección"
           itemName={` la retección realizada el ${
-            currentItem?.fechaDeteccion}
+            currentItem?.fechaDeteccion
               ? formatDate(currentItem?.fechaDeteccion)
               : ''
           }`}

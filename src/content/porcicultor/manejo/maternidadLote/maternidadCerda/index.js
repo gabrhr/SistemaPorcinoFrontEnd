@@ -8,7 +8,6 @@ import * as Yup from 'yup';
 
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
-import { DatePicker } from '@mui/lab';
 import {
   Box,
   Breadcrumbs,
@@ -35,6 +34,7 @@ import { Formik } from 'formik';
 import { Tab, Tabs } from 'react-bootstrap';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import DatePickerReadOnly from 'src/components/Form/DatePickerReadOnly';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
@@ -581,21 +581,10 @@ function EditMaternidad() {
                         >
                           {/* Fecha */}
                           <Grid item xs={12} sm={12} md={4}>
-                            <DatePicker
+                            <DatePickerReadOnly
                               value={item?.fechaParto || null}
                               label="Fecha parto"
-                              disabled
-                              onChange={() => {}}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  placeholder="dd/mm/yyyy"
-                                  name="fechaParto"
-                                />
-                              )}
+                              inputName="fechaParto"
                             />
                           </Grid>
                           {/* Código */}
@@ -883,65 +872,32 @@ function EditMaternidad() {
                     <SubtitleForm subtitle="Fecha de Destete"/>
                     <Grid container item xs={12} sm={12} md={12} spacing={3}>
                       <Grid item xs={12} sm={12} md={4}>
-                        <DatePicker
-                          value={
-                            item?.fechaIniDestete || null
-                          }
-                          label="Fecha inicial recomendada"
-                          disabled
-                          onChange={() => {}}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                              placeholder="dd/mm/yyyy"
-                              name="ini"
+                        <DatePickerReadOnly
+                              value={
+                                item?.fechaIniDestete || null
+                              }
+                              label="Fecha inicial recomendada"
+                              inputName="fechaIniDestete"
                             />
-                          )}
-                        />
                       </Grid>
                         <Grid item xs={12} sm={12} md={4}>
-                        <DatePicker
-                          value={
-                            item?.fechaFinDestete || null
-                          }
-                          label="Fecha final recomendada"
-                          disabled
-                          onChange={() => {}}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                              placeholder="dd/mm/yyyy"
-                              name="fin"
+                        <DatePickerReadOnly
+                              value={
+                                item?.fechaFinDestete || null
+                              }
+                              label="Fecha final recomendada"
+                              inputName="fechaFinDestete"
                             />
-                          )}
-                        />
                       </Grid>
                       <Grid container item xs={12} sm={12} md={12} spacing={3}>
                       <Grid item xs={12} sm={12} md={4}>
-                        <DatePicker
-                          value={
-                            item?.fechaDestete || null
-                          }
-                          label="Fecha real"
-                          disabled
-                          onChange={() => {}}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                              placeholder="dd/mm/yyyy"
-                              name="real"
+                         <DatePickerReadOnly
+                              value={
+                                item?.fechaDestete || null
+                              }
+                              label="Fecha real"
+                              inputName="fechaDestete"
                             />
-                          )}
-                        />
                       </Grid>
                         </Grid>
                     </Grid>

@@ -1,13 +1,5 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { enqueueSnackbar } from 'notistack';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import { ceboTerminarAPI, engordeFindByIdAPI, engordeRegisterAPI, engordeUpdateAPI, pesosRegisterAPI, preceboTerminarAPI } from 'src/utils/apiUrls';
-import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
-import * as Yup from 'yup';
-
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
-import { DatePicker } from '@mui/lab';
 import {
   Box,
   Button,
@@ -29,19 +21,25 @@ import {
   useTheme
 } from '@mui/material';
 import { Formik } from 'formik';
+import { enqueueSnackbar } from 'notistack';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DataView from 'src/components/Form/DataView';
+import DatePickerReadOnly from 'src/components/Form/DatePickerReadOnly';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
+import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
+import { ceboTerminarAPI, engordeFindByIdAPI, engordeRegisterAPI, engordeUpdateAPI, pesosRegisterAPI, preceboTerminarAPI } from 'src/utils/apiUrls';
 import { engordeEstado, resultCodeOk } from 'src/utils/defaultValues';
+import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
+import * as Yup from 'yup';
 import AddCamadaModal from './AddCamadaModal';
 import TerminarEtapaModal from './TerminarEtapaModal';
-
 
 function AddEditLote() {
   const [item, setItem] = useState(undefined);
@@ -585,24 +583,11 @@ function AddEditLote() {
                   <Grid container item xs={12} sm={12} md={12} spacing={4} mb={2}>
                     {/* Fecha */}
                     <Grid item xs={12} sm={12} md={6}>
-                      <DatePicker
-                          value={
-                            item?.fechaApertura || null
-                          }
-                          label="Fecha Apertura"
-                          disabled
-                          onChange={() => {}}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                              placeholder="dd/mm/yyyy"
-                              name="fin"
-                            />
-                          )}
-                        />
+                      <DatePickerReadOnly
+                        value={item?.fechaApertura || null}
+                        label="Fecha Apertura"
+                        inputName="fechaApertura"
+                      />
                     </Grid>
                    {/* Numero */}
                    <Grid item xs={12} sm={12} md={6}>
@@ -894,88 +879,35 @@ function AddEditLote() {
                     <SubtitleForm subtitle="Precebo"/>
                     <Grid container item xs={12} sm={12} md={12} spacing={3}>
                     <Grid item xs={12} sm={12} md={4}>
-                      <DatePicker
-                        value={
-                          item?.fechaPreceboProbable || null
-                        }
-                        label="Fecha recomendada"
-                        disabled
-                        onChange={() => {}}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            onChange={() => {}}
-                            placeholder="dd/mm/yyyy"
-                            name="ini"
-                          />
-                        )}
+                      <DatePickerReadOnly
+                        value={item?.fechaPreceboProbable || null}
+                        label="Fecha Recomendada"
+                        inputName="fechaPreceboProbable"
                       />
                     </Grid>
                     <Grid item xs={12} sm={12} md={4}>
-                      <DatePicker
-                        value={
-                          item?.fechaFinPrecebo || null
-                        }
-                        label="Fecha real"
-                        disabled
-                        onChange={() => {}}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            placeholder="dd/mm/yyyy"
-                            name="real"
-                          />
-                        )}
+                      <DatePickerReadOnly
+                        value={item?.fechaFinPrecebo || null}
+                        label="Fecha Real"
+                        inputName="fechaFinPrecebo"
                       />
                     </Grid>
                       </Grid>
                     <SubtitleForm subtitle="Cebo"/>
                     <Grid container item xs={12} sm={12} md={12} spacing={3}>
                       <Grid item xs={12} sm={12} md={4}>
-                        <DatePicker
-                          value={
-                            item?.fechaCeboProbable || null
-                          }
-                          label="Fecha recomendada"
-                          disabled
-                          onChange={() => {}}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                              placeholder="dd/mm/yyyy"
-                              name="probtwo"
-                            />
-                          )}
-                        />
+                      <DatePickerReadOnly
+                        value={item?.fechaCeboProbable || null}
+                        label="Fecha Recomendada"
+                        inputName="fechaCeboProbable"
+                      />
                       </Grid>
                       <Grid item xs={12} sm={12} md={4}>
-                        <DatePicker
-                          value={
-                            item?.fechaFinCebo || null
-                          }
-                          label="Fecha real"
-                          disabled
-                          onChange={() => {}}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                              placeholder="dd/mm/yyyy"
-                              name="real"
-                            />
-                          )}
-                        />
+                      <DatePickerReadOnly
+                        value={item?.fechaFinCebo || null}
+                        label="Fecha Real"
+                        inputName="fechaFinCebo"
+                      />
                       </Grid>
                     </Grid>
                   </Grid>
