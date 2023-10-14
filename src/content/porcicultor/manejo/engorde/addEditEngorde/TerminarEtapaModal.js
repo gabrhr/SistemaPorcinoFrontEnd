@@ -84,8 +84,7 @@ function TerminarEtapaModal ({
             validationSchema={Yup.object().shape({
                 fechaFin: Yup.string().required('La fecha es requerida')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values) => {      
                 const request = {
                     id: engordeId,
                     fechaFin: values.fechaFin,
@@ -93,8 +92,7 @@ function TerminarEtapaModal ({
                 if(precebo){
                     request.finalizarProceso = values.finalizarProceso? 1: 0
                 }
-                await handleAction(request, resetForm, precebo)
-                setSubmitting(false)   
+                await handleAction(request, precebo)
             }}
           >
             {({ errors, touched, handleBlur, values, handleSubmit, isSubmitting, dirty, isValid,setFieldValue, handleChange}) => (

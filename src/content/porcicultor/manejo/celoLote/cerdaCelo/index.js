@@ -289,7 +289,7 @@ function AddEditAlimento() {
               </Grid>
               <Grid item xs={12} sm={12} md={4}>
                 <DataView
-                  label="Estado"
+                  label="Estado Actual"
                   status
                   cerda
                   text={(item?.cerda && item?.cerda?.estado) || ''}

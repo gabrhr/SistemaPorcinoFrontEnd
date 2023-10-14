@@ -62,6 +62,7 @@ function AddCamadaModal({
       const response = await certifyAxios.post(camadaToAddAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         const updatedList = processList(response.data.list || [])
+        console.log("aaaa", updatedList)
         setListFiltered(updatedList || []);
         setList(updatedList || []);
       }
@@ -211,7 +212,7 @@ function AddCamadaModal({
               </Box>
             </Box>
             <Divider />
-            <TableContainer sx={{height: (listFiltered !== undefined ||
+            <TableContainer sx={{height: (listFiltered !== undefined &&
                     listFiltered?.length !== 0)? "50vh": "10vh", overflowY:"auto"}}>
               <Table sx={{height:"max-content"}}>
                 <TableHead>
@@ -267,7 +268,7 @@ function AddCamadaModal({
               <>
                 <Typography
                   sx={{
-                    py: 3
+                    py: 2
                   }}
                   variant="h3"
                   fontWeight="normal"
@@ -282,6 +283,7 @@ function AddCamadaModal({
         </Grid>
 
         {/* Botones */}
+        {(listFiltered !== undefined && listFiltered?.length !== 0) &&
         <Grid
           sx={{
             display: 'flex',
@@ -322,7 +324,7 @@ function AddCamadaModal({
               Agregar camada
             </Button>
           </Grid>
-        </Grid>
+        </Grid>}
       </Box>
     </DialogWrapper>
   );

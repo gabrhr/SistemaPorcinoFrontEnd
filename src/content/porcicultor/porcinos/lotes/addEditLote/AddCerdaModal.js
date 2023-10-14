@@ -242,8 +242,7 @@ function AddCerdaModal({
                 </Box>
               </Box>
               <Divider />
-              <TableContainer sx={{height: (listFiltered !== undefined ||
-                      listFiltered?.length !== 0)? "50vh": "10vh", overflowY:"auto"}}>
+              <TableContainer sx={{height: (listFiltered?.length !== 0 || listFiltered !== undefined)? "50vh": "10vh", overflowY:"auto"}}>
                 <Table sx={{height:"max-content"}}>
                   <TableHead>
                     <TableRow>
@@ -314,6 +313,8 @@ function AddCerdaModal({
         )}
 
         {/* Botones */}
+        {(listFiltered !== undefined &&
+                      listFiltered?.length !== 0) && 
         <Grid
           sx={{
             display: 'flex',
@@ -354,7 +355,7 @@ function AddCerdaModal({
               Agregar cerdas
             </Button>
           </Grid>
-        </Grid>
+        </Grid>}
       </Box>
     </DialogWrapper>
   );

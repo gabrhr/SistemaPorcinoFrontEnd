@@ -33,6 +33,8 @@ import { Formik } from 'formik';
 import { Tab, Tabs } from 'react-bootstrap';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BackdropLoading from 'src/components/BackdropLoading';
+import CircularLoading from 'src/components/CircularLoading';
 import DatePickerReadOnly from 'src/components/Form/DatePickerReadOnly';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
@@ -65,7 +67,6 @@ function EditMaternidad() {
   const [pesosList, setPesosList] = useState([]);  
   const [currentItem, setCurrentItem] = useState({})
   const [loading, setLoading] = useState(false);
-  const [loadingItem, setLoadingItem] = useState(false);
   const [locationState, setLocationState] = useState({});
   const [showAction, setShowAction] = useState(true);
   const [showTerminar, setShowTerminar] = useState(false);
@@ -81,7 +82,6 @@ function EditMaternidad() {
   // get cerda by id
   const getItemById = useCallback(
     async (reqObj) => {
-      setLoadingItem(true)
       try {
         const response = await certifyAxios.post(maternidadFindByIdAPI, reqObj);
         if (isMountedRef.current) {
@@ -94,15 +94,15 @@ function EditMaternidad() {
             }
             if(response?.data?.lechonesVivos > 0 && response.data.fechaDestete === null){
               setShowTerminar(true)
+            } else {
+              setShowTerminar(false)
             }
           }
-          setLoadingItem(false)
         }
       } catch (err) {
         console.error(err);
         setItem({});
         setLechonesList([])
-        setLoadingItem(false)
         if (err.response) {
           console.log(err.response);
         } else {
@@ -188,14 +188,13 @@ function EditMaternidad() {
       setLoading(true)
       const response = await certifyAxios.post(mLechonRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        getItemById({id: item.id, granjaId: user.granjaId})
+        closeCompraModal()
+        await getItemById({id: item.id, granjaId: user.granjaId})
         successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
+        setLoading(false)
       }
-      setLoading(false)
-      closeCompraModal()
     } catch (error) {
       setLoading(false)
-      console.error(error);
       showUserErrors(error, "No se ha podido agregar. Inténtelo de nuevo")
     }
   };
@@ -218,18 +217,20 @@ function EditMaternidad() {
   const deleteItem = async () => {
     // llamada
     try {
+      setLoading(true)
+      closeDeleteModal();
       const reqObj = {
         id: currentItem.id,
         loteCerdaMaternidadId: item.id
       }
       const response = await certifyAxios.post(mLechonDeleteAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
-        getItemById({id: item.id, granjaId: user.granjaId})
-        closeDeleteModal()
+        await getItemById({id: item.id, granjaId: user.granjaId})
         successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
+        setLoading(false)
       }
     } catch (error) {
-      closeDeleteModal()
+      setLoading(false)
       console.error(error)
       showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
     }
@@ -250,18 +251,20 @@ function EditMaternidad() {
   const descartarItem = async () => {
     // llamada
     try {
+      setLoading(true)
+      closeDescartarModal()
       const reqObj = {
         id: currentItem.id,
         loteCerdaMaternidadId: item.id
       }
       const response = await certifyAxios.post(mLechonDescartarAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
-        getItemById({id: item.id, granjaId: user.granjaId})
-        closeDescartarModal()
+        await getItemById({id: item.id, granjaId: user.granjaId})
         successMessage(response.data.userMsg?? "Se ha descartado satisfactoriamente")
+        setLoading(false)
       }
     } catch (error) {
-      closeDescartarModal()
+      setLoading(false)
       console.error(error)
       showUserErrors(error, "No se ha podido descartar. Inténtelo de nuevo")
     }
@@ -277,14 +280,16 @@ function EditMaternidad() {
   const terminarMaternidad = async (reqObj) => {
     // llamada
     try {
+      setLoading(true)
       const response = await certifyAxios.post(maternidadTerminarAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
-        await getItemById({id: item.id, granjaId: user.granjaId})
         closeTerminarModal()
+        await getItemById({id: item.id, granjaId: user.granjaId})
         successMessage(response.data.userMsg?? "Se ha terminado satisfactoriamente")
+        setLoading(false)
       }
     } catch (error) {
-      closeTerminarModal()
+      setLoading(false)
       console.error(error)
       showUserErrors(error, "No se ha podido terminar. Inténtelo de nuevo")
     }
@@ -407,22 +412,9 @@ function EditMaternidad() {
           borderRadius: 2
         }}
       >
-        { (loadingItem || item === undefined) && (
-          <div
-            style={{
-              display: 'grid',
-              justifyContent: 'center',
-              paddingTop: '6rem',
-              paddingBottom: '6rem'
-            }}
-          >
-            <CircularProgress
-              color="secondary"
-              sx={{ mb: '1rem', mx: '10rem' }}
-            />
-          </div>
-        )}
-        { (!loadingItem && item !== undefined) && (
+        {item === undefined && <CircularLoading />}
+        <BackdropLoading open={loading}/>
+        {item !== undefined && (
           <>
             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
               <Tab eventKey={1} title="Maternidad">
@@ -784,7 +776,7 @@ function EditMaternidad() {
                                     <TableCell align="center">
                                       {editPesos &&
                                       <TextField
-                                      id="outlined-controlled"
+                                      id={`peso-lechon-${idx}`}
                                       label=""
                                       variant='standard'
                                       value={pesosList[idx].pesoDestete}
@@ -915,7 +907,7 @@ function EditMaternidad() {
           title="Eliminar Lechón"
           itemName={`eliminar el lechón ${
             currentItem?.codigo || ''
-          }. Este lechón se eliminará permantentemente, al guardar cambios.`}
+          }. Este lechón se eliminará permantentemente, al confirmar.`}
           handleDeleteCompleted={deleteItem}
         />
       )}
@@ -926,7 +918,7 @@ function EditMaternidad() {
           title="Descartar Lechón"
           itemName={` descartar el lechón ${
             currentItem?.codigo || ''
-          }. Este lechón pasará a Muerto, al guardar los cambios`}
+          }. Este lechón pasará a Muerto, al confirmar`}
           handleDeleteCompleted={descartarItem}
         />
       )}

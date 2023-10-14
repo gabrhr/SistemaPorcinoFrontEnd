@@ -519,7 +519,7 @@ function AddEditLote() {
                       <TableHead>
                         <TableRow>
                           <TableCell>Código Cerda</TableCell>
-                          <TableCell align='center'>Estado</TableCell>
+                          <TableCell align='center'>Estado Cerda inicial</TableCell>
                           <TableCell align='center'>Línea Genética</TableCell>
                           <TableCell align='center'>Orden de Parto</TableCell>
                           {editActive && <TableCell align='center'>Acciones</TableCell>}
@@ -534,7 +534,7 @@ function AddEditLote() {
                                   {element?.codigo?? ""}
                                 </TableCell>
                                 <TableCell align='center'>
-                              <CerdaEstadoChip estado={element?.estado ?? ''} />
+                              <CerdaEstadoChip estado={showAction && (element?.estado?? '') || (element?.estadoLote ?? '')} />
                             </TableCell>
                                 <TableCell align='center'>
                                   {element?.lineaGeneticaNombre?? ""}

@@ -22,7 +22,7 @@ import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import StatusTable from 'src/components/Form/StatusTable';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
 import { differenciaEntreFechas, formatDate, getEstadoCerdaNombre } from 'src/utils/dataFormat';
-import { allStatus, listEstadoCelo } from 'src/utils/defaultValues';
+import { allStatus, celoEstado, listEstadoCelo } from 'src/utils/defaultValues';
 import DescarteModal from '../../porcinos/cerdas/DescarteModal';
 
 const statusList = listEstadoCelo()
@@ -174,8 +174,10 @@ const Results = (props) => {
                   {
                     (props.loading || listFiltered === undefined) &&
                     <TableRowsLoader
-                      rowsNum={5} 
-                      cellsRow={["text",  "text", "text", "text", "action"]}
+                      rowsNum={props.statusHeaderCerda && 6 || 5} 
+                      cellsRow={props.statusHeaderCerda && ["text",  "status", "text", "text", "text", "action"]
+                      || ["text", "text", "text", "text", "action"]    
+                    }
                     />
                   }
                   {listFiltered !== undefined && listFiltered?.length !== 0 &&
@@ -209,9 +211,12 @@ const Results = (props) => {
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.estado || "0"} 
-                            {element.cerda?.descartada === 1? " - Descartada" : ""}
+                            {element && element.estado || ""} 
                           </Typography>
+                          {element?.estado === celoEstado.finalizado &&
+                          <Typography noWrap sx={{color: element.cerda?.descartada === 1? "red":"green"}}>
+                            {element.cerda?.descartada === 1? "Descartada" : "Apta Servicio"}
+                          </Typography>}
                         </TableCell>
                         <TableCell align='center'>
                             {/* Actions */}
@@ -223,11 +228,11 @@ const Results = (props) => {
                                 }}
                                 color='primary'
                             >
-                                {element.cerda?.descartada === 1?
+                                {(element?.estado === celoEstado.finalizado || element.cerda?.descartada === 1)?
                                 <AssignmentRoundedIcon/>
                                 : <CreateRoundedIcon/>}
                             </IconButton>
-                            {element.cerda?.descartada < 1 && 
+                            {(element?.estado !== celoEstado.finalizado && element?.cerda?.descartada < 1) && 
                             <Tooltip title="Descartar cerda">
                               <IconButton color="error" 
                                 sx={{borderRadius:30}}
