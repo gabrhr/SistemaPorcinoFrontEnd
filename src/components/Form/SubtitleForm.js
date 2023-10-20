@@ -4,8 +4,8 @@ export function SubtitleForm({subtitle = "", description = "", d2="", children, 
 
     if(list){
         return (
-            <Grid container item xs={12} sm={12} md={12} spacing={4} justifyContent="space-between" marginTop={0} paddingTop={0}>
-            <Grid item xs={12} sm={12} md={5} paddingTop={0}>
+            <Grid container item xs={12} sm={12} md={12} spacing={3} justifyContent="space-between" marginTop={0} paddingTop={0}>
+            <Grid item xs={12} sm={12} md={4} paddingTop={0}>
                 <Typography variant='h6' gutterBottom>
                     {subtitle}
                 </Typography>
@@ -13,7 +13,7 @@ export function SubtitleForm({subtitle = "", description = "", d2="", children, 
                     {description}
                 </Typography>}
             </Grid>
-            <Grid item xs={12} sm={12} md={6} className="end-content">
+            <Grid item xs={12} sm={12} md={7} marginTop={0} paddingTop={0} className="end-content">
                 {children}
             </Grid>
             </Grid>

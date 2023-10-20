@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
   controlCerdasDeleteAPI,
-  controlCerdasFindByIdAPI,
-  controlCerdasRegisterAPI
+  controlCerdasRegisterAPI,
+  loteFindByIdAPI
 } from 'src/utils/apiUrls';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
@@ -28,7 +28,6 @@ import {
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
@@ -60,7 +59,7 @@ function AddEditAlimento() {
     async (reqObj) => {
       setLoading(true)
       try {
-        const response = await certifyAxios.post(controlCerdasFindByIdAPI, reqObj);
+        const response = await certifyAxios.post(loteFindByIdAPI, reqObj);
         if (isMountedRef.current) {
           if (response.status === 200 && response.data) {
             setItem(response.data);
@@ -85,12 +84,10 @@ function AddEditAlimento() {
   );
 
   useEffect(() => {
-    if (location.state.cerdaId !== -1) {
+    if (location.state.loteId !== -1) {
       // id de navigate
       const request = {
-        id: location.state.cerdaId,
-        granjaId: user.granjaId,
-        maxResults
+        id: location.state.loteId
       };
       getItemById(request);
     } else {
@@ -182,7 +179,7 @@ function AddEditAlimento() {
   return (
     <>
       <Helmet>
-        <title>Control Cerda</title>
+        <title>Control Lote</title>
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
@@ -194,7 +191,7 @@ function AddEditAlimento() {
           <Grid item xs={10} md={6} sm={6} alignItems="left">
             {/* Titulo */}
             <Typography variant="h3" component="h3" gutterBottom>
-              Detalle de Alimentación
+              Detalle de Control del Lote
             </Typography>
           </Grid>
         </Grid>
@@ -211,37 +208,21 @@ function AddEditAlimento() {
         }}
       >
         <>
-          {item === undefined && <CircularLoading/>}
           {item !== undefined && !loading && (
             <Grid container justifyContent="center" spacing={2}>
-              <SubtitleForm subtitle="Datos de Cerda" />
+              <SubtitleForm subtitle="Datos de Lote" />
               <Grid container item xs={12} sm={12} md={12} spacing={4}>
                 <Grid item xs={12} sm={12} md={4}>
-                  <DataView label="Codigo" text={item?.cerda?.codigo || ''} />
+                  <DataView label="Codigo" text={item?.codigo || ''} />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4}>
-                  <DataView label="Fecha de nacimiento" text={item?.cerda?.fechaNacimiento && formatDate(item?.cerda?.fechaNacimiento) || '-'} />
+                  <DataView label="Fecha de apertura" text={item?.fechaApertura && formatDate(item?.fechaApertura) || '-'} />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4}>
-                  <DataView cerda status label="Estado" text={item?.cerda?.estado || ''} />
+                  <DataView label="Total de Cerdas" text={item?.totalCerdas || '0'} />
                 </Grid>
               </Grid>
 
-              <SubtitleForm subtitle="Consumo de alimento" />
-              <Grid container item xs={12} sm={12} md={12} spacing={4}>
-                <Grid item xs={12} sm={12} md={4}>
-                  <DataView
-                    label="Cantidad diario promedio (kg)"
-                    text={item?.consumoDiarioProm??'No se ha consumido'}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4}>
-                  <DataView
-                    label="Consumo total del último mes (kg)"
-                    text={item?.cantidadConsumidaTotal ?? '0'}
-                  />
-                </Grid>
-              </Grid>
               <SubtitleForm subtitle="Listado de controles" list>
                 <Button
                   variant="contained"
@@ -273,9 +254,8 @@ function AddEditAlimento() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Fecha de Consumo</TableCell>
-                        <TableCell align="center">Alimento</TableCell>
-                        <TableCell align="center">Cantidad</TableCell>
+                        <TableCell>Fecha de Control</TableCell>
+                        <TableCell align="center">Tipo de Vacuna</TableCell>
                         <TableCell align="center">Acciones</TableCell>
                       </TableRow>
                     </TableHead>
@@ -291,9 +271,6 @@ function AddEditAlimento() {
                               </TableCell>
                               <TableCell align="center">
                                 {element?.alimento?.nombre ?? '-'}
-                              </TableCell>
-                              <TableCell align="center">
-                                {element?.cantidadConsumida ?? '0'}
                               </TableCell>
                               <TableCell align="center">
                                 <Tooltip title="Remover control">
@@ -325,13 +302,18 @@ function AddEditAlimento() {
                       color="text.secondary"
                       align="center"
                     >
-                      Sin controles registradas
+                      Sin controles registrados
                     </Typography>
                   </Box>
                 )}
               </Grid>
             </Grid>
           )}
+          {/* <Grid container justifyContent="center" spacing={2}>
+            <Alert severity="info">
+              Las fechas de vacunación son referenciales, ya que dependen de lo establecido por la marca
+            </Alert>
+          </Grid> */}
         </>
       </DialogContent>
       {controlModal && (

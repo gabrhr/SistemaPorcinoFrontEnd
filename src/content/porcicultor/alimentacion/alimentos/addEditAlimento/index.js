@@ -1,3 +1,4 @@
+import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
@@ -29,6 +30,7 @@ import { Formik } from 'formik';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
+import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
@@ -326,6 +328,7 @@ function AddEditAlimento() {
               >
         
         <>
+        {item === undefined && <CircularLoading/>}
         {item !== undefined && <Formik
          innerRef={formLote}
          enableReinitialize
@@ -394,12 +397,13 @@ function AddEditAlimento() {
                         }}
                       >
                         <Button
-                          variant="contained"
+                          variant="text"
                           size="small"
                           color="primary"
                           onClick={() => {
                             setEditActive(true);
                           }}
+                          startIcon={<CreateRoundedIcon fontSize="small" />}
                         >
                           Editar
                         </Button>

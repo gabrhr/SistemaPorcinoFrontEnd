@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { createContext, useEffect, useReducer } from 'react';
 import { keyCodeBack } from 'src/config';
-import { errorMessage } from 'src/utils/notifications';
+import { errorMessage, successMessage } from 'src/utils/notifications';
 import axios, { showUserErrors } from 'src/utils/spAxios';
 
 const initialAuthState = {
@@ -147,7 +147,7 @@ export const AuthProvider = (props) => {
             user
           }
         });
-        
+        successMessage("Bienvenido a Sistema Porcino")
       } else {
         errorMessage("Credenciales invalidas")
   

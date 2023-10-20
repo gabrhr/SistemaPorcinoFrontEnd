@@ -29,7 +29,7 @@ function TerminarEtapaModal ({
             open={open}
             TransitionComponent={Transition}
             onClose={modalClose}
-            maxWidth="md"
+            maxWidth="sm"
         >
         <Box
           display="flex"

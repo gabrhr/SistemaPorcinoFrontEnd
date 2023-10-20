@@ -17,6 +17,7 @@ import {
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
+import { fertilidad } from 'src/utils/defaultValues';
 import AddEditModal from './AddEditModal';
 import DeleteModal from './DeleteModal';
 
@@ -105,6 +106,7 @@ const Results = (props) => {
   
   const editItem = (request, resetForm) => {
     props.editById(request, () => {
+      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
       editModalClose()
       resetForm()
     })
@@ -113,6 +115,7 @@ const Results = (props) => {
   
   const deleteItem = () => {
     props.deleteById(currentItem.id, () => {
+      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
         deleteModalClose()
     })
 
@@ -203,7 +206,8 @@ const Results = (props) => {
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.fertilidad || "0%"}
+                            {/* {element && element.fertilidad || "0%"} */}
+                            {fertilidad[idx]}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>

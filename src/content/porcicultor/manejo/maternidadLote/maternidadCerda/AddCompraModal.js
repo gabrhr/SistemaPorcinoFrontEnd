@@ -109,7 +109,6 @@ function AddCompraModal ({
                       onChange={handleChange}
                       errors={errors}
                       touched={touched}
-                      number
                     >
                       {["Macho", "Hembra"].map((type) => (
                         <MenuItem key={type} value={type}>

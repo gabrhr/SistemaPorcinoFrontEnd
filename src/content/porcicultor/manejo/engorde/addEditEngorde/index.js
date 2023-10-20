@@ -1,5 +1,7 @@
+import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
 import {
   Box,
   Button,
@@ -41,6 +43,7 @@ import { errorMessage, successMessage } from 'src/utils/notifications';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import * as Yup from 'yup';
 import AddCamadaModal from './AddCamadaModal';
+import LechonesCamadaModal from './LechonesCamadaModal';
 import TerminarEtapaModal from './TerminarEtapaModal';
 
 function AddEditLote() {
@@ -52,6 +55,8 @@ function AddEditLote() {
   const [cerdaModal, setCerdaModal] = useState(false);
   const [preceboModal, setPreceboModal] = useState(false);
   const [ceboModal, setCeboModal] = useState(false);
+  const [lechonModal, setLechonModal] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
   const [removeList, setRemoveList] = useState([]);
   const [cerdasLote, setCerdasLote] = useState([]);  
   const [loading, setLoading] = useState(false);
@@ -70,12 +75,12 @@ function AddEditLote() {
 
   const preceboTemp = {
     camadaId: 0,
-    pesoTotalPrecebo: 0
+    peso: 0
   }
 
   const ceboTemp = {
     lechonId: 0,
-    pesoTotalCebo: 0
+    peso: 0
   }
 
 
@@ -91,9 +96,14 @@ function AddEditLote() {
             getPesosList(response.data.camadas)
             if(response?.data?.estado && response?.data?.estado === engordeEstado.finalizado){
               setShowAction(false);
-            } 
+            } else {
+              setShowAction(true)
+            }
+
             if(response?.data?.estado && response?.data?.estado !== engordeEstado.precebo){
               setShowEditCamada(false);
+            } else{
+              setShowEditCamada(true);
             }
           }
         }
@@ -128,7 +138,11 @@ function AddEditLote() {
   }, [getItemById]);
 
   // process cerdas
-  const processCerdasToSave = () => {
+  const processCerdasToSave = (list = []) => {
+    if(list.length > 0){
+      return list.map(e => e.id)
+    }
+
     if(cerdasLote.length>0){
       return cerdasLote.map(e => e.id)
     }
@@ -148,6 +162,13 @@ function AddEditLote() {
 
   // add
   const addItem = async (reqObj) => {
+    const isValidCamada = cerdasLote.length > 0;
+    const camadasText = "Debe agregar al menos 1 camada."
+    if(!isValidCamada){
+      resetStates()
+      errorMessage(camadasText)
+      return 
+    }
     const cerdasToSave = processCerdasToSave()
     reqObj.camadaIds = cerdasToSave
     try {
@@ -165,8 +186,8 @@ function AddEditLote() {
   };
 
   // edit
-  const editItemById = async (reqObj, resetForm) => {
-    const cerdasToSave = processCerdasToSave()
+  const editItemById = async (reqObj, list = [], resetForm = () =>{}) => {
+    const cerdasToSave = processCerdasToSave(list)
     reqObj.camadaIds = cerdasToSave
    try {
       setLoading(true)
@@ -201,36 +222,46 @@ function AddEditLote() {
   }
 
   // agregar cerdas seleccionadas del modal
-  const addCerdaToList = (cerdasToAdd=[]) => {
+  const addCerdaToList = async (cerdasToAdd=[]) => {
     let temp = [...cerdasLote]
-    setCerdasLote(temp.concat(cerdasToAdd))
+    if(editMode){
+      const request = {
+        id: item.id,
+        granjaId: user.granjaId,
+        onlyInfo: false,
+        onlyCamadas: true
+      }
+      editItemById(request, temp.concat(cerdasToAdd));
+    } else {
+      setCerdasLote(temp.concat(cerdasToAdd))
+    }
     closeCerdaModal()
   };
 
   // eliminar cerda 
-  const removeCerda = (item) => {
+  const removeCerda = (element) => {
     const updatedList = cerdasLote.filter(
-      (cerda) => cerda.id !== item.id
+      (cerda) => cerda.id !== element.id
     );
-    setRemoveList([...removeList].concat(item))
-    setCerdasLote(updatedList)
+    
+    if(editMode){
+      const request = {
+        id: item.id,
+        granjaId: user.granjaId,
+        onlyInfo: false,
+        onlyCamadas: true
+      }
+      editItemById(request, updatedList);
+    } else {
+      setCerdasLote(updatedList)
+      setRemoveList([...removeList].concat(element))
+    }
   };
-  
-  
-  // validar todo 
-  const validateForm = () => {
-    if(loading) return true
-    if(formLote && formLote.current && !formLote?.current?.isValid)
-  {
-    return true
+
+  const closeLechonModal = () => {
+    setLechonModal(false)      
+    setCurrentItem(null)
   }
-  
-  if(editMode && cerdasLote.length>0 && JSON.stringify(cerdasLote) !== JSON.stringify(item.camadas)){
-    return false
-  }
-  
-     return false
-  };
   
     // close modal precebo fin
   const closeCeboModal = () => {
@@ -273,13 +304,13 @@ function AddEditLote() {
       const temp2 = {...ceboTemp}
       temp.camadaId = e.id
       if(e.pesoTotalPrecebo !== null){
-        temp.pesoTotalPrecebo = e.pesoTotalPrecebo
+        temp.peso = e.pesoTotalPrecebo
       }
       pesos = pesos.concat(temp)
 
       temp2.camadaId = e.id
       if(e.pesoTotalCebo !== null){
-        temp2.pesoTotalCebo = e.pesoTotalCebo
+        temp2.peso = e.pesoTotalCebo
       }
       pesosCebo = pesosCebo.concat(temp2)
     })
@@ -293,19 +324,27 @@ function AddEditLote() {
     const reqObj = {
       id: item?.id,
       pesoCamada: precebo? pesosList: pesosListCebo,
-      precebo: precebo? 1: 0
+      precebo
     }
     try {
       setLoading(true)
       const response = await certifyAxios.post(pesosRegisterAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
         await getItemById({id: item.id, granjaId: user.granjaId})
-        setEditPesos(false)
+        if(precebo){
+          setEditPesos(false)
+        } else {
+          setEditPesosCebo(false)
+        }
         successMessage(response.data.userMsg?? "Se ha registrado satisfactoriamente")
         setLoading(false)
       }
     } catch (error) {
-      setEditPesos(false)
+      if(precebo){
+        setEditPesos(false)
+      } else {
+        setEditPesosCebo(false)
+      }
       setLoading(false)
       console.error(error)
       showUserErrors(error, "No se ha podido terminar. Inténtelo de nuevo")
@@ -315,12 +354,11 @@ function AddEditLote() {
   const cambiarValor = (valor, idx, precebo = false) => {
     if(precebo){
       let pesosTemp = [...pesosList]
-      pesosTemp[idx].pesoTotalPrecebo = valor
+      pesosTemp[idx].peso = valor
       setPesosList(pesosTemp)
-      console.log("B", pesosTemp)
     } else {
       let pesosTemp = [...pesosListCebo]
-      pesosTemp[idx].pesoTotalCebo = valor
+      pesosTemp[idx].peso = valor
       setPesosListCebo(pesosTemp)
     }
   };
@@ -344,7 +382,8 @@ function AddEditLote() {
               {!editMode ? 'Agregar engorde' : 'Detalle engorde'}
             </Typography>
           </Grid>
-          {showAction && (!editMode || (editMode && editActive)) && (
+          {/* Solo para el agregar */}
+          {(!editMode && editActive) && (
             <Grid
               item
               xs={12}
@@ -393,40 +432,12 @@ function AddEditLote() {
                     <CircularProgress size="1rem" color="white" />
                   ) : null
                 }
-                disabled={validateForm()}
+                disabled={loading}
                 variant="contained"
                 size="small"
                 color="primary"
               >
                 Guardar Cambios
-              </Button>
-            </Grid>
-          )}
-          {showAction && editMode && !editActive && (
-            <Grid
-              item
-              xs={12}
-              sm={5}
-              md={5.5}
-              sx={{
-                display: 'flex',
-                [theme.breakpoints.up('sm')]: {
-                  justifyContent: 'flex-end'
-                },
-                [theme.breakpoints.down('sm')]: {
-                  justifyContent: 'center'
-                }
-              }}
-            >
-              <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                onClick={() => {
-                  setEditActive(true);
-                }}
-              >
-                Editar
               </Button>
             </Grid>
           )}
@@ -514,7 +525,7 @@ function AddEditLote() {
                   validationSchema={Yup.object().shape({
                     codigo: Yup.string().required('El codigo es requerido')
                   })}
-                  onSubmit={async (values, { resetForm }) => {
+                  onSubmit={async (values, { resetForm}) => {
                     setLoading(true);
                     const request = {
                       codigo: values.codigo,
@@ -523,8 +534,12 @@ function AddEditLote() {
                     };
                     if (editMode && editActive) {
                       request.id = item.id;
-                      editItemById(request);
+                      request.onlyInfo = true
+                      request.onlyCamadas = false
+                      editItemById(request, [], resetForm);
                     } else {
+                      request.onlyInfo = true
+                      request.onlyCamadas = true
                       addItem(request, resetForm);
                     }
                   }}
@@ -535,19 +550,100 @@ function AddEditLote() {
                     handleBlur,
                     handleChange,
                     values,
-                    handleSubmit
+                    handleSubmit,
+                    isValid,
+                    dirty,
+                    isSubmitting,
+                    resetForm
                   }) => (
                     <form noValidate onSubmit={handleSubmit}>
                       {/* Form and table */}
-
                       <Grid
                         container
                         justifyContent="center"
                         spacing={3}
-                        mt={2}
+                        mt={0}
                       >
                         {/* Form */}
-                        <SubtitleForm subtitle="Datos generales" />
+                        <SubtitleForm subtitle="Datos generales" list>
+                          {(showAction && editMode && !editActive) && (
+                            <Grid
+                              item
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              sx={{
+                                display: 'flex',
+                                [theme.breakpoints.up('sm')]: {
+                                  justifyContent: 'flex-end'
+                                },
+                                [theme.breakpoints.down('sm')]: {
+                                  justifyContent: 'center'
+                                }
+                              }}
+                            >
+                              <Button
+                                variant="text"
+                                size="small"
+                                color="primary"
+                                onClick={() => {
+                                  setEditActive(true);
+                                }}
+                                startIcon={<CreateRoundedIcon fontSize="small" />}
+                              >
+                                Editar
+                              </Button>
+                            </Grid>
+                          )}
+                          {(showAction && editMode && editActive) && <Grid
+                            item
+                            xs={12}
+                            sm={5}
+                            md={5.5}
+                            sx={{
+                              display: 'flex',
+                              [theme.breakpoints.up('sm')]: {
+                                justifyContent: 'flex-end'
+                              },
+                              [theme.breakpoints.down('sm')]: {
+                                justifyContent: 'center'
+                              }
+                            }}
+                          >
+                            <Button
+                              color="error"
+                              size="small"
+                              variant="outlined"
+                              sx={{
+                                mr: 2
+                              }}
+                              onClick={() => {
+                                if (editMode && editActive) {
+                                  setEditActive(false);
+                                  resetForm();
+                                  setCerdasLote(item.camadas || []);
+                                  setRemoveList([]);
+                                }
+                              }}
+                            >
+                              Cancelar
+                            </Button>
+                            <Button
+                              type="submit"
+                              startIcon={
+                                loading ? (
+                                  <CircularProgress size="1rem" color="white" />
+                                ) : null
+                              }
+                              disabled={!isValid || !dirty || isSubmitting}
+                              variant="contained"
+                              size="small"
+                              color="primary"
+                            >
+                              Guardar
+                            </Button>
+                          </Grid>}
+                        </SubtitleForm>
                         <Grid
                           container
                           item
@@ -580,6 +676,7 @@ function AddEditLote() {
                               value={values.numCorral}
                               onChange={handleChange}
                               errors={errors}
+                              disabled={!editActive}
                               touched={touched}
                               number
                             >
@@ -604,9 +701,9 @@ function AddEditLote() {
                             {/* Fecha */}
                             <Grid item xs={12} sm={12} md={6}>
                               <DatePickerReadOnly
-                                value={item?.fechaApertura || null}
-                                label="Fecha Apertura"
-                                inputName="fechaApertura"
+                                value={item?.fechaPromNacimiento || null}
+                                label="Fecha Nacimiento Promedio"
+                                inputName="fechaPromNacimiento"
                               />
                             </Grid>
                             {/* Numero */}
@@ -644,7 +741,9 @@ function AddEditLote() {
                         }
                       }}
                     >
-                      {editMode && !editPesos && !editPesosCebo && (
+                      {((item?.estado && item.estado === engordeEstado.cebo) || 
+                        (item?.estadoFinal && item.estadoFinal === engordeEstado.cebo)) &&
+                        (editMode && !editPesos && !editPesosCebo) && (
                         <Button
                           variant="contained"
                           size="small"
@@ -664,6 +763,7 @@ function AddEditLote() {
                           variant="contained"
                           size="small"
                           color="primary"
+                          sx={{ marginRight: 1 }}
                           disabled={item && item?.fechaFinPrecebo === null}
                           onClick={() => {
                             setEditPesos(true);
@@ -672,23 +772,17 @@ function AddEditLote() {
                           Modificar Pesos de Precebo
                         </Button>
                       )}
-                    </Grid>
-                    {editPesos && (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={12}
-                        md={12}
-                        sx={{
-                          display: 'flex',
-                          [theme.breakpoints.up('sm')]: {
-                            justifyContent: 'flex-end'
-                          },
-                          [theme.breakpoints.down('sm')]: {
-                            justifyContent: 'center'
-                          }
-                        }}
-                      >
+                      {showEditCamada && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          color="primary"
+                          onClick={openCerdaModal}
+                        >
+                          Agregar camadas
+                        </Button>
+                      )}
+                      {editPesos && 
                         <Button
                           color="error"
                           size="small"
@@ -703,6 +797,8 @@ function AddEditLote() {
                         >
                           Cancelar
                         </Button>
+                      }
+                      {editPesos && 
                         <Button
                           onClick={() => registerPesos(true)}
                           startIcon={
@@ -717,24 +813,8 @@ function AddEditLote() {
                         >
                           Guardar Cambios
                         </Button>
-                      </Grid>
-                    )}
-                    {editPesosCebo && (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={12}
-                        md={12}
-                        sx={{
-                          display: 'flex',
-                          [theme.breakpoints.up('sm')]: {
-                            justifyContent: 'flex-end'
-                          },
-                          [theme.breakpoints.down('sm')]: {
-                            justifyContent: 'center'
-                          }
-                        }}
-                      >
+                      }
+                      {editPesosCebo && 
                         <Button
                           color="error"
                           size="small"
@@ -749,8 +829,10 @@ function AddEditLote() {
                         >
                           Cancelar
                         </Button>
+                      }
+                      {editPesosCebo && 
                         <Button
-                          onClick={registerPesos}
+                          onClick={() => registerPesos()}
                           startIcon={
                             loading ? (
                               <CircularProgress size="1rem" color="white" />
@@ -763,18 +845,8 @@ function AddEditLote() {
                         >
                           Guardar Cambios
                         </Button>
-                      </Grid>
-                    )}
-                    {showEditCamada && editActive && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="primary"
-                        onClick={openCerdaModal}
-                      >
-                        Agregar camadas
-                      </Button>
-                    )}
+                      }
+                    </Grid>
                   </SubtitleForm>
                   <Grid item xs={12} sm={12} md={10}>
                     <Box
@@ -811,12 +883,12 @@ function AddEditLote() {
                             <TableCell align="center">
                               Peso Total de Precebo (kg){' '}
                             </TableCell>
+                            {((item?.estado && item.estado === engordeEstado.cebo) || 
+                            (item?.estadoFinal && item.estadoFinal === engordeEstado.cebo)) &&
                             <TableCell align="center">
                               Peso Total de Cebo (kg){' '}
-                            </TableCell>
-                            {editActive && (
-                              <TableCell align="center">Acciones</TableCell>
-                            )}
+                            </TableCell>}
+                            <TableCell align="center">Acciones</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -837,7 +909,7 @@ function AddEditLote() {
                                         id="outlined-controlled-1"
                                         label=""
                                         variant="standard"
-                                        value={pesosList[idx].pesoTotalPrecebo}
+                                        value={pesosList[idx].peso}
                                         type="number"
                                         inputProps={{ min: '0' }}
                                         onChange={(e) =>
@@ -852,14 +924,16 @@ function AddEditLote() {
                                     {!editPesos &&
                                       (element?.pesoTotalPrecebo ?? '-')}
                                   </TableCell>
-                                  <TableCell align="center">
+                                  {((item?.estado && item.estado === engordeEstado.cebo) || 
+                                    (item?.estadoFinal && item.estadoFinal === engordeEstado.cebo)) &&
+                                    <TableCell align="center">
                                     {editPesosCebo && (
                                       <TextField
                                         id="outlined-controlled-2"
                                         label=""
                                         variant="standard"
                                         value={
-                                          pesosListCebo[idx].pesoTotalPrecebo
+                                          pesosListCebo[idx].peso
                                         }
                                         type="number"
                                         inputProps={{ min: '0' }}
@@ -869,23 +943,41 @@ function AddEditLote() {
                                       />
                                     )}
                                     {!editPesosCebo &&
-                                      (element?.pesoTotalPrecebo ?? '-')}
-                                  </TableCell>
-                                  {showEditCamada && editActive && (
+                                      (element?.pesoTotalCebo ?? '-')}
+                                  </TableCell>}
                                     <TableCell align="center">
+                                    <Tooltip title="Lechones">
+                                      <span>
+                                      <IconButton
+                                        color="info"
+                                        sx={{ borderRadius: 30 }}
+                                        onClick={() => {
+                                          setLechonModal(true);
+                                          setCurrentItem(element)
+                                        }}
+                                        disabled={cerdasLote.length === 1}
+                                      >
+                                        <ListAltRoundedIcon />
+                                      </IconButton>
+                                      </span>
+                                    </Tooltip>
+                                    {showEditCamada && (
                                       <Tooltip title="Remover camada">
+                                        <span>
                                         <IconButton
                                           color="error"
                                           sx={{ borderRadius: 30 }}
                                           onClick={() => {
                                             removeCerda(element);
                                           }}
+                                          disabled={cerdasLote.length === 1}
                                         >
                                           <DeleteRoundedIcon />
                                         </IconButton>
+                                        </span>
                                       </Tooltip>
+                                    )}
                                     </TableCell>
-                                  )}
                                 </TableRow>
                               );
                             })}
@@ -915,16 +1007,19 @@ function AddEditLote() {
                   <Grid
                     container
                     justifyContent="normal"
-                    spacing={3}
+                    spacing={2}
                     mb={3}
                     mt={3}
                   >
-                    <SubtitleForm subtitle="Precebo" />
+                    <SubtitleForm subtitle="Precebo" 
+                    description='Los lechones son alimentados para desarrollarse y alcanzar un peso entre los 22 y 25 kilogramos.'
+                    d2={`Recomendación: Fin de precebo a ${item.diasFinPrecebo || 0} días de nacido.`}
+                    />
                     <Grid container item xs={12} sm={12} md={12} spacing={3}>
                       <Grid item xs={12} sm={12} md={4}>
                         <DatePickerReadOnly
                           value={item?.fechaPreceboProbable || null}
-                          label="Fecha Recomendada"
+                          label="Fecha Fin Recomendada"
                           inputName="fechaPreceboProbable"
                         />
                       </Grid>
@@ -936,12 +1031,15 @@ function AddEditLote() {
                         />
                       </Grid>
                     </Grid>
-                    <SubtitleForm subtitle="Cebo" />
+                    <SubtitleForm subtitle="Cebo" 
+                    description='Los cerdos son alimentados para alcanzar un peso óptimo antes del sacrificio, entre los 90 y 100 kg según el mercado.'
+                    d2={`Recomendación: Fin de cebo a ${item.diasFinCebo || 0} días de nacido.`}
+                    />
                     <Grid container item xs={12} sm={12} md={12} spacing={3}>
                       <Grid item xs={12} sm={12} md={4}>
                         <DatePickerReadOnly
                           value={item?.fechaCeboProbable || null}
-                          label="Fecha Recomendada"
+                          label="Fecha Fin Recomendada"
                           inputName="fechaCeboProbable"
                         />
                       </Grid>
@@ -968,6 +1066,13 @@ function AddEditLote() {
           granjaId={user.granjaId}
           cerdasList={cerdasLote || []}
           removeList={removeList || []}
+        />
+      )}
+      {lechonModal && (
+        <LechonesCamadaModal
+          open={lechonModal}
+          modalClose={closeLechonModal}
+          camada={currentItem}
         />
       )}
       {preceboModal && (

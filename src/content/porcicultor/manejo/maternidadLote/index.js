@@ -14,9 +14,9 @@ import { maternidadLoteQueryAPI, servicioFalloRegisterAPI } from 'src/utils/apiU
 import { errorMessage, successMessage } from 'src/utils/notifications';
 import Results from './Results';
 
-const tituloPagina = "Detalle de Servicio del Lote"
+const tituloPagina = "Detalle de Maternidad del Lote"
 
-const mainUrl = "/sp/porcicultor/manejo/servicio"
+const mainUrl = "/sp/porcicultor/manejo/maternidad"
 
 function LineasGeneticasListado() {
     const [itemListado, setItemListado] = useState([])
@@ -108,14 +108,14 @@ function LineasGeneticasListado() {
                 <Grid container alignItems="center">
                 <Grid item xs={12} md={12} sm={12} mb={2}>
                   <Breadcrumbs aria-label="breadcrumb">
-                    <Link underline="hover" color="inherit" onClick={navigateToMain}>
+                    <Link underline="hover" color="inherit" onClick={navigateToMain} sx={{cursor: "pointer"}}>
                       Listado de Maternidades
                     </Link>
                     <Typography color="text.primary">Maternidad del Lote</Typography>
                   </Breadcrumbs>
                 </Grid>
                 <Grid item xs={2} md={0.5} sm={0.5}>
-                    <IconButton size="small" onClick={navigateToMain}>
+                    <IconButton size="small" onClick={navigateToMain} >
                       <KeyboardArrowLeftRoundedIcon />
                     </IconButton>
                   </Grid>

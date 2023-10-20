@@ -219,7 +219,6 @@ function ServicioCerdaDetalle() {
   };
 
   const resetAllForms = () => {
-    console.log("RESET: ", item)
     if(!loading){
       if(generalForm?.current){
         generalForm.current.resetForm({
@@ -254,10 +253,8 @@ function ServicioCerdaDetalle() {
       setLoading(true);
       const response = await certifyAxios.post(url, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
-        console.log("antes edit")
         await getItemById({ id: reqObj.id, granjaId: user.granjaId});
         successMessage(response.data.userMsg ?? 'Se ha modificado satisfactoriamente');
-        console.log("luego edit")
         resetStates(true);
       }
     } catch (error) {
@@ -407,13 +404,14 @@ function ServicioCerdaDetalle() {
         <Grid container alignItems="center">
           <Grid item xs={12} md={12} sm={12} mb={2}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link underline="hover" color="inherit" onClick={navigateToMain}>
+              <Link underline="hover" color="inherit" onClick={navigateToMain} sx={{cursor: "pointer"}}>
                 Listado de Servicios
               </Link>
               <Link
                 underline="hover"
                 color="inherit"
                 onClick={navigateToLoteList}
+                sx={{cursor: "pointer"}}
               >
                 Servicio del Lote
               </Link>

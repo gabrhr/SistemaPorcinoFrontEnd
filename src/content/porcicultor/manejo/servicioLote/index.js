@@ -108,7 +108,7 @@ function LineasGeneticasListado() {
                 <Grid container alignItems="center">
                 <Grid item xs={12} md={12} sm={12} mb={2}>
                   <Breadcrumbs aria-label="breadcrumb">
-                    <Link underline="hover" color="inherit" onClick={navigateToMain}>
+                    <Link underline="hover" color="inherit" onClick={navigateToMain} sx={{cursor: "pointer"}}>
                       Listado de Servicios
                     </Link>
                     <Typography color="text.primary">Servicio del Lote</Typography>

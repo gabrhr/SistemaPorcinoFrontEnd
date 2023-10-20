@@ -62,7 +62,6 @@ function AddCamadaModal({
       const response = await certifyAxios.post(camadaToAddAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         const updatedList = processList(response.data.list || [])
-        console.log("aaaa", updatedList)
         setListFiltered(updatedList || []);
         setList(updatedList || []);
       }
@@ -105,7 +104,9 @@ function AddCamadaModal({
     if(removeList && removeList.length > 0){
         listado = listado.concat([...removeList])
     }
-    return listado
+    const uniqueSet = new Set(listado.map(JSON.stringify));
+    const uniqueArray = Array.from(uniqueSet).map(JSON.parse);
+    return uniqueArray
 
   };
   
@@ -212,8 +213,7 @@ function AddCamadaModal({
               </Box>
             </Box>
             <Divider />
-            <TableContainer sx={{height: (listFiltered !== undefined &&
-                    listFiltered?.length !== 0)? "50vh": "10vh", overflowY:"auto"}}>
+            <TableContainer sx={{height: (listFiltered?.length === 0)? "10vh": "50vh", overflowY:"auto"}}>
               <Table sx={{height:"max-content"}}>
                 <TableHead>
                   <TableRow>
@@ -228,7 +228,7 @@ function AddCamadaModal({
                   {listFiltered === undefined && (
                     <TableRowsLoader
                       rowsNum={5}
-                      cellsNum={4}
+                      cellsNum={5}
                     />
                   )}
                   {listFiltered !== undefined &&

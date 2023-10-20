@@ -12,6 +12,7 @@ import {
   TableHead, TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery
 } from '@mui/material';
@@ -141,12 +142,14 @@ const Results = (props) => {
   
   const deleteItem = () => {
     props.deleteById(currentItem.id, () => {
-        deleteModalClose()
+      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
+      deleteModalClose()
     })
   }
 
   const descartarCerda = (request) => {
     props.descartarById(request, () => {
+      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
       descarteModalClose()
   })
   }
@@ -276,21 +279,25 @@ const Results = (props) => {
                             </IconButton>
                             {element.descartada !== 1 && 
                             <>
-                            <IconButton  
-                                onClick={()=> openModalDescartada(element)}
-                                sx={{
-                                    borderRadius:30, 
-                                    marginRight:"15px"
-                                }}
-                            >
-                                <HighlightOffRoundedIcon/>
-                            </IconButton>
-                            <IconButton color="error" 
-                                sx={{borderRadius:30}}
-                                onClick={()=> openModal(element)}
-                                >
-                                <DeleteRoundedIcon/>                          
-                            </IconButton>
+                            <Tooltip title="Descartar cerda">
+                              <IconButton  
+                                  onClick={()=> openModalDescartada(element)}
+                                  sx={{
+                                      borderRadius:30, 
+                                      marginRight:"15px"
+                                  }}
+                              >
+                                  <HighlightOffRoundedIcon/>
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Remover cerda">
+                              <IconButton color="error" 
+                                  sx={{borderRadius:30}}
+                                  onClick={()=> openModal(element)}
+                                  >
+                                  <DeleteRoundedIcon/>                          
+                              </IconButton>
+                            </Tooltip>
                               </>
                             }
                         </TableCell>

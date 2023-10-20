@@ -1,7 +1,7 @@
 import '@mui/lab/themeAugmentation';
 import { alpha, createTheme, darken, lighten } from '@mui/material';
 import { esES } from '@mui/material/locale';
-import { esES as dpES } from '@mui/x-date-pickers';
+import { esES as dpES } from '@mui/x-date-pickers/locales';
 // import i18n from 'src/i18n/i18n';
 
 const themeColors = {
@@ -1317,6 +1317,6 @@ export const AimTheme = createTheme(
       'none'
     ]
   },
-  esES,
-  dpES
+  dpES,
+  esES
 );

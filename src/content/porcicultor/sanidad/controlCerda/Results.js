@@ -1,5 +1,4 @@
-import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
@@ -15,28 +14,34 @@ import {
   useMediaQuery
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import StatusTable from 'src/components/Form/StatusTable';
+import LoteEstadoChip from 'src/components/LoteEstadoChip';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
-import AddEditModal from './AddEditModal';
-import DeleteModal from './DeleteModal';
+import { formatDate } from 'src/utils/dataFormat';
+import { allStatus, listEstadoLotes } from 'src/utils/defaultValues';
 
-const itemSingular = "Línea genética"
+const statusList = listEstadoLotes()
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
   const [query, setQuery] = useState('');
-  const [openDelete, setOpenDelete] = useState(false)
-  const [openEdit, setOpenEdit] = useState(false)
-  const [currentItem, setCurrentItem] = useState({})
+  const statusRef = useRef(null);
+  const [openStatus, setOpenStatus] = useState(false);
+  const [status, setStatus] = useState(allStatus.text);
   const isRowBased = useMediaQuery('(min-width: 500px)');
 
   const handleQueryChange = (event) => {
     event.persist();
     setQuery(event.target.value);
+    if(status !== allStatus.text){
+      setStatus(allStatus.text)
+    }
     if(event && event.target && event.target.value === ""){
       props.setPageNumber(0);
       const reqObj = {
-        "nombre": "",
+        "codigo": "",
+        "tipo": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -45,7 +50,8 @@ const Results = (props) => {
     } else if(event?.target?.value && event.target.value.length >= 1){
       props.setPageNumber(0);
       const reqObj = {
-        "nombre": event.target.value,
+        "codigo": event.target.value,
+        "tipo": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -54,11 +60,24 @@ const Results = (props) => {
     } 
   };
 
+  const handleChangeStatus = (value) => {
+    const reqObj = {
+        "codigo": "",
+        "tipo": value,
+        "pageNumber": 1,
+        "maxResults": limit,
+        "granjaId": props.granjaId
+    }
+
+    props.onPageParamsChange(reqObj);
+  } 
+
   const handlePageChange = (_event, newPage) => {
     props.setPageNumber(newPage);
 
     const reqObj = {
-        "nombre": "",
+        "codigo": "",
+        "tipo": "",
         "pageNumber": newPage + 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -72,7 +91,8 @@ const Results = (props) => {
     props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
 
     const reqObj = {
-        "nombre": "",
+        "codigo": "",
+        "tipo":"",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -80,53 +100,19 @@ const Results = (props) => {
 
     props.onPageParamsChange(reqObj);
   };
-
-
-  const openModal = (item, deleteAccion = false) => {
-    console.log(item)
-    setCurrentItem(item)
-    if(deleteAccion){
-      setOpenDelete(true)      
-    } else {
-      setOpenEdit(true)
-    }
-  }
-
-  const deleteModalClose = () => {
-    setCurrentItem({})
-    setOpenDelete(false)
-  }
-
-  const editModalClose = () => {
-    setCurrentItem({})
-    setOpenEdit(false)
-  }
-
-  
-  const editItem = (request, resetForm) => {
-    props.editById(request, () => {
-      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
-      editModalClose()
-      resetForm()
-    })
+ 
+  const editItem = (id) => {
+    props.navigateToDetalle(id)
 
   }
   
-  const deleteItem = () => {
-    props.deleteById(currentItem.id, () => {
-      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
-      deleteModalClose()
-    })
-
-  }
-
   const paginatedObject = props.itemListado;
 
   return (
     <>
-        <Grid container spacing={0}>
+        <Grid container spacing={0} mt={2}>
           <Grid item xs={12}>
-            <Box pt={0} pb={1}>
+            <Box p={1}>
               <TextField
                 sx={{
                   mx: 0,
@@ -144,7 +130,7 @@ const Results = (props) => {
                 }}
                 size='small'
                 onChange={handleQueryChange}
-                placeholder="Busque por nombre"
+                placeholder="Busque por código"
                 value={query}
                 variant="outlined"
               />
@@ -164,20 +150,30 @@ const Results = (props) => {
             <Typography component="span" variant="subtitle1">
               Mostrando:
             </Typography>{' '}
-            <b>{paginatedObject.length}</b> <b>línea(s)</b>
+            <b>{paginatedObject.length}</b> <b>servicio(s)</b> {/* change */}
           </Box>
+          <StatusTable
+            actionRef = {statusRef}
+            setOpenStatus ={setOpenStatus}
+            openStatus = {openStatus}
+            status = {status}
+            setStatus = {setStatus}
+            menuList = {statusList}
+            handleChange = {handleChangeStatus}
+          />
         </Box>
         <Divider />
+
         
-          
           <>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Nombre de la línea</TableCell>
-                    <TableCell align='center'>Nro. Cerdas</TableCell>
-                    <TableCell align='center'> Nro. Verracos</TableCell>
+                    <TableCell>Código Lote</TableCell>
+                    <TableCell align='center'>Fecha apertura</TableCell>
+                    <TableCell align='center'> Nro. cerdas</TableCell>
+                    <TableCell align='center'> Estado Lote</TableCell>
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -186,16 +182,22 @@ const Results = (props) => {
                     <TableRowsLoader
                       rowsNum={5} 
                       action
-                      cellsNum={3}
+                      cellsNum={4}
                     />
                 }
-                {!props.loading  && paginatedObject.length !== 0 &&
+                {!props.loading && paginatedObject.length !== 0 &&
                   (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
                           <Typography noWrap>
-                            {element && element.nombre || ""}
+                            {element && element.codigo || ""}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align='center'>
+                          <Typography noWrap>
+                            {element && element.fechaApertura && 
+                            formatDate(element.fechaApertura) || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
@@ -205,36 +207,32 @@ const Results = (props) => {
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.totalVerracos || "0"}
+                            <LoteEstadoChip
+                            estado={element && element.estado || ""}
+                            />
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                             {/* Actions */}
                             <IconButton  
-                                onClick={()=> {openModal(element)}}
+                                onClick={()=> {editItem(element.id)}}
                                 sx={{
                                     borderRadius:30, 
                                     marginRight:"15px"
                                 }}
                                 color='primary'
                             >
-                                <CreateRoundedIcon/>
-                            </IconButton>
-                            <IconButton color="error" 
-                                sx={{borderRadius:30}}
-                                onClick={()=> openModal(element, true)}
-                            >
-                                <DeleteRoundedIcon/>                          
+                                <ArrowForwardIosRoundedIcon/>
                             </IconButton>
                         </TableCell>
                       </TableRow>
                     );
                   }))
-                }
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
-            {!props.loading  && paginatedObject.length === 0 &&
+            {!props.loading && paginatedObject.length === 0 &&
               <>
                 <Typography
                   sx={{
@@ -245,10 +243,10 @@ const Results = (props) => {
                   color="text.secondary"
                   align="center"
                 >
-                  No se encontraron líneas
+                  No se encontraron lotes
                 </Typography>
               </>
-              }
+            }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -261,25 +259,8 @@ const Results = (props) => {
               />
           </Box>
           </>
+        
       </Card>
-      {/* Editar */}
-      <AddEditModal
-        openConfirmModal={openEdit}
-        closeConfirmModal={editModalClose}
-        title={`Editar ${itemSingular}`}
-        item= {currentItem || null}
-        editMode
-        handleCompleted={editItem}
-        granjaId={props.granjaId}
-      />
-      {/* Eliminar */}
-      <DeleteModal
-        openConfirmDelete={openDelete}
-        closeConfirmDelete={deleteModalClose}
-        title={`Eliminar ${itemSingular}`}
-        itemName={` la línea ${currentItem?.nombre || "" }`}
-        handleDeleteCompleted={deleteItem}
-      />
     </>
   );
 };

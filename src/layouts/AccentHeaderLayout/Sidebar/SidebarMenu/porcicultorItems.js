@@ -1,5 +1,6 @@
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CachedIcon from '@mui/icons-material/Cached';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import SavingsIcon from '@mui/icons-material/Savings';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
@@ -53,7 +54,7 @@ const menuItems = [
           }
         ]
       },
-      /* {
+      {
         name: 'Sanidad',
         icon: LocalHospitalIcon,
         link: '',
@@ -61,7 +62,7 @@ const menuItems = [
           {
             name: 'Control Cerdas',
             link: '/sp/porcicultor/sanidad/cerdas'
-          },
+          }/* ,
           {
             name: 'Control Lechones',
             link: '/sp/porcicultor/sanidad/lechones'
@@ -69,9 +70,9 @@ const menuItems = [
           {
             name: 'Calendario',
             link: '/sp/porcicultor/sanidad/calendario'
-          }
+          } */
         ]
-      }, */
+      },
       {
         name: 'Alimentación',
         icon: ShoppingBasketIcon,

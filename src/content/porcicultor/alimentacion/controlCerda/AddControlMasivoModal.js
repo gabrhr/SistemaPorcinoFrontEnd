@@ -6,7 +6,7 @@ import DatePickerForm from "src/components/Form/DatePickerForm";
 import InputForm from "src/components/Form/InputForm";
 import SelectForm from "src/components/Form/SelectForm";
 import { alimentoQueryAllAPI } from "src/utils/apiUrls";
-import { resultCodeOk } from "src/utils/defaultValues";
+import { listEstadosCerda, resultCodeOk } from "src/utils/defaultValues";
 import { errorMessage } from "src/utils/notifications";
 import certifyAxios from "src/utils/spAxios";
 import * as Yup from 'yup';
@@ -23,11 +23,12 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-function AddControlModal ({
+const cerdaEstados = listEstadosCerda()
+
+function AddControlMasivoModal ({
     open, 
     modalClose,
     handleAction, 
-    cerdaId,
     granjaId
 }){
     
@@ -103,30 +104,30 @@ function AddControlModal ({
                 variant="h3"
                 mb={3}
             >
-                Agregar Control
+                Agregar Control Alimenticio
             </Typography>
 
             {/* Contenido */}
            
             <Formik
             initialValues={{
+                estado: "none",
                 cantidadConsumida: 0,
                 fechaConsumo: new Date(),
                 alimentoId: -1
             }}
             validationSchema={Yup.object().shape({
                 fechaConsumo: Yup.string().required('La fecha de compra es requerida'),
+                estado: Yup.string().required('El estado de cerdas es requerido'),
                 cantidadConsumida: Yup.number().min(0, 'Debe ser mayor a 0').required('La cantidad es requerida'),
                 alimentoId: Yup.number().min(0, 'Seleccione el alimento').required('Seleccione el alimento')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {      
                 const alimentoIndex = list.findIndex(e => e.id === values.alimentoId)
                 if(alimentoIndex !== -1){
                     const alimento = list[alimentoIndex]
                     if(alimento.cantidadActual < values.cantidadConsumida){
                         errorMessage("La cantidad consumida no debe exceder el stock")
-                        setSubmitting(false)   
                         return;
                     }
                 }
@@ -135,25 +136,63 @@ function AddControlModal ({
                     fechaConsumo: values.fechaConsumo,
                     cantidadConsumida: values.cantidadConsumida,
                     alimentoId: values.alimentoId,
-                    id: cerdaId
+                    estado: values.estado
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid, setFieldValue }) => (
               <form noValidate onSubmit={handleSubmit}>
                     <Grid
                         container
-                        spacing={0}
+                        spacing={2}
                         direction="column"
                         paddingLeft={2}
                         alignContent="stretch"
                     >
-                        {/* Nombre */}
                         <Grid
                             sx={{
-                                my: `${theme.spacing(2)}`,
+                                mt: `${theme.spacing(2)}`,
+                                mb: 0,
+                                mr:`${theme.spacing(1)}`,
+                                paddingRight: 3
+                            }}
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                        >
+                        <SelectForm
+                            label="Estado de Cerdas"
+                            name="estado"
+                            value={values.estado}
+                            onChange={handleChange}
+                            errors={errors}
+                            onBlur={handleBlur}
+                            touched={touched}
+                            >
+                                {cerdaEstados && cerdaEstados.map((type) => (
+                                <MenuItem key={type.value} value={type.value}>
+                                    {`${type.text}`}
+                                </MenuItem>
+                                ))}
+                            </SelectForm>
+                        </Grid>
+                        <Grid item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            mt={0}
+                        >
+                            <Typography >
+                                Total cerdas en estado:
+                                <b>{` ${0}`}</b>
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            sx={{
+                                mt: `${theme.spacing(2)}`,
+                                mb: 0,
                                 mr:`${theme.spacing(1)}`,
                                 paddingRight: 3
                             }}
@@ -211,7 +250,7 @@ function AddControlModal ({
                             mt={0}
                         >
                             <Typography >
-                                Consumo recomendado:
+                                Consumo recomendado por cerda:
                                 <b>{` ${getTextoAlimento(values.alimentoId)[0]} kg`}</b>
                             </Typography>
                             <Typography >
@@ -221,7 +260,8 @@ function AddControlModal ({
                         </Grid>
                         <Grid
                             sx={{
-                                my: `${theme.spacing(2)}`,
+                                mt: `${theme.spacing(2)}`,
+                                mb: 0,
                                 mr:`${theme.spacing(1)}`,
                                 paddingRight: 3
                             }}
@@ -233,7 +273,7 @@ function AddControlModal ({
                             <InputForm
                                 inputName="cantidadConsumida"
                                 value={values.cantidadConsumida}
-                                label="Cantidad (kg)"
+                                label="Cantidad por cada cerda(kg)"
                                 placeholder="Cantidad en kg"
                                 handleChange={handleChange}
                                 errors={errors}
@@ -243,6 +283,17 @@ function AddControlModal ({
                                 type='number'
                                 inputProps={{ min: '0' }}
                                 />
+                        </Grid>
+                        <Grid item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            mt={0}
+                        >
+                            <Typography >
+                                Consumo total:
+                                <b>{` ${values.cantidadConsumida} kg`}</b>
+                            </Typography>
                         </Grid>
                     </Grid>
 
@@ -293,4 +344,4 @@ function AddControlModal ({
     )
 }
 
-export default AddControlModal;
+export default AddControlMasivoModal;

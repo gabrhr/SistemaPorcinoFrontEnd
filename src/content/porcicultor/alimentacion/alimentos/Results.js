@@ -125,6 +125,7 @@ const Results = (props) => {
   const deleteItem = () => {
     setLoadingDelete(true)
     props.deleteById(currentItem.id, () => {
+      props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
       deleteModalClose()
       setLoadingDelete(false)
     })

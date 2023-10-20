@@ -5,7 +5,7 @@ import {
   cerdaUpdateAPI,
   lineaQueryAllAPI
 } from 'src/utils/apiUrls';
-import { cerdaEstados, resultCodeOk } from 'src/utils/defaultValues';
+import { cerdaEstados, resultCodeOk, servicioEstado } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import * as Yup from 'yup';
 
@@ -122,13 +122,15 @@ function EditCerda() {
   };
 
   // texto de dias no productivos
-  const getDNPText = (estado) => {
+  const getDNPText = (estado, ordenParto = 0) => {
     if(estado === cerdaEstados.reemplazo){
       return "Tiempo de la cerda de reemplazo en la granja desde su ingreso"
     } else if(estado === cerdaEstados.descartada){
-      return "Tiempo de la cerda desde su último destete hasta su descarte"
+      return "Tiempo de la cerda desde su último destete o ingreso hasta su descarte"
+    } else if(ordenParto === 0){
+      return "Tiempo de la cerda en la granja hasta su primer servicio"
     }
-    return "Intervalo de tiempo entre el destete a el servicio"
+    return "Intervalo de tiempo entre el destete y servicio"
   }
 
   // return
@@ -420,23 +422,38 @@ function EditCerda() {
               </Grid>}
               {/* Dias no productivos */}
               <Grid container justifyContent="center" spacing={2} className='mt'>
-                <SubtitleForm subtitle='Periodo no productivo' description={getDNPText(item.estado)}/>
+                <SubtitleForm subtitle='Periodo no productivo' description={getDNPText(item.estado, item.ordenParto)}/>
                 <Grid container item  xs={12} sm={12} md={12} spacing={4}>
                 <Grid item xs={12} sm={12} md={4}>
                   <Typography variant='body1' gutterBottom>
                     Días no productivos
                   </Typography>
-                  <Chip label={`\u00A0\u00A0${item.diasNoProductivos || 0}\u00A0\u00A0`} variant='outlined' color='black'/>
+                  <Chip label={`\u00A0\u00A0${item.diasNoProductivos || 0}\u00A0\u00A0`} variant='outlined' 
+                  color={!(item.servicio && item.servicio?.fechaPrimeraInseminacion && item.servicio.estado !== servicioEstado.finalizado
+                    && item.servicio.estado !== servicioEstado.fallido)?'error': 'black'}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4}>
                   <Typography variant='body1' gutterBottom>
                     Fecha de último destete
                   </Typography>
                   {
-                    item.fechaUltimoServicio?
-                    <Chip label={formatDate(item.fechaUltimoServicio)} variant='outlined' color='success' icon={<EventAvailableRoundedIcon/>}/>
+                    item.fechaUltimoDestete?
+                    <Chip label={formatDate(item.fechaUltimoDestete)} variant='outlined' color='info' icon={<EventAvailableRoundedIcon/>}/>
                     :
-                    <Chip label="Sin servicio" variant='outlined' color='primary' icon={<EventBusyRoundedIcon/>}/>
+                    <Chip label="Sin destete" variant='outlined' color='error' icon={<EventBusyRoundedIcon/>}/>
+                  }
+                </Grid>
+                <Grid item xs={12} sm={12} md={4}>
+                  <Typography variant='body1' gutterBottom>
+                    Fecha de servicio actual
+                  </Typography>
+                  {
+                    (item.servicio && item.servicio?.fechaPrimeraInseminacion && item.servicio.estado !== servicioEstado.finalizado
+                    && item.servicio.estado !== servicioEstado.fallido)?
+                    <Chip label={formatDate(item.servicio.fechaPrimeraInseminacion)} variant='outlined' color='info' icon={<EventAvailableRoundedIcon/>}/>
+                    :
+                    <Chip label="Servicio pendiente" variant='outlined' color='error' icon={<EventBusyRoundedIcon/>}/>
                   }
                 </Grid>
                 </Grid>
@@ -472,7 +489,7 @@ function EditCerda() {
                     Fecha de parto {item.servicio?.fechaParto === null && " probable"}
                   </Typography>
                     
-                  <Chip label={formatDate(item.servicio?.fechaParto? item.servicio.fechaPrimeraInseminacion: item.fechaPartoProbable)} variant='outlined' icon={<CalendarTodayRoundedIcon/>}/>
+                  <Chip label={formatDate(item.servicio?.fechaParto? item.servicio.fechaParto: item.fechaPartoProbable)} variant='outlined' icon={<CalendarTodayRoundedIcon/>}/>
                 </Grid>
                 </Grid>
               </Grid>}

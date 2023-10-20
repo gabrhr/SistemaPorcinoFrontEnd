@@ -42,7 +42,6 @@ function AddModal ({
         const response = await certifyAxios.post(celoGetLotesPendientesAPI, reqObj);
         if (response.data?.resultCode === resultCodeOk) {
             const updatedList = processList(response.data.list || [])
-            console.log("aa", updatedList)
             setList(updatedList || []);
         }
         } catch (err) {

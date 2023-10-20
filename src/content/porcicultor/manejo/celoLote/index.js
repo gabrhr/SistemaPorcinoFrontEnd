@@ -119,7 +119,7 @@ function LineasGeneticasListado() {
                 <Grid container alignItems="center">
                 <Grid item xs={12} md={12} sm={12} mb={2}>
                   <Breadcrumbs aria-label="breadcrumb">
-                    <Link underline="hover" color="inherit" onClick={navigateToMain}>
+                    <Link underline="hover" color="inherit" onClick={navigateToMain} sx={{cursor: "pointer"}}>
                       Listado de Celos
                     </Link>
                     <Typography color="text.primary">Celo del Lote</Typography>

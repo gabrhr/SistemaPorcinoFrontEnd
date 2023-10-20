@@ -65,7 +65,7 @@ function TerminarMaternidadModal ({
                 align="left"
                 sx={{
                 pt: 1,
-                pb: 1
+                pb: 2
                 // px: 6
                 }}
                 fontWeight="normal"
@@ -98,8 +98,7 @@ function TerminarMaternidadModal ({
               <form noValidate onSubmit={handleSubmit} style={{width:"100%"}}>
                     <Grid
                         container
-                        spacing={2}
-                        mt={2}
+                        spacing={4}
                         direction="column"
                         alignContent="stretch"
                     >

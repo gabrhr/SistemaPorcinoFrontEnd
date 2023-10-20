@@ -1,5 +1,6 @@
+import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { mLechonDeleteAPI, mLechonDescartarAPI, mLechonRegisterAPI, maternidadFindByIdAPI, maternidadTerminarAPI, maternidadUpdateAPI, pesosDesteteRegisterAPI } from 'src/utils/apiUrls';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
@@ -35,13 +36,15 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BackdropLoading from 'src/components/BackdropLoading';
 import CircularLoading from 'src/components/CircularLoading';
+import DataView from 'src/components/Form/DataView';
 import DatePickerReadOnly from 'src/components/Form/DatePickerReadOnly';
 import InputForm from 'src/components/Form/InputForm';
 import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { resultCodeOk } from 'src/utils/defaultValues';
+import { formatDate } from 'src/utils/dataFormat';
+import { lechonEstado, resultCodeOk } from 'src/utils/defaultValues';
 import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddCompraModal from './AddCompraModal';
 import DeleteCompraModal from './DeleteCompraModal';
@@ -77,7 +80,6 @@ function EditMaternidad() {
   const location = useLocation();
   const isMountedRef = useRefMounted();
   const { user } = useAuth();
-  const formLote = useRef();
 
   // get cerda by id
   const getItemById = useCallback(
@@ -135,16 +137,35 @@ function EditMaternidad() {
   const getPesosList = (list = []) => {
     let pesos = []
     list.forEach(e => {
-      const temp = {...desteteTemp}
-      temp.lechonId = e.id
-      if(e.pesoDestete !== null && e.pesoDestete !== 0.0){
-        temp.pesoDestete = e.pesoDestete
-      }
-      pesos = pesos.concat(temp)
+        const temp = {...desteteTemp}
+        temp.lechonId = e.id
+        if(e.estado === lechonEstado.muerto){
+          temp.pesoDestete = 0.0
+        } else if(e.pesoDestete !== null && e.pesoDestete !== 0.0){
+          temp.pesoDestete = e.pesoDestete
+        }
+        pesos = pesos.concat(temp)
     })
 
     setPesosList(pesos)
   };
+
+  const getPesoPromNacimiento = () => {
+     if(lechonesList && lechonesList.length > 0){
+      let pesos = 0;
+      let lechones = 0;
+      lechonesList.forEach(e => {
+        if(e.estado !== lechonEstado.muerto){
+          pesos += e.pesoNacimiento
+          lechones += 1
+        }
+      })
+
+      return (pesos/lechones).toFixed(2)
+     }
+     return 0;
+  };
+  
   
 
   const resetStates = (edit = false) => {
@@ -300,18 +321,20 @@ function EditMaternidad() {
     // llamada
     const reqObj = {
       id: item?.id,
-      pesoLechones: pesosList,
-      pesoPromDestete: 5.4
+      pesoLechones: pesosList
     }
+    setLoading(true)
     try {
       const response = await certifyAxios.post(pesosDesteteRegisterAPI, reqObj);
       if(response.data?.resultCode === resultCodeOk){
         await getItemById({id: item.id, granjaId: user.granjaId})
         setEditPesos(false)
         successMessage(response.data.userMsg?? "Se han registrado los pesos")
+        setLoading(false)
       }
     } catch (error) {
       setEditPesos(false)
+      setLoading(false)
       console.error(error)
       showUserErrors(error, "No se ha podido terminar. Inténtelo de nuevo")
     } 
@@ -347,13 +370,14 @@ function EditMaternidad() {
         <Grid container alignItems="center">
           <Grid item xs={12} md={12} sm={12} mb={2}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link underline="hover" color="inherit" onClick={navigateToMain}>
+              <Link underline="hover" color="inherit" onClick={navigateToMain} sx={{cursor: "pointer"}}>
                 Listado de Maternidades
               </Link>
               <Link
                 underline="hover"
                 color="inherit"
                 onClick={navigateToLoteList}
+                sx={{cursor: "pointer"}}
               >
                 Maternidad del Lote
               </Link>
@@ -371,34 +395,6 @@ function EditMaternidad() {
               Detalle Maternidad de Cerda
             </Typography>
           </Grid>
-          {showAction && showTerminar && (
-            <Grid
-              item
-              xs={12}
-              sm={5}
-              md={5.5}
-              sx={{
-                display: 'flex',
-                [theme.breakpoints.up('sm')]: {
-                  justifyContent: 'flex-end'
-                },
-                [theme.breakpoints.down('sm')]: {
-                  justifyContent: 'center'
-                }
-              }}
-            >
-              <Button
-                variant="outlined"
-                size="small"
-                color="primary"
-                onClick={() => {
-                  setTerminarMatModal(true);
-                }}
-              >
-                Terminar maternidad
-              </Button>
-            </Grid>
-          )}
         </Grid>
       </PageTitleWrapper>
       {/* Form and table */}
@@ -416,15 +412,42 @@ function EditMaternidad() {
         <BackdropLoading open={loading}/>
         {item !== undefined && (
           <>
+            {showAction && showTerminar && (
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                sx={{
+                  display: 'flex',
+                  [theme.breakpoints.up('sm')]: {
+                    justifyContent: 'flex-end'
+                  },
+                  [theme.breakpoints.down('sm')]: {
+                    justifyContent: 'center'
+                  }
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                  onClick={() => {
+                    setTerminarMatModal(true);
+                  }}
+                >
+                  Terminar maternidad
+                </Button>
+              </Grid>
+            )}
             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
               <Tab eventKey={1} title="Maternidad">
                 <Formik
-                  innerRef={formLote}
                   enableReinitialize
                   initialValues={{
                     camadaCodigo:
                       (item && item?.camada && item?.camada?.codigo) || '',
-                    lechonesMuertos: (item && item.lechonesMuertos) || '',
+                    lechonesMuertos: (item && item.lechonesMuertos) || 0,
                     numCorralMaternidad:
                       (item && item.numCorralMaternidad) || -1
                   }}
@@ -468,13 +491,13 @@ function EditMaternidad() {
                         container
                         justifyContent="center"
                         spacing={2}
-                        mb={2}
+                        mb={0}
                         pt={0}
                         mt={0}
                       >
                         {/* Form */}
                         <SubtitleForm subtitle="Datos generales" list>
-                          {showAction && !editActive && (
+                          {!editActive && (
                             <Grid
                               item
                               xs={12}
@@ -491,12 +514,13 @@ function EditMaternidad() {
                               }}
                             >
                               <Button
-                                variant="contained"
+                                variant="text"
                                 size="small"
                                 color="primary"
                                 onClick={() => {
                                   setEditActive(true);
                                 }}
+                                startIcon={<CreateRoundedIcon fontSize="small" />}
                               >
                                 Editar
                               </Button>
@@ -508,6 +532,7 @@ function EditMaternidad() {
                               xs={12}
                               sm={12}
                               md={12}
+                              mb={.2}
                               sx={{
                                 display: 'flex',
                                 [theme.breakpoints.up('sm')]: {
@@ -527,7 +552,13 @@ function EditMaternidad() {
                                 }}
                                 onClick={() => {
                                   setEditActive(false);
-                                  resetForm();
+                                  resetForm({
+                                    camadaCodigo:
+                                      (item && item?.camada && item?.camada?.codigo) || '',
+                                    lechonesMuertos: (item && item.lechonesMuertos) || 0,
+                                    numCorralMaternidad:
+                                      (item && item.numCorralMaternidad) || -1
+                                  });
                                   setLechonesList(
                                     item?.lechonList || []
                                   );
@@ -550,7 +581,7 @@ function EditMaternidad() {
                                 size="small"
                                 color="primary"
                               >
-                                Guardar Cambios
+                                Guardar
                               </Button>
                             </Grid>
                           )}
@@ -565,15 +596,41 @@ function EditMaternidad() {
                         >
                           {/* Fecha */}
                           <Grid item xs={12} sm={12} md={4}>
-                            <DatePickerReadOnly
-                              value={item?.fechaParto || null}
-                              label="Fecha parto"
-                              inputName="fechaParto"
+                              <DataView
+                              label="Código Cerda"
+                              text={(item?.cerda && item?.cerda?.codigo) || ''}
                             />
                           </Grid>
-                          {/* Código */}
                           <Grid item xs={12} sm={12} md={4}>
-                            <InputForm
+                            <DataView
+                              label="Fecha parto"
+                              text={item?.fechaParto && formatDate(item.fechaParto) || ''}
+                            />  
+                          </Grid>
+                          <Grid item xs={12} sm={12} md={4}>
+                            <DataView
+                              label="Total Lechones"
+                              text={item?.totalLechones || 0}
+                            /> 
+                          </Grid>
+                        </Grid>
+
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={12}
+                          md={12}
+                          spacing={4}
+                        >
+                          <Grid item xs={12} sm={12} md={4}>
+                            {!editActive && 
+                            <DataView
+                              label="Camada Código"
+                              text={values.camadaCodigo || "-"}
+                            /> 
+                            }
+                            {editActive && <InputForm
                               inputName="camadaCodigo"
                               value={values.camadaCodigo}
                               label="Camada Código"
@@ -582,11 +639,16 @@ function EditMaternidad() {
                               touched={touched}
                               handleBlur={handleBlur}
                               disabled={!editActive}
-                            />
+                            />}
                           </Grid>
-                          {/* Corral */}
                           <Grid item xs={12} sm={12} md={4}>
-                            <SelectForm
+                            {(!showAction || !editActive) && 
+                            <DataView
+                              label="Número Corral"
+                              text={values.numCorralMaternidad !== -1? values.numCorralMaternidad : "-"}
+                            /> 
+                            }
+                            {showAction && editActive && <SelectForm
                               key="numCorralMaternidad"
                               label="Número Corral"
                               name="numCorralMaternidad"
@@ -602,33 +664,16 @@ function EditMaternidad() {
                                   {type}
                                 </MenuItem>
                               ))}
-                            </SelectForm>
+                            </SelectForm>}
                           </Grid>
-                        </Grid>
-
-                        <Grid
-                          container
-                          item
-                          xs={12}
-                          sm={12}
-                          md={12}
-                          spacing={4}
-                        >
                           <Grid item xs={12} sm={12} md={4}>
-                            <InputForm
-                              inputName="total"
-                              value={item?.totalLechones || 0}
-                              label="Total lechones"
-                              handleChange={() => {}}
-                              errors={errors}
-                              touched={touched}
-                              handleBlur={handleBlur}
-                              disabled
-                            />
-                          </Grid>
-
-                          <Grid item xs={12} sm={12} md={4}>
-                            <InputForm
+                            {(!showAction || !editActive) && 
+                            <DataView
+                              label="Lechones Nacidos Muertos"
+                              text={values.lechonesMuertos || 0}
+                            /> 
+                            }
+                            {showAction && editActive && <InputForm
                               inputName="lechonesMuertos"
                               value={values.lechonesMuertos}
                               label="Lechones Nacidos Muertos"
@@ -639,7 +684,7 @@ function EditMaternidad() {
                               disabled={!editActive}
                               type="number"
                               inputProps={{ min: '0' }}
-                            />
+                            />}
                           </Grid>
                         </Grid>
                       </Grid>
@@ -727,7 +772,7 @@ function EditMaternidad() {
                         p={2}
                         display="flex"
                         alignItems="normal"
-                        flexDirection="column"
+                        flexDirection="row"
                         justifyContent="space-between"
                         mr={2}
                       >
@@ -736,12 +781,23 @@ function EditMaternidad() {
                             Lechones nacidos vivos:
                           </Typography>{' '}
                           <b>{lechonesList.length || 0}</b>
-                        </Box>
-                        <Box>
+                          <br/>
                           <Typography component="span" variant="subtitle1">
                             Lechones muertos en lactancia:
                           </Typography>{' '}
                           <b>{item?.lechonesMuertosLactancia || 0}</b>
+                        </Box>
+                        <Divider orientation="vertical" sx={{background:"#00000082"}}flexItem />
+                        <Box>
+                          <Typography component="span" variant="subtitle1">
+                            Promedio peso nacimiento:
+                          </Typography>{' '}
+                          <b>{item && getPesoPromNacimiento()}</b>
+                          <br/>
+                          <Typography component="span" variant="subtitle1">
+                            Promedio peso destete:
+                          </Typography>{' '}
+                          <b>{item?.pesoPromedioCamada || 0}</b>
                         </Box>
                       </Box>
                       <Divider />
@@ -774,7 +830,7 @@ function EditMaternidad() {
                                       {element?.pesoNacimiento ?? '0'}
                                     </TableCell>
                                     <TableCell align="center">
-                                      {editPesos &&
+                                      {editPesos && element.estado !== lechonEstado.muerto &&
                                       <TextField
                                       id={`peso-lechon-${idx}`}
                                       label=""
@@ -786,10 +842,12 @@ function EditMaternidad() {
                                     />
 
                                     }
-                                      {!editPesos && (element?.pesoDestete ?? '-')}
+                                      {!editPesos 
+                                      && (element?.pesoDestete ?? '-')}
+                                      {/* {element.estado === lechonEstado.muerto && '-'} */}
                                     </TableCell>
                                     <TableCell align="center">
-                                      {element.estado === 'Muerto'
+                                      {element.estado === lechonEstado.muerto
                                         ? 'Muerto'
                                         : 'Vivo'}
                                     </TableCell>
@@ -837,8 +895,7 @@ function EditMaternidad() {
                             color="text.secondary"
                             align="center"
                           >
-                            Sin lechones registrados. Agregue un lechón para
-                            iniciar con la lactancia de la cerda.
+                            Sin lechones registrados. <br/> Agregue un lechón para iniciar con la lactancia de la cerda.
                           </Typography>
                         </Box>
                       )}

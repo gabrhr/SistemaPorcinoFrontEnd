@@ -1,29 +1,27 @@
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
-import { Button, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { controlCerdasQueryAPI, controlCerdasRegisterAPI } from 'src/utils/apiUrls';
+import { loteDeleteAPI, servicioQueryAPI } from 'src/utils/apiUrls';
+import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
-import { resultCodeOk } from 'src/utils/defaultValues';
+import { Tab, Tabs } from 'react-bootstrap';
 import { errorMessage, successMessage } from 'src/utils/notifications';
-import AddControlMasivoModal from './AddControlMasivoModal';
 import Results from './Results';
 
-const tituloPagina = "Alimentación Cerdas"
+const tituloPagina = "Control Sanitario de Cerdas"
 
-function ControlCerdasListado() {
+function LineasGeneticasListado() {
     const [itemListado, setItemListado] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [openMasivo, setOpenMasivo] = useState(false);
 
     const isMountedRef = useRefMounted();
     const {user} = useAuth();
@@ -31,7 +29,7 @@ function ControlCerdasListado() {
 
     const defaultObj = {
         "codigo": "",
-        "estado": "",
+        "tipo": "",
         "pageNumber": 1,
         "maxResults": 10,
         "granjaId": user.granjaId
@@ -40,7 +38,7 @@ function ControlCerdasListado() {
     const getListado = useCallback(async (reqObj) => {
       setLoading(true)
         try {
-          const response = await certifyAxios.post(controlCerdasQueryAPI, reqObj);
+          const response = await certifyAxios.post(servicioQueryAPI, reqObj);
           if (isMountedRef.current) {
             if(response.data.list.length === 0 && response.data.total > 0) {
               const lastPage = Math.ceil(response.data.total / reqObj.maxResults);
@@ -73,38 +71,34 @@ function ControlCerdasListado() {
         getListado(reqObj);
       }, [getListado]);
     
-    const onPageParamsChange = (reqObj) => {
-      if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
-        setPageSize(reqObj.maxResults) // "limit" en Results.js
-      }
-      getListado(reqObj)
-    }    
-    
-    // modal control masivo
-    const closeControlModal = () => {
-      setOpenMasivo(false);
-    };
-  
-    // agregar api
-    const agregarControl = async (reqObj) => {
-      try {
-        const response = await certifyAxios.post(controlCerdasRegisterAPI, reqObj);
-        if (response.data?.resultCode === resultCodeOk) {
-          const reqObj = defaultObj;
-          getListado(reqObj);
-          successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
+      const onPageParamsChange = (reqObj) => {
+        if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
+          setPageSize(reqObj.maxResults) // "limit" en Results.js
         }
-        closeControlModal();
+        getListado(reqObj)
+      }    
+
+    // delete
+    const deleteItemById = async (id, afterDelete) => {
+      try {
+        const reqObj = {
+          id
+        }
+        const response = await certifyAxios.post(loteDeleteAPI, reqObj);
+        if(response.data?.resultCode === resultCodeOk){
+          getListado(defaultObj)
+          successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
+        }
       } catch (error) {
-        console.error(error);
-        showUserErrors(error, 'No se ha podido agregar. Inténtelo de nuevo');
+        console.error(error)
+        showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
       }
-    };
+      afterDelete()
+    }
     
-      
     // add or edit
     const navigateToDetalle = (id) => {
-      navigate('/sp/porcicultor/alimentacion/cerdas/detalle', {state:{cerdaId: id}});
+      navigate('/sp/porcicultor/sanidad/cerdas/lote-detalle', {state:{loteId: id}});
     };
 
     return(
@@ -119,18 +113,6 @@ function ControlCerdasListado() {
                         {tituloPagina}
                     </Typography>
                 </Grid>
-                <Grid item>
-                    <Button
-                    sx={{
-                        mt: { xs: 2, sm: 0 }
-                    }}
-                    onClick={() => {setOpenMasivo(true)}}
-                    variant="contained"
-                    startIcon={<AddTwoToneIcon fontSize="small" />}
-                    >
-                      Control por Estado 
-                    </Button>
-                </Grid>
                 </Grid>
             </PageTitleWrapper>
             <Grid
@@ -143,28 +125,42 @@ function ControlCerdasListado() {
                   justifyContent="center"
             >
                 <Grid item xs={12}>
-                        <Results
-                            itemListado={itemListado} 
-                            getListado={getListado}
-                            onPageParamsChange={onPageParamsChange}
-                            numberOfResults={numberOfResults}
-                            pageNumber={pageNumber}
-                            setPageNumber={setPageNumber}
-                            navigateToDetalle={navigateToDetalle}
-                            granjaId={user.granjaId}
-                            loading={loading}
-                        />
+                <Tabs defaultActiveKey={1} id="uncontrolled-tab-sanitario">
+                <Tab eventKey={1} title="Lotes de Servicio">
+                  <Results
+                    itemListado={itemListado} 
+                    getListado={getListado}
+                    onPageParamsChange={onPageParamsChange}
+                    numberOfResults={numberOfResults}
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    deleteById={deleteItemById}
+                    navigateToDetalle={navigateToDetalle}
+                    granjaId={user.granjaId}
+                    loading={loading}
+                  />
+                </Tab>  
+                {/* <Tab eventKey={2} title="Cerdas de Reemplazo">
+                  <ResultsReemplazo
+                    itemListado={itemListado} 
+                    getListado={getListado}
+                    onPageParamsChange={onPageParamsChange}
+                    numberOfResults={numberOfResults}
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    deleteById={deleteItemById}
+                    navigateToDetalle={navigateToDetalle}
+                    granjaId={user.granjaId}
+                    loading={loading}
+                  />
+                </Tab>   */}
+                </Tabs>  
+                        
                 </Grid>
             </Grid>
-            {openMasivo && <AddControlMasivoModal
-            open={openMasivo}
-            modalClose={closeControlModal}
-            handleAction={agregarControl}
-            granjaId={user.granjaId}
-            />}
         </>
     )
     
 }
 
-export default ControlCerdasListado;
+export default LineasGeneticasListado;

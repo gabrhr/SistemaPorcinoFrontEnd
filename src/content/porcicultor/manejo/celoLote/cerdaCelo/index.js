@@ -229,13 +229,14 @@ function AddEditAlimento() {
         <Grid container alignItems="center">
           <Grid item xs={12} md={12} sm={12} mb={2}>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link underline="hover" color="inherit" href={mainUrl}>
+              <Link underline="hover" color="inherit" href={mainUrl} sx={{cursor: "pointer"}}>
                 Listado de Celos
               </Link>
               <Link
                 underline="hover"
                 color="inherit"
                 onClick={navigateToLoteList}
+                sx={{cursor: "pointer"}}
               >
                 Celo del Lote
               </Link>

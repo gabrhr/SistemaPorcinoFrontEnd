@@ -21,6 +21,8 @@ import { Helmet } from 'react-helmet-async';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 
+import BackdropLoading from 'src/components/BackdropLoading';
+import CircularLoading from 'src/components/CircularLoading';
 import InputForm from 'src/components/Form/InputForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import { errorMessage, successMessage } from 'src/utils/notifications';
@@ -28,6 +30,7 @@ import { errorMessage, successMessage } from 'src/utils/notifications';
 function EditParametros() {
   const [item, setItem] = useState(undefined);
   const [editActive, setEditActive] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
   const isMountedRef = useRefMounted();
@@ -67,17 +70,20 @@ function EditParametros() {
 
   // edit
   const editItemById = async (reqObj, resetForm) => {
+    setLoading(true)
     try {
       const response = await certifyAxios.post(paramatroUpdateAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         const request = {
           id: user.granjaId
         };
-        getItemById(request);
+        await getItemById(request);
+        setLoading(false)
         successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
       }
     } catch (error) {
       resetForm()
+      setLoading(false)
       console.error(error);
       showUserErrors(error, "No se ha podido editar. Inténtelo de nuevo")
     }
@@ -234,6 +240,9 @@ function EditParametros() {
                   }}
               >
               {/* Form */}
+              {item === undefined && <CircularLoading/>}
+              <BackdropLoading open={loading}/>
+              {item !== undefined && 
               <Grid container justifyContent="center" spacing={2}>
               <SubtitleForm subtitle='Servicio'/>
               <Grid container item  xs={12} sm={12} md={12} spacing={4} mb={2}>
@@ -253,6 +262,7 @@ function EditParametros() {
                       type='number'
                       inputProps={{ min: '0' }}
                       disabled={!editActive}
+                      notlabel
                     />
                 </Grid>
               </Grid>
@@ -275,6 +285,7 @@ function EditParametros() {
                       type='number'
                       inputProps={{ min: '0' }}
                       disabled={!editActive}
+                      notlabel
                     />
                 </Grid>
                 {/* Paso a sala */}
@@ -293,6 +304,7 @@ function EditParametros() {
                       type='number'
                       inputProps={{ min: '0' }}
                       disabled={!editActive}
+                      notlabel
                     />
                 </Grid>
                 {/* parto */}
@@ -311,6 +323,7 @@ function EditParametros() {
                       type='number'
                       inputProps={{ min: '0' }}
                       disabled={!editActive}
+                      notlabel
                     />
                 </Grid>
               </Grid>
@@ -333,6 +346,7 @@ function EditParametros() {
                     type='number'
                     inputProps={{ min: '0' }}
                     disabled={!editActive}
+                    notlabel
                   />
                 </Grid>
                 {/* max destete */}
@@ -351,6 +365,7 @@ function EditParametros() {
                     type='number'
                     inputProps={{ min: '0' }}
                     disabled={!editActive}
+                    notlabel
                   />
                 </Grid>
               </Grid>
@@ -373,6 +388,7 @@ function EditParametros() {
                     type='number'
                     inputProps={{ min: '0' }}
                     disabled={!editActive}
+                    notlabel
                   />
                 </Grid>
               </Grid>
@@ -395,10 +411,11 @@ function EditParametros() {
                     type='number'
                     inputProps={{ min: '0' }}
                     disabled={!editActive}
+                    notlabel
                   />
                 </Grid>
               </Grid>
-              </Grid>
+              </Grid>}
               </DialogContent>
             </form>
           )}

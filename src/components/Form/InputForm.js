@@ -3,7 +3,7 @@ import { TextField } from "@mui/material"
 
 function InputForm({inputName, touched, errors,
      placeholder = "", label,handleBlur, handleChange, value,
-     multiline = false, type = "text", disabled = false, inputProps={}
+     multiline = false, type = "text", disabled = false, inputProps={}, notlabel = false
     }) {
     return(
         <TextField
@@ -23,6 +23,7 @@ function InputForm({inputName, touched, errors,
             type={type}
             disabled={disabled}
             inputProps={inputProps}
+            sx={notlabel && { '& legend': { display: 'none' }, '& fieldset': { top: 0 }} || {}}
             />
     )
 }

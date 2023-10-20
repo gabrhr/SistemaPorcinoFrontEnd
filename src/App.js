@@ -11,7 +11,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import { CssBaseline } from '@mui/material';
-import { es } from 'date-fns/locale';
+import { esES } from '@mui/x-date-pickers/locales';
+import "dayjs/locale/es";
 import AppInit from './components/AppInit';
 import ThemeProvider from './theme/ThemeProvider';
 
@@ -21,7 +22,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={es}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es" localeText={esES.components.MuiLocalizationProvider.defaultProps.localeText}>
           <CssBaseline />
           {auth.isInitialized ? content : <AppInit />}
           <ToastContainer

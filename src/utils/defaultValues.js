@@ -88,6 +88,12 @@ export const engordeEstado = {
   cebo: "Cebo"
 }
 
+export const lechonEstado = {
+  muerto: "Muerto",
+  destetado: "Destetado",
+  lactante: "Lactante"
+}
+
 // Obtener estados
 
 export const listEstadosCerda = () => {
@@ -95,7 +101,7 @@ export const listEstadosCerda = () => {
   const estadosList = []
 
   estados.forEach((value) => {
-    const text = value === 'vacia' ? 'Vacía' : value; // Agregar tilde solo a "Vacia"
+    const text = value === 'Vacia' ? 'Vacía' : value; // Agregar tilde solo a "Vacia"
     estadosList.push({value, text})
   })
 
@@ -169,3 +175,13 @@ export const listEstadoEngorde = () => {
 
   return out
 }
+
+
+export const fertilidad = [
+  "99 %",
+  "97 %",
+  "98 %",
+  "95 %",
+  "99 %",
+  "0 %"
+]

@@ -101,6 +101,7 @@ export const engordeDeleteAPI = `${urlEngorde}delete`
 export const preceboTerminarAPI = `${urlEngorde}precebo/terminar`
 export const ceboTerminarAPI = `${urlEngorde}cebo/terminar`
 export const pesosRegisterAPI = `${urlEngorde}peso/register`
+export const lechonesCamadaIdAPI = `${urlEngorde}camada/lechones`
 
 
 // Granja Parametros

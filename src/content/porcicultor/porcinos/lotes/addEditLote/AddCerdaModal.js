@@ -118,8 +118,9 @@ function AddCerdaModal({
     if(removeList && removeList.length > 0){
         listado = listado.concat([...removeList])
     }
-    return listado
-
+    const uniqueSet = new Set(listado.map(JSON.stringify));
+    const uniqueArray = Array.from(uniqueSet).map(JSON.parse);
+    return uniqueArray
   };
   
 
@@ -242,7 +243,7 @@ function AddCerdaModal({
                 </Box>
               </Box>
               <Divider />
-              <TableContainer sx={{height: (listFiltered?.length !== 0 || listFiltered !== undefined)? "50vh": "10vh", overflowY:"auto"}}>
+              <TableContainer sx={{height: (listFiltered?.length === 0)? "10vh": "50vh", overflowY:"auto"}}>
                 <Table sx={{height:"max-content"}}>
                   <TableHead>
                     <TableRow>
