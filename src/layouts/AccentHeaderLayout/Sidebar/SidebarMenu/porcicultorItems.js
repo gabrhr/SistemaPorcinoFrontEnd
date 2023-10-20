@@ -62,11 +62,12 @@ const menuItems = [
           {
             name: 'Control Cerdas',
             link: '/sp/porcicultor/sanidad/cerdas'
-          }/* ,
+          } ,
           {
             name: 'Control Lechones',
-            link: '/sp/porcicultor/sanidad/lechones'
-          },
+            link: '/sp/porcicultor/sanidad/engorde'
+          }
+          /* ,
           {
             name: 'Calendario',
             link: '/sp/porcicultor/sanidad/calendario'
@@ -85,11 +86,11 @@ const menuItems = [
           {
             name: 'Control Cerdas',
             link: '/sp/porcicultor/alimentacion/cerdas'
-          }/* ,
+          } ,
           {
             name: 'Control Engorde',
-            link: '/sp/porcicultor/alimentacion/lechones'
-          } */
+            link: '/sp/porcicultor/alimentacion/engorde'
+          }
         ]
       },
       {

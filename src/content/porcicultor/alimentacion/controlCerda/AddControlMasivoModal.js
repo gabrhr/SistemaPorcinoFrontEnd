@@ -5,8 +5,8 @@ import { forwardRef, useEffect, useState } from "react";
 import DatePickerForm from "src/components/Form/DatePickerForm";
 import InputForm from "src/components/Form/InputForm";
 import SelectForm from "src/components/Form/SelectForm";
-import { alimentoQueryAllAPI } from "src/utils/apiUrls";
-import { listEstadosCerda, resultCodeOk } from "src/utils/defaultValues";
+import { alimentoQueryAllAPI, controlCerdaEstadoTotaldAPI } from "src/utils/apiUrls";
+import { cerdaEstados, listEstadosCerda, resultCodeOk } from "src/utils/defaultValues";
 import { errorMessage } from "src/utils/notifications";
 import certifyAxios from "src/utils/spAxios";
 import * as Yup from 'yup';
@@ -23,7 +23,7 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const cerdaEstados = listEstadosCerda()
+const estadosCerda = listEstadosCerda()
 
 function AddControlMasivoModal ({
     open, 
@@ -33,32 +33,50 @@ function AddControlMasivoModal ({
 }){
     
     const [list, setList] = useState(undefined);
+    const [estadoCount, setEstadoCount] = useState(undefined)
 
-    // get cerdas
+    // get alimentos
     const getAlimentos = async () => {
-    const reqObj = {
-      categoria: "cerda",
-      granjaId
+        const reqObj = {
+        categoria: "cerda",
+        granjaId
+        };
+        try {
+        const response = await certifyAxios.post(alimentoQueryAllAPI, reqObj);
+        if (response.data?.resultCode === resultCodeOk) {
+            setList(response.data.list || []);
+        }
+        } catch (err) {
+        console.error(err);
+        setList([]);
+
+        errorMessage('No se ha podido obtener los alimentos')
+        }
     };
-    try {
-      const response = await certifyAxios.post(alimentoQueryAllAPI, reqObj);
-      if (response.data?.resultCode === resultCodeOk) {
-        setList(response.data.list || []);
-      }
-    } catch (err) {
-      console.error(err);
-      setList([]);
 
-      errorMessage('No se ha podido obtener los alimentos')
-    }
-  };
+    const getEstadosTotal = async () => {
+        const reqObj = {
+            granjaId
+        };
+        try {
+        const response = await certifyAxios.post(controlCerdaEstadoTotaldAPI, reqObj);
+        if (response.status === 200 && response.data) {
+            setEstadoCount(response.data);
+        }
+        } catch (err) {
+        console.error(err);
+        setList([]);
 
+        errorMessage('No se ha podido obtener los alimentos')
+        }
+    };
 
     useEffect(() => {
         let isMounted = true;
 
         if (isMounted) {
-          getAlimentos();
+            getEstadosTotal()
+            getAlimentos();
         }
 
         return () => {
@@ -124,9 +142,11 @@ function AddControlMasivoModal ({
             })}
             onSubmit={async (values, {resetForm}) => {      
                 const alimentoIndex = list.findIndex(e => e.id === values.alimentoId)
+                const totalCerdas = estadoCount &&  (estadoCount[values.estado]?? 0) || 0
+                const consumoTotal = values.cantidadConsumida*totalCerdas || 0
                 if(alimentoIndex !== -1){
                     const alimento = list[alimentoIndex]
-                    if(alimento.cantidadActual < values.cantidadConsumida){
+                    if(alimento.cantidadActual < consumoTotal){
                         errorMessage("La cantidad consumida no debe exceder el stock")
                         return;
                     }
@@ -135,8 +155,11 @@ function AddControlMasivoModal ({
                 const request = {
                     fechaConsumo: values.fechaConsumo,
                     cantidadConsumida: values.cantidadConsumida,
+                    consumoTotal,
                     alimentoId: values.alimentoId,
-                    estado: values.estado
+                    estado: values.estado,
+                    totalCerdas,
+                    granjaId
                 }                
                 await handleAction(request, resetForm)
             }}
@@ -170,10 +193,12 @@ function AddControlMasivoModal ({
                             errors={errors}
                             onBlur={handleBlur}
                             touched={touched}
+                            disabled={estadoCount === undefined}
                             >
-                                {cerdaEstados && cerdaEstados.map((type) => (
-                                <MenuItem key={type.value} value={type.value}>
-                                    {`${type.text}`}
+                                {estadosCerda && estadoCount !== undefined && estadosCerda.map((type) => ( 
+                                    type.value !== cerdaEstados.descartada &&
+                                <MenuItem key={type.value} value={type.value}disabled={estadoCount[type.value] === undefined}>
+                                    {`${type.text} - ${estadoCount[type.value] || 0} cerda(s)`}
                                 </MenuItem>
                                 ))}
                             </SelectForm>
@@ -186,7 +211,7 @@ function AddControlMasivoModal ({
                         >
                             <Typography >
                                 Total cerdas en estado:
-                                <b>{` ${0}`}</b>
+                                <b>{` ${ estadoCount && (estadoCount[values.estado]?? 0) || 0}`}</b>
                             </Typography>
                         </Grid>
                         <Grid
@@ -292,7 +317,7 @@ function AddControlMasivoModal ({
                         >
                             <Typography >
                                 Consumo total:
-                                <b>{` ${values.cantidadConsumida} kg`}</b>
+                                <b>{` ${estadoCount && (values.cantidadConsumida*(estadoCount[values.estado]?? 0)) || 0} kg`}</b>
                             </Typography>
                         </Grid>
                     </Grid>

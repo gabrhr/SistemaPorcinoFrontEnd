@@ -41,14 +41,14 @@ export const allStatus = {
 
 // Estados
 export const cerdaEstados = {
-  reemplazo: 'Reemplazo',
-  porservir: 'Por servir',
-  servida: 'Servida',
-  gestante:'Gestante',
-  parida: 'Parida',
-  lactante:'Lactante',
   destetada: 'Destetada',
   descartada: 'Descartada',
+  gestante:'Gestante',
+  lactante:'Lactante',
+  parida: 'Parida',
+  porservir: 'Por servir',
+  servida: 'Servida',
+  reemplazo: 'Reemplazo',
   vacia:'Vacia'
 }
 

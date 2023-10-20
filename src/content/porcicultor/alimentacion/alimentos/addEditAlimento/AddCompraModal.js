@@ -166,10 +166,10 @@ function AddCompraModal ({
                             sm={12}
                             md={10}
                         >
-            <Typography >
-                Precio total de compra:
-                <b>{` S/. ${values.cantidad*values.precioUnitario}`}</b>
-            </Typography>
+                            <Typography >
+                                Precio total de compra:
+                                <b>{` S/. ${values.cantidad*values.precioUnitario}`}</b>
+                            </Typography>
                         </Grid>
                     </Grid>
 

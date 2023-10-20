@@ -126,5 +126,13 @@ export const compraDeleteAPI = `${urlAlimento}compra/delete`
 // Alimentacion - Control cerdas
 export const controlCerdasQueryAPI = `${urlAlimento}controlCerda/query`
 export const controlCerdasRegisterAPI = `${urlAlimento}controlCerda/register`
+export const controlCerdasMasivoAPI = `${urlAlimento}controlCerda/masivo`
 export const controlCerdasDeleteAPI = `${urlAlimento}controlCerda/delete`
 export const controlCerdasFindByIdAPI = `${urlAlimento}controlCerda/find`
+export const controlCerdaEstadoTotaldAPI = `${urlAlimento}controlCerda/estado`
+
+// Alimentacion - Control engorde
+export const controlEngordeRegisterAPI = `${urlAlimento}controlEngorde/register`
+export const controlEngordeQueryAPI = `${urlAlimento}controlEngorde/query`
+export const controlEngordeDeleteAPI = `${urlAlimento}controlEngorde/delete`
+export const controlEngordeFindByIdAPI = `${urlAlimento}controlEngorde/find`

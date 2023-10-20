@@ -1,31 +1,25 @@
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Helmet } from 'react-helmet-async';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
-import { Button, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { controlCerdasMasivoAPI, controlCerdasQueryAPI } from 'src/utils/apiUrls';
-import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
+import { controlEngordeQueryAPI } from 'src/utils/apiUrls';
+import certifyAxios from 'src/utils/spAxios';
 
-import BackdropLoading from 'src/components/BackdropLoading';
-import { resultCodeOk } from 'src/utils/defaultValues';
-import { errorMessage, successMessage } from 'src/utils/notifications';
-import AddControlMasivoModal from './AddControlMasivoModal';
+import { errorMessage } from 'src/utils/notifications';
 import Results from './Results';
 
-const tituloPagina = "Alimentación Cerdas"
+const tituloPagina = "Alimentación Engorde"
 
-function ControlCerdasListado() {
+function ControlLechonListado() {
     const [itemListado, setItemListado] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [loadingMasivo, setLoadingMasivo] = useState(false);
-    const [openMasivo, setOpenMasivo] = useState(false);
 
     const isMountedRef = useRefMounted();
     const {user} = useAuth();
@@ -42,7 +36,7 @@ function ControlCerdasListado() {
     const getListado = useCallback(async (reqObj) => {
       setLoading(true)
         try {
-          const response = await certifyAxios.post(controlCerdasQueryAPI, reqObj);
+          const response = await certifyAxios.post(controlEngordeQueryAPI, reqObj);
           if (isMountedRef.current) {
             if(response.data.list.length === 0 && response.data.total > 0) {
               const lastPage = Math.ceil(response.data.total / reqObj.maxResults);
@@ -80,36 +74,10 @@ function ControlCerdasListado() {
         setPageSize(reqObj.maxResults) // "limit" en Results.js
       }
       getListado(reqObj)
-    }    
-    
-    // modal control masivo
-    const closeControlModal = () => {
-      setOpenMasivo(false);
-    };
-  
-    // agregar api
-    const agregarControl = async (reqObj) => {
-      try {
-        setLoadingMasivo(true)
-        const response = await certifyAxios.post(controlCerdasMasivoAPI, reqObj);
-        if (response.data?.resultCode === resultCodeOk) {
-          closeControlModal();
-          const reqObj = defaultObj;
-          getListado(reqObj);
-          setLoadingMasivo(false)
-          successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
-        }
-      } catch (error) {
-        setLoadingMasivo(false)
-        console.error(error);
-        showUserErrors(error, 'No se ha podido agregar. Inténtelo de nuevo');
-      }
-    };
-    
-      
+    }   
     // add or edit
     const navigateToDetalle = (id) => {
-      navigate('/sp/porcicultor/alimentacion/cerdas/detalle', {state:{cerdaId: id}});
+      navigate('/sp/porcicultor/alimentacion/engorde/detalle', {state:{engordeId: id}});
     };
 
     return(
@@ -124,21 +92,8 @@ function ControlCerdasListado() {
                         {tituloPagina}
                     </Typography>
                 </Grid>
-                <Grid item>
-                    <Button
-                    sx={{
-                        mt: { xs: 2, sm: 0 }
-                    }}
-                    onClick={() => {setOpenMasivo(true)}}
-                    variant="contained"
-                    startIcon={<AddTwoToneIcon fontSize="small" />}
-                    >
-                      Control por Estado 
-                    </Button>
-                </Grid>
                 </Grid>
             </PageTitleWrapper>
-            <BackdropLoading open={loadingMasivo}/>
             <Grid
                 sx={{
                     px: 4,
@@ -149,28 +104,22 @@ function ControlCerdasListado() {
                   justifyContent="center"
             >
                 <Grid item xs={12}>
-                        <Results
-                            itemListado={itemListado} 
-                            getListado={getListado}
-                            onPageParamsChange={onPageParamsChange}
-                            numberOfResults={numberOfResults}
-                            pageNumber={pageNumber}
-                            setPageNumber={setPageNumber}
-                            navigateToDetalle={navigateToDetalle}
-                            granjaId={user.granjaId}
-                            loading={loading}
-                        />
+                  <Results
+                      itemListado={itemListado} 
+                      getListado={getListado}
+                      onPageParamsChange={onPageParamsChange}
+                      numberOfResults={numberOfResults}
+                      pageNumber={pageNumber}
+                      setPageNumber={setPageNumber}
+                      navigateToDetalle={navigateToDetalle}
+                      granjaId={user.granjaId}
+                      loading={loading}
+                  />
                 </Grid>
             </Grid>
-            {openMasivo && <AddControlMasivoModal
-            open={openMasivo}
-            modalClose={closeControlModal}
-            handleAction={agregarControl}
-            granjaId={user.granjaId}
-            />}
         </>
     )
     
 }
 
-export default ControlCerdasListado;
+export default ControlLechonListado;

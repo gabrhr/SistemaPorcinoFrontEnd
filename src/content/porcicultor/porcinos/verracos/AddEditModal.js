@@ -106,7 +106,7 @@ function AddEditModal ({
                                 helperText={touched.codigo && errors.codigo}
                                 name="codigo"
                                 placeholder="Ejemplo: VER001"
-                                label="Codigo"
+                                label="Código"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
                                 variant="outlined"

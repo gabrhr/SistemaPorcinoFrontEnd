@@ -27,16 +27,17 @@ function AddControlModal ({
     open, 
     modalClose,
     handleAction, 
-    cerdaId,
+    engordeId,
+    totalLechones = 0,
     granjaId
 }){
     
     const [list, setList] = useState(undefined);
 
-    // get cerdas
+    // get alimentos
     const getAlimentos = async () => {
     const reqObj = {
-      categoria: "cerda",
+      categoria: "lechon",
       granjaId
     };
     try {
@@ -120,11 +121,10 @@ function AddControlModal ({
                 alimentoId: Yup.number().min(0, 'Seleccione el alimento').required('Seleccione el alimento')
             })}
             onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
                 const alimentoIndex = list.findIndex(e => e.id === values.alimentoId)
                 if(alimentoIndex !== -1){
                     const alimento = list[alimentoIndex]
-                    if(alimento.cantidadActual < values.cantidadConsumida){
+                    if(alimento.cantidadActual < (values.cantidadConsumida*totalLechones)){
                         errorMessage("La cantidad consumida no debe exceder el stock")
                         setSubmitting(false)   
                         return;
@@ -133,12 +133,11 @@ function AddControlModal ({
 
                 const request = {
                     fechaConsumo: values.fechaConsumo,
-                    cantidadConsumida: values.cantidadConsumida,
+                    cantidadConsumida: values.cantidadConsumida*totalLechones,
                     alimentoId: values.alimentoId,
-                    id: cerdaId
+                    id: engordeId
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid, setFieldValue }) => (
@@ -221,7 +220,7 @@ function AddControlModal ({
                         </Grid>
                         <Grid
                             sx={{
-                                my: `${theme.spacing(2)}`,
+                                my: `${theme.spacing(3)}`,
                                 mr:`${theme.spacing(1)}`,
                                 paddingRight: 3
                             }}
@@ -233,7 +232,7 @@ function AddControlModal ({
                             <InputForm
                                 inputName="cantidadConsumida"
                                 value={values.cantidadConsumida}
-                                label="Cantidad (kg)"
+                                label="Cantidad por cada lechón(kg)"
                                 placeholder="Cantidad en kg"
                                 handleChange={handleChange}
                                 errors={errors}
@@ -244,6 +243,37 @@ function AddControlModal ({
                                 inputProps={{ min: '0' }}
                                 />
                         </Grid>
+                        <Grid
+                            sx={{
+                                my: `${theme.spacing(1)}`,
+                                mr:`${theme.spacing(1)}`,
+                                paddingRight: 3
+                            }}
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                        >
+                            <Typography >
+                                Total de lechones:
+                                <b>{` ${totalLechones || 0}`}</b>
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            sx={{
+                                mr:`${theme.spacing(1)}`,
+                                paddingRight: 3
+                            }}
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                        >
+                            <Typography >
+                                Consumo total:
+                                <b>{` ${values.cantidadConsumida*totalLechones} kg`}</b>
+                            </Typography>
+                        </Grid>
                     </Grid>
 
                     {/* Botones */}
@@ -251,7 +281,7 @@ function AddControlModal ({
                         sx={{
                             display: 'flex',
                             flexDirection: 'row',
-                            justifyContent: 'center',
+                            justifyContent: 'flex-end',
                             pt: 2
                         }}
                         container

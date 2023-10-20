@@ -28,6 +28,7 @@ import {
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BackdropLoading from 'src/components/BackdropLoading';
 import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
@@ -41,7 +42,7 @@ import DeleteControlModal from './DeleteControlModal';
 
 const maxResults = 30;
 
-function AddEditAlimento() {
+function AddEditAlimentoCerda() {
   const [item, setItem] = useState(undefined);
   const [controlModal, setControlModal] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -58,7 +59,6 @@ function AddEditAlimento() {
   // get cerda by id
   const getItemById = useCallback(
     async (reqObj) => {
-      setLoading(true)
       try {
         const response = await certifyAxios.post(controlCerdasFindByIdAPI, reqObj);
         if (isMountedRef.current) {
@@ -67,12 +67,10 @@ function AddEditAlimento() {
             setControlesList(response.data.controles || []);
           }
         }
-        setLoading(false)
       } catch (err) {
         console.error(err);
         setItem({});
         setControlesList([]);
-        setLoading(false)
         if (err.response) {
           console.log(err.response);
         } else {
@@ -123,18 +121,21 @@ function AddEditAlimento() {
   // agregar api
   const agregarControl = async (reqObj) => {
     try {
+      setLoading(true)
       const response = await certifyAxios.post(controlCerdasRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
+        closeControlModal();
         const request = {
           id: item.cerda.id,
           granjaId: user.granjaId,
           maxResults
         };
-        getItemById(request);
+        await getItemById(request);
+        setLoading(false)
         successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
-      closeControlModal();
     } catch (error) {
+      setLoading(false)
       console.error(error);
       showUserErrors(error, 'No se ha podido agregar. Inténtelo de nuevo');
     }
@@ -157,6 +158,7 @@ function AddEditAlimento() {
   const deleteItem = async () => {
     // llamada
     try {
+      setLoading(true)
       const reqObj = {
         id: currentItem.id
       };
@@ -167,11 +169,13 @@ function AddEditAlimento() {
           granjaId: user.granjaId,
           maxResults
         };
-        getItemById(request);
+        await getItemById(request);
         closeDeleteModal();
+        setLoading(false)
         successMessage(response.data.userMsg ?? 'Se ha eliminado satisfactoriamente');
       }
     } catch (error) {
+      setLoading(false)
       closeDeleteModal();
       console.error(error);
       showUserErrors(error, 'No se ha podido eliminar. Inténtelo de nuevo');
@@ -212,7 +216,8 @@ function AddEditAlimento() {
       >
         <>
           {item === undefined && <CircularLoading/>}
-          {item !== undefined && !loading && (
+          <BackdropLoading open={loading}/>
+          {item !== undefined && (
             <Grid container justifyContent="center" spacing={2}>
               <SubtitleForm subtitle="Datos de Cerda" />
               <Grid container item xs={12} sm={12} md={12} spacing={4}>
@@ -232,7 +237,7 @@ function AddEditAlimento() {
                 <Grid item xs={12} sm={12} md={4}>
                   <DataView
                     label="Cantidad diario promedio (kg)"
-                    text={item?.consumoDiarioProm??'No se ha consumido'}
+                    text={item?.cerda?.consumoDiarioProm??'No se ha consumido'}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4}>
@@ -285,15 +290,21 @@ function AddEditAlimento() {
                           return (
                             <TableRow hover key={idx}>
                               <TableCell>
+                              <Typography noWrap>
                                 {(element?.fechaConsumo &&
                                   formatDate(element.fechaConsumo)) ||
                                   ''}
+                              </Typography> 
                               </TableCell>
                               <TableCell align="center">
+                                <Typography noWrap>
                                 {element?.alimento?.nombre ?? '-'}
+                                </Typography> 
                               </TableCell>
                               <TableCell align="center">
+                                <Typography noWrap>
                                 {element?.cantidadConsumida ?? '0'}
+                                </Typography> 
                               </TableCell>
                               <TableCell align="center">
                                 <Tooltip title="Remover control">
@@ -360,4 +371,4 @@ function AddEditAlimento() {
   );
 }
 
-export default AddEditAlimento;
+export default AddEditAlimentoCerda;

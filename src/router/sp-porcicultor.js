@@ -39,6 +39,8 @@ const Alimentos = Loader(lazy(() => import('src/content/porcicultor/alimentacion
 const AlimentoDetalle = Loader(lazy(() => import('src/content/porcicultor/alimentacion/alimentos/addEditAlimento')));
 const AlimentoCerdaList = Loader(lazy(() => import('src/content/porcicultor/alimentacion/controlCerda')));
 const AlimentoCerdaDetalle = Loader(lazy(() => import('src/content/porcicultor/alimentacion/controlCerda/editControl')));
+const AlimentoEngordeList = Loader(lazy(() => import('src/content/porcicultor/alimentacion/controlLechon')));
+const AlimentoEngordeDetalle = Loader(lazy(() => import('src/content/porcicultor/alimentacion/controlLechon/editControl')));
 
 // Sanidad
 const SanidadCerdas = Loader(lazy(() => import('src/content/porcicultor/sanidad/controlCerda')));
@@ -137,6 +139,12 @@ const porcicultorRoutes = [
     },
     {path: 'alimentacion/cerdas/detalle',
      element: <AlimentoCerdaDetalle/>
+    },
+    {path: 'alimentacion/engorde',
+     element: <AlimentoEngordeList/>
+    },
+    {path: 'alimentacion/engorde/detalle',
+     element: <AlimentoEngordeDetalle/>
     },
     {path: 'sanidad/cerdas',
      element: <SanidadCerdas/>

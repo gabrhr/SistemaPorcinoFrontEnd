@@ -598,17 +598,23 @@ function AddEditAlimento() {
                               return (
                               <TableRow hover key={idx}>
                                 <TableCell>
+                                  <Typography noWrap>
                                   {element?.fechaCompra && formatDate(element.fechaCompra) || ""}
+                                  </Typography> 
                                 </TableCell>
                                 <TableCell align='center'>
-                              <CerdaEstadoChip estado={element?.cantidad ?? '0'} />
-                            </TableCell>
+                                  <CerdaEstadoChip estado={element?.cantidad ?? '0'} />
+                                </TableCell>
                                 <TableCell align='center'>
+                                  <Typography noWrap>
                                   {element?.precioUnitario?? "0"}
+                                  </Typography> 
                                 </TableCell>
                                 <TableCell align='center'>
+                                  <Typography noWrap>
                                   {(element && element.precioUnitario && element.cantidad) && 
                                   element.precioUnitario*element.cantidad || 0}
+                                  </Typography>
                                 </TableCell>
                                 
                                 <TableCell align='center'>

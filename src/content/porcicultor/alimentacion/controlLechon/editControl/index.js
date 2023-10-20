@@ -2,9 +2,9 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
-  controlCerdasDeleteAPI,
-  controlCerdasRegisterAPI,
-  loteFindByIdAPI
+  controlEngordeDeleteAPI,
+  controlEngordeFindByIdAPI,
+  controlEngordeRegisterAPI
 } from 'src/utils/apiUrls';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
@@ -28,19 +28,21 @@ import {
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BackdropLoading from 'src/components/BackdropLoading';
+import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
 import { formatDate } from 'src/utils/dataFormat';
-import { resultCodeOk } from 'src/utils/defaultValues';
+import { engordeEstado, resultCodeOk } from 'src/utils/defaultValues';
 import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddControlModal from './AddControlModal';
 import DeleteControlModal from './DeleteControlModal';
 
 const maxResults = 30;
 
-function AddEditAlimento() {
+function AddEditAlimentoEngorde() {
   const [item, setItem] = useState(undefined);
   const [controlModal, setControlModal] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -54,24 +56,21 @@ function AddEditAlimento() {
   const isMountedRef = useRefMounted();
   const { user } = useAuth();
 
-  // get cerda by id
+  // get item by id
   const getItemById = useCallback(
     async (reqObj) => {
-      setLoading(true)
       try {
-        const response = await certifyAxios.post(loteFindByIdAPI, reqObj);
+        const response = await certifyAxios.post(controlEngordeFindByIdAPI, reqObj);
         if (isMountedRef.current) {
           if (response.status === 200 && response.data) {
             setItem(response.data);
             setControlesList(response.data.controles || []);
           }
         }
-        setLoading(false)
       } catch (err) {
         console.error(err);
         setItem({});
         setControlesList([]);
-        setLoading(false)
         if (err.response) {
           console.log(err.response);
         } else {
@@ -84,10 +83,12 @@ function AddEditAlimento() {
   );
 
   useEffect(() => {
-    if (location.state.loteId !== -1) {
+    if (location.state.engordeId !== -1) {
       // id de navigate
       const request = {
-        id: location.state.loteId
+        id: location.state.engordeId,
+        granjaId: user.granjaId,
+        maxResults
       };
       getItemById(request);
     } else {
@@ -120,18 +121,21 @@ function AddEditAlimento() {
   // agregar api
   const agregarControl = async (reqObj) => {
     try {
-      const response = await certifyAxios.post(controlCerdasRegisterAPI, reqObj);
+      setLoading(true)
+      const response = await certifyAxios.post(controlEngordeRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
+        closeControlModal();
         const request = {
-          id: item.cerda.id,
+          id: item.engorde.id,
           granjaId: user.granjaId,
           maxResults
         };
         getItemById(request);
+        setLoading(false)
         successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
       }
-      closeControlModal();
     } catch (error) {
+      setLoading(false)
       console.error(error);
       showUserErrors(error, 'No se ha podido agregar. Inténtelo de nuevo');
     }
@@ -154,22 +158,24 @@ function AddEditAlimento() {
   const deleteItem = async () => {
     // llamada
     try {
+      setLoading(true)
+      closeDeleteModal();
       const reqObj = {
         id: currentItem.id
       };
-      const response = await certifyAxios.post(controlCerdasDeleteAPI, reqObj);
+      const response = await certifyAxios.post(controlEngordeDeleteAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         const request = {
-          id: item.cerda.id,
+          id: item.engorde.id,
           granjaId: user.granjaId,
           maxResults
         };
-        getItemById(request);
-        closeDeleteModal();
+        await getItemById(request);
+        setLoading(false)
         successMessage(response.data.userMsg ?? 'Se ha eliminado satisfactoriamente');
       }
     } catch (error) {
-      closeDeleteModal();
+      setLoading(false)
       console.error(error);
       showUserErrors(error, 'No se ha podido eliminar. Inténtelo de nuevo');
     }
@@ -179,7 +185,7 @@ function AddEditAlimento() {
   return (
     <>
       <Helmet>
-        <title>Control Lote</title>
+        <title>Control Engorde</title>
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
@@ -191,7 +197,7 @@ function AddEditAlimento() {
           <Grid item xs={10} md={6} sm={6} alignItems="left">
             {/* Titulo */}
             <Typography variant="h3" component="h3" gutterBottom>
-              Detalle de Control del Lote
+              Detalle de Alimentación
             </Typography>
           </Grid>
         </Grid>
@@ -208,30 +214,34 @@ function AddEditAlimento() {
         }}
       >
         <>
-          {item !== undefined && !loading && (
+          {item === undefined && <CircularLoading/>}
+          <BackdropLoading open={loading}/>
+          {item !== undefined && (
             <Grid container justifyContent="center" spacing={2}>
-              <SubtitleForm subtitle="Datos de Lote" />
+              <SubtitleForm subtitle="Datos de Engorde" />
               <Grid container item xs={12} sm={12} md={12} spacing={4}>
-                <Grid item xs={12} sm={12} md={4}>
-                  <DataView label="Código" text={item?.codigo || ''} />
+                <Grid item xs={12} sm={12} md={3}>
+                  <DataView label="Código" text={item?.engorde?.codigo || ''} />
                 </Grid>
-                <Grid item xs={12} sm={12} md={4}>
-                  <DataView label="Fecha de apertura" text={item?.fechaApertura && formatDate(item?.fechaApertura) || '-'} />
+                <Grid item xs={12} sm={12} md={3}>
+                  <DataView label="Fecha de nacimiento promedio" text={item?.engorde?.fechaPromNacimiento && formatDate(item?.engorde?.fechaPromNacimiento) || '-'} />
                 </Grid>
-                <Grid item xs={12} sm={12} md={4}>
-                  <DataView label="Total de Cerdas" text={item?.totalCerdas || '0'} />
+                <Grid item xs={12} sm={12} md={3}>
+                  <DataView label="Total de lechones" text={item?.engorde?.totalLechones || 0} />
+                </Grid>
+                <Grid item xs={12} sm={12} md={3}>
+                  <DataView lote status label="Estado" text={item?.engorde?.estado || ''} />
                 </Grid>
               </Grid>
-
               <SubtitleForm subtitle="Listado de controles" list>
-                <Button
+                {item?.engorde?.estado !== engordeEstado.finalizado &&<Button
                   variant="contained"
                   size="small"
                   color="primary"
                   onClick={openControlModal}
                 >
                   Agregar control
-                </Button>
+                </Button>}
               </SubtitleForm>
               <Grid item xs={12} sm={12} md={10}>
                 <Box
@@ -247,6 +257,11 @@ function AddEditAlimento() {
                       Total de controles del último mes:
                     </Typography>{' '}
                     <b>{controlesList.length || 0}</b>
+                    <br/>
+                    <Typography component="span" variant="subtitle1">
+                      Consumo total:
+                    </Typography>{' '}
+                    <b>{item?.cantidadConsumidaTotal ?? 0} {' kg'}</b>
                   </Box>
                 </Box>
                 <Divider />
@@ -254,9 +269,11 @@ function AddEditAlimento() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Fecha de Control</TableCell>
-                        <TableCell align="center">Tipo de Vacuna</TableCell>
-                        <TableCell align="center">Acciones</TableCell>
+                        <TableCell>Fecha de Consumo</TableCell>
+                        <TableCell align="center">Alimento</TableCell>
+                        <TableCell align="center">Cantidad</TableCell>
+                        {item?.engorde?.estado !== engordeEstado.finalizado && 
+                        <TableCell align="center">Acciones</TableCell>}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -265,13 +282,23 @@ function AddEditAlimento() {
                           return (
                             <TableRow hover key={idx}>
                               <TableCell>
-                                {(element?.fechaConsumo &&
-                                  formatDate(element.fechaConsumo)) ||
-                                  ''}
+                                <Typography noWrap>
+                                  {(element?.fechaConsumo &&
+                                    formatDate(element.fechaConsumo)) ||
+                                    ''}
+                                </Typography>
                               </TableCell>
                               <TableCell align="center">
-                                {element?.alimento?.nombre ?? '-'}
+                                <Typography noWrap>
+                                  {element?.alimento?.nombre ?? '-'}
+                                </Typography> 
                               </TableCell>
+                              <TableCell align="center">
+                                <Typography noWrap>
+                                  {element?.cantidadConsumida ?? '0'}
+                                </Typography> 
+                              </TableCell>
+                              {item?.engorde?.estado !== engordeEstado.finalizado && 
                               <TableCell align="center">
                                 <Tooltip title="Remover control">
                                   <IconButton
@@ -284,7 +311,7 @@ function AddEditAlimento() {
                                     <DeleteRoundedIcon />
                                   </IconButton>
                                 </Tooltip>
-                              </TableCell>
+                              </TableCell>}
                             </TableRow>
                           );
                         })}
@@ -302,18 +329,13 @@ function AddEditAlimento() {
                       color="text.secondary"
                       align="center"
                     >
-                      Sin controles registrados
+                      Sin controles registradas
                     </Typography>
                   </Box>
                 )}
               </Grid>
             </Grid>
           )}
-          {/* <Grid container justifyContent="center" spacing={2}>
-            <Alert severity="info">
-              Las fechas de vacunación son referenciales, ya que dependen de lo establecido por la marca
-            </Alert>
-          </Grid> */}
         </>
       </DialogContent>
       {controlModal && (
@@ -321,8 +343,9 @@ function AddEditAlimento() {
           open={controlModal}
           modalClose={closeControlModal}
           handleAction={agregarControl}
-          cerdaId={item?.cerda?.id}
+          engordeId={item?.engorde?.id}
           granjaId={user.granjaId}
+          totalLechones={item?.engorde?.totalLechones}
         />
       )}
       {openDelete && (
@@ -342,4 +365,4 @@ function AddEditAlimento() {
   );
 }
 
-export default AddEditAlimento;
+export default AddEditAlimentoEngorde;
