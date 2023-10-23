@@ -6,22 +6,27 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { loteDeleteAPI, servicioQueryAPI } from 'src/utils/apiUrls';
-import { resultCodeOk } from 'src/utils/defaultValues';
-import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
+import { sanitarioReemplazoQueryAPI, sanitarioServicioQueryAPI } from 'src/utils/apiUrls';
+import certifyAxios from 'src/utils/spAxios';
 
 import { Tab, Tabs } from 'react-bootstrap';
-import { errorMessage, successMessage } from 'src/utils/notifications';
+import { errorMessage } from 'src/utils/notifications';
 import Results from './Results';
+import ResultsReemplazo from './ResultsReemplazo';
 
 const tituloPagina = "Control Sanitario de Cerdas"
 
 function LineasGeneticasListado() {
     const [itemListado, setItemListado] = useState([])
+    const [itemListadoReemp, setItemListadoReemp] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
+    const [numberOfResultsReemp, setNumberOfResultsReemp] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [pageSizeReemp, setPageSizeReemp] = useState(10);
     const [pageNumber, setPageNumber] = useState(0);
+    const [pageNumberReemp, setPageNumberReemp] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [key, setKey] = useState(1);
 
     const isMountedRef = useRefMounted();
     const {user} = useAuth();
@@ -29,26 +34,69 @@ function LineasGeneticasListado() {
 
     const defaultObj = {
         "codigo": "",
-        "tipo": "",
+        "estado": "",
         "pageNumber": 1,
         "maxResults": 10,
         "granjaId": user.granjaId
+    }
+
+    const defaultObjReemp = {
+      "codigo": "",
+      "estado": "",
+      "pageNumber": 1,
+      "maxResults": 10,
+      "granjaId": user.granjaId
     }
     
     const getListado = useCallback(async (reqObj) => {
       setLoading(true)
         try {
-          const response = await certifyAxios.post(servicioQueryAPI, reqObj);
+          const response = await certifyAxios.post(sanitarioServicioQueryAPI, reqObj);
+          if (isMountedRef.current) {
+            if(response.status === 200){
+              if(response.data.list.length === 0 && response.data.total > 0) {
+                const lastPage = Math.ceil(response.data.total / reqObj.maxResults);
+                reqObj.pageNumber = lastPage;
+                setPageNumber(lastPage - 1);
+                getListado(reqObj);
+              }
+              else {
+                setItemListado(response.data.list);
+                setNumberOfResults(response.data.total);
+              }
+              const reqObjReemp = defaultObjReemp;
+              await getListadoReemp(reqObjReemp)
+            }
+            setLoading(false)
+          }
+        } catch (err) {
+          
+          setLoading(false)
+          if (err.response) {
+            console.log(err.response);
+          } else if (err.request) {
+            console.error(err.request);
+          } else {
+            console.error('Servicio encontró un error');
+          }
+          errorMessage("El servicio ha encontrado un error")
+        }
+    }, [isMountedRef])
+
+    const getListadoReemp = async (reqObj) => {
+        try {
+          setLoading(true)
+          const response = await certifyAxios.post(sanitarioReemplazoQueryAPI, reqObj);
           if (isMountedRef.current) {
             if(response.data.list.length === 0 && response.data.total > 0) {
               const lastPage = Math.ceil(response.data.total / reqObj.maxResults);
               reqObj.pageNumber = lastPage;
-              setPageNumber(lastPage - 1);
-              getListado(reqObj);
+              setPageNumberReemp(lastPage - 1);
+              getListadoReemp(reqObj);
             }
             else {
-              setItemListado(response.data.list);
-              setNumberOfResults(response.data.total);
+              setItemListadoReemp(response.data.list);
+              setNumberOfResultsReemp(response.data.total);
             }
           }
           setLoading(false)
@@ -64,41 +112,39 @@ function LineasGeneticasListado() {
           }
           errorMessage("El servicio ha encontrado un error")
         }
-    }, [isMountedRef])
+    }
 
     useEffect(() => {
         const reqObj = defaultObj;
         getListado(reqObj);
       }, [getListado]);
     
-      const onPageParamsChange = (reqObj) => {
-        if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
-          setPageSize(reqObj.maxResults) // "limit" en Results.js
-        }
-        getListado(reqObj)
-      }    
-
-    // delete
-    const deleteItemById = async (id, afterDelete) => {
-      try {
-        const reqObj = {
-          id
-        }
-        const response = await certifyAxios.post(loteDeleteAPI, reqObj);
-        if(response.data?.resultCode === resultCodeOk){
-          getListado(defaultObj)
-          successMessage(response.data.userMsg?? "Se ha eliminado satisfactoriamente")
-        }
-      } catch (error) {
-        console.error(error)
-        showUserErrors(error, "No se ha podido eliminar. Inténtelo de nuevo")
+    const onPageParamsChange = (reqObj) => {
+      if(reqObj.maxResults &&  pageSize !== reqObj.maxResults){
+        setPageSize(reqObj.maxResults) // "limit" en Results.js
       }
-      afterDelete()
-    }
+      getListado(reqObj)
+    }   
+
+    const onPageParamsChangeReemp = (reqObj) => {
+      if(reqObj.maxResults &&  pageSizeReemp !== reqObj.maxResults){
+        setPageSizeReemp(reqObj.maxResults) // "limit" en Results.js
+      }
+      getListadoReemp(reqObj)
+    }   
     
+    const changeTab = (k) => {
+      setPageNumber(0)
+      setKey(k)
+    }
+
     // add or edit
     const navigateToDetalle = (id) => {
       navigate('/sp/porcicultor/sanidad/cerdas/lote-detalle', {state:{loteId: id}});
+    };
+
+    const navigateToDetalleReemp = (id) => {
+      navigate('/sp/porcicultor/sanidad/cerdas/reemplazo-detalle', {state:{cerdaId: id}});
     };
 
     return(
@@ -125,7 +171,9 @@ function LineasGeneticasListado() {
                   justifyContent="center"
             >
                 <Grid item xs={12}>
-                <Tabs defaultActiveKey={1} id="uncontrolled-tab-sanitario">
+                <Tabs id="controlled-tab-example"
+                    activeKey={key}
+                    onSelect={(k) => changeTab(k)}>
                 <Tab eventKey={1} title="Lotes de Servicio">
                   <Results
                     itemListado={itemListado} 
@@ -134,26 +182,24 @@ function LineasGeneticasListado() {
                     numberOfResults={numberOfResults}
                     pageNumber={pageNumber}
                     setPageNumber={setPageNumber}
-                    deleteById={deleteItemById}
                     navigateToDetalle={navigateToDetalle}
                     granjaId={user.granjaId}
                     loading={loading}
                   />
                 </Tab>  
-                {/* <Tab eventKey={2} title="Cerdas de Reemplazo">
+                <Tab eventKey={2} title="Cerdas de Reemplazo">
                   <ResultsReemplazo
-                    itemListado={itemListado} 
-                    getListado={getListado}
-                    onPageParamsChange={onPageParamsChange}
-                    numberOfResults={numberOfResults}
-                    pageNumber={pageNumber}
-                    setPageNumber={setPageNumber}
-                    deleteById={deleteItemById}
-                    navigateToDetalle={navigateToDetalle}
+                    itemListado={itemListadoReemp} 
+                    getListado={getListadoReemp}
+                    onPageParamsChange={onPageParamsChangeReemp}
+                    numberOfResults={numberOfResultsReemp}
+                    pageNumber={pageNumberReemp}
+                    setPageNumber={setPageNumberReemp}
+                    navigateToDetalle={navigateToDetalleReemp}
                     granjaId={user.granjaId}
                     loading={loading}
                   />
-                </Tab>   */}
+                </Tab>
                 </Tabs>  
                         
                 </Grid>

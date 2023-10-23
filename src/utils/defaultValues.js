@@ -94,6 +94,13 @@ export const lechonEstado = {
   lactante: "Lactante"
 }
 
+export const vacunaTipo = {
+  cc: "Coli-clostridium",
+  ple: "Parvovirus-leptospirosis-erisipela",
+  cp: "Cólera porcino",
+  myc: "Mycoplasma y Circovirus"
+}
+
 // Obtener estados
 
 export const listEstadosCerda = () => {
@@ -176,6 +183,41 @@ export const listEstadoEngorde = () => {
   return out
 }
 
+export const listTiposVacuna = () => {
+  return generalList(vacunaTipo)
+}
+
+export const listTiposVacunaServicio = () => {
+
+  const obj = {
+    cc: vacunaTipo.cc,
+    ple: vacunaTipo.ple,
+    cp: vacunaTipo.cp
+  }
+
+  return generalList(obj)
+}
+
+export const listTiposVacunaReemp = () => {
+
+  const obj = {
+    cp: vacunaTipo.cp,
+    ple: vacunaTipo.ple
+  }
+
+  return generalList(obj)
+}
+
+
+export const listTiposVacunaEngorde = () => {
+
+  const obj = {
+    cp: vacunaTipo.cp,
+    myc: vacunaTipo.myc
+  }
+
+  return generalList(obj)
+}
 
 export const fertilidad = [
   "99 %",

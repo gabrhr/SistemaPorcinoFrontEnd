@@ -19,9 +19,9 @@ import StatusTable from 'src/components/Form/StatusTable';
 import LoteEstadoChip from 'src/components/LoteEstadoChip';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
 import { formatDate } from 'src/utils/dataFormat';
-import { allStatus, listEstadoLotes } from 'src/utils/defaultValues';
+import { allStatus, listEstadoEngorde } from 'src/utils/defaultValues';
 
-const statusList = listEstadoLotes()
+const statusList = listEstadoEngorde()
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
@@ -92,7 +92,7 @@ const Results = (props) => {
 
     const reqObj = {
         "codigo": "",
-        "estado":"",
+        "estado": "",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -100,7 +100,8 @@ const Results = (props) => {
 
     props.onPageParamsChange(reqObj);
   };
- 
+
+
   const editItem = (id) => {
     props.navigateToDetalle(id)
 
@@ -110,7 +111,7 @@ const Results = (props) => {
 
   return (
     <>
-        <Grid container spacing={0} mt={2}>
+        <Grid container spacing={0}>
           <Grid item xs={12}>
             <Box p={1}>
               <TextField
@@ -150,7 +151,7 @@ const Results = (props) => {
             <Typography component="span" variant="subtitle1">
               Mostrando:
             </Typography>{' '}
-            <b>{paginatedObject.length}</b> <b>servicio(s)</b> {/* change */}
+            <b>{paginatedObject.length}</b> <b>engorde(s)</b> {/* change */}
           </Box>
           <StatusTable
             actionRef = {statusRef}
@@ -163,18 +164,16 @@ const Results = (props) => {
           />
         </Box>
         <Divider />
-
-        
           <>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Código Lote</TableCell>
-                    <TableCell align='center'>Fecha apertura</TableCell>
-                    <TableCell align='center'> Estado Lote</TableCell>
-                    <TableCell align='center'> Nro. cerdas</TableCell>
-                    <TableCell align='center'> Próximo control</TableCell>
+                    <TableCell>Código Engorde</TableCell>
+                    <TableCell align='center'>Código Corral</TableCell>
+                    <TableCell align='center'> Estado</TableCell>
+                    <TableCell align='center'>Total Lechones</TableCell>
+                    <TableCell align='center'>Próximo Control</TableCell>
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -192,29 +191,26 @@ const Results = (props) => {
                       <TableRow hover key={idx}>
                         <TableCell>
                           <Typography noWrap>
-                            {element && element.codigo || ""}
+                            {element && element?.codigo || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.fechaApertura && 
-                            formatDate(element.fechaApertura) || "0"}
+                            {element && element?.numCorral || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
-                          <Typography noWrap>
-                            <LoteEstadoChip
-                            estado={element && element.estado || ""}
+                          <LoteEstadoChip
+                            estado={element && element?.estado || ""}
                             />
-                          </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.totalCerdas || "0"}
+                            {element && element?.totalLechones || "0"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
-                          <Typography noWrap>
+                        <Typography noWrap>
                             {element && element.proximaVacunaFecha && formatDate(element.proximaVacunaFecha) || "-"}
                           </Typography>
                         </TableCell>
@@ -249,7 +245,7 @@ const Results = (props) => {
                   color="text.secondary"
                   align="center"
                 >
-                  No se encontraron lotes
+                  No se encontraron engordes
                 </Typography>
               </>
             }

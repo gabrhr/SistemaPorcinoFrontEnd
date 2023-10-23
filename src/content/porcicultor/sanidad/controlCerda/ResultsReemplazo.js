@@ -1,4 +1,4 @@
-import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
@@ -15,13 +15,16 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
+import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
 import StatusTable from 'src/components/Form/StatusTable';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
-import { formatDate } from 'src/utils/dataFormat';
-import { allStatus, listEstadosCerda } from 'src/utils/defaultValues';
+import { formatDate, getEstadoCerdaNombre } from 'src/utils/dataFormat';
+import { allStatus } from 'src/utils/defaultValues';
 
 
-const statusList = listEstadosCerda()
+const statusList = [{value:"Reemplazo", text:"Reemplazo"},
+{value:"Otros", text:"Otros"}
+]
 
 const ResultsReemplazo = (props) => {
   const [limit, setLimit] = useState(10); // page size
@@ -41,7 +44,7 @@ const ResultsReemplazo = (props) => {
       props.setPageNumber(0);
       const reqObj = {
         "codigo": "",
-        "tipo": "",
+        "estado": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -51,7 +54,7 @@ const ResultsReemplazo = (props) => {
       props.setPageNumber(0);
       const reqObj = {
         "codigo": event.target.value,
-        "tipo": "",
+        "estado": "",
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -63,7 +66,7 @@ const ResultsReemplazo = (props) => {
   const handleChangeStatus = (value) => {
     const reqObj = {
         "codigo": "",
-        "tipo": value,
+        "estado": value,
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -77,7 +80,7 @@ const ResultsReemplazo = (props) => {
 
     const reqObj = {
         "codigo": "",
-        "tipo": "",
+        "estado": "",
         "pageNumber": newPage + 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -92,7 +95,7 @@ const ResultsReemplazo = (props) => {
 
     const reqObj = {
         "codigo": "",
-        "tipo":"",
+        "estado":"",
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -172,10 +175,11 @@ const ResultsReemplazo = (props) => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Código Lote</TableCell>
-                    <TableCell align='center'>Tipo</TableCell>
-                    <TableCell align='center'>Fecha apertura</TableCell>
-                    <TableCell align='center'> Nro. cerdas</TableCell>
+                    <TableCell>Código Cerda</TableCell>
+                    <TableCell align='center'>Estado</TableCell>
+                    <TableCell align='center'>Días de vida</TableCell>
+                    <TableCell align='center'>Vacunas aplicadas</TableCell>
+                    <TableCell align='center'>Próximo control</TableCell>
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -184,7 +188,7 @@ const ResultsReemplazo = (props) => {
                     <TableRowsLoader
                       rowsNum={5} 
                       action
-                      cellsNum={4}
+                      cellsNum={5}
                     />
                 }
                 {!props.loading && paginatedObject.length !== 0 &&
@@ -196,19 +200,26 @@ const ResultsReemplazo = (props) => {
                             {element && element.codigo || ""}
                           </Typography>
                         </TableCell>
-                        <TableCell align='center'>
-                          <Typography noWrap>
-                            {element && element.tipo || ""}
+                        <TableCell>
+                          <Typography align='center'>
+                          {element && element.estado &&
+                            <CerdaEstadoChip estado={getEstadoCerdaNombre(element.estado) || ""}/>
+                          }
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && formatDate(element.fechaApertura) || "0"}
+                            {element && element.diasEdad || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.totalCerdas || "0"}
+                            {`${element && element.totalVacunasAplicadas || 0}/3`}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align='center'>
+                          <Typography noWrap>
+                            {element && formatDate(element.proximaVacunaFecha) || "-"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
@@ -221,7 +232,7 @@ const ResultsReemplazo = (props) => {
                                 }}
                                 color='primary'
                             >
-                                <CreateRoundedIcon/>
+                                <ArrowForwardIosRoundedIcon/>
                             </IconButton>
                         </TableCell>
                       </TableRow>
@@ -242,7 +253,7 @@ const ResultsReemplazo = (props) => {
                   color="text.secondary"
                   align="center"
                 >
-                  No se encontraron lotes
+                  No se encontraron cerdas
                 </Typography>
               </>
             }

@@ -4,7 +4,7 @@ import { Formik } from "formik";
 import { forwardRef } from "react";
 import DatePickerForm from "src/components/Form/DatePickerForm";
 import SelectForm from "src/components/Form/SelectForm";
-import { listTiposVacunaServicio } from "src/utils/defaultValues";
+import { listTiposVacunaReemp } from "src/utils/defaultValues";
 import * as Yup from 'yup';
 
 const DialogWrapper = styled(Dialog)(
@@ -19,13 +19,13 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const list = listTiposVacunaServicio()
+const list = listTiposVacunaReemp()
 
 function AddControlModal ({
     open, 
     modalClose,
     handleAction, 
-    servicioId
+    engordeId
 }){
     
     const theme = useTheme();
@@ -69,8 +69,8 @@ function AddControlModal ({
                 const request = {
                     fechaAplicacion: values.fechaAplicacion,
                     vacunaTipo: values.vacunaTipo,
-                    id: servicioId,
-                    forServicio: true
+                    id: engordeId,
+                    forEngorde: true
                 }                
                 await handleAction(request, resetForm)
             }}

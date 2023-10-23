@@ -136,3 +136,14 @@ export const controlEngordeRegisterAPI = `${urlAlimento}controlEngorde/register`
 export const controlEngordeQueryAPI = `${urlAlimento}controlEngorde/query`
 export const controlEngordeDeleteAPI = `${urlAlimento}controlEngorde/delete`
 export const controlEngordeFindByIdAPI = `${urlAlimento}controlEngorde/find`
+
+// Alimentacion - Control cerdas
+const urlSanidad = "sanidad/"
+export const sanitarioServicioQueryAPI = `${urlSanidad}servicio/query`
+export const sanitarioServicioFindByIdAPI = `${urlSanidad}servicio/find`
+export const sanitarioReemplazoQueryAPI = `${urlSanidad}reemplazo/query`
+export const sanitarioReemplazoFindByIdAPI = `${urlSanidad}reemplazo/find`
+export const sanitarioEngordeQueryAPI = `${urlSanidad}engorde/query`
+export const sanitarioEngordeFindByIdAPI = `${urlSanidad}engorde/find`
+export const controlSanitarioRegisterAPI = `${urlSanidad}control/register`
+export const controlSanitarioDeleteAPI = `${urlSanidad}control/delete`

@@ -4,7 +4,7 @@ import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
   controlSanitarioDeleteAPI,
   controlSanitarioRegisterAPI,
-  sanitarioServicioFindByIdAPI
+  sanitarioEngordeFindByIdAPI
 } from 'src/utils/apiUrls';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
@@ -62,7 +62,7 @@ function AddEditAlimento() {
   const getItemById = useCallback(
     async (reqObj) => {
       try {
-        const response = await certifyAxios.post(sanitarioServicioFindByIdAPI, reqObj);
+        const response = await certifyAxios.post(sanitarioEngordeFindByIdAPI, reqObj);
         if (isMountedRef.current) {
           if (response.status === 200 && response.data) {
             setItem(response.data);
@@ -85,10 +85,10 @@ function AddEditAlimento() {
   );
 
   useEffect(() => {
-    if (location.state.loteId !== -1) {
+    if (location.state.engordeId !== -1) {
       // id de navigate
       const request = {
-        id: location.state.loteId,
+        id: location.state.engordeId,
         maxResults
       };
       getItemById(request);
@@ -176,7 +176,7 @@ function AddEditAlimento() {
   return (
     <>
       <Helmet>
-        <title>Control Lote</title>
+        <title>Control Engorde</title>
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
@@ -188,7 +188,7 @@ function AddEditAlimento() {
           <Grid item xs={10} md={6} sm={6} alignItems="left">
             {/* Titulo */}
             <Typography variant="h3" component="h3" gutterBottom>
-              Detalle de Control del Lote
+              Detalle de Control de Engorde
             </Typography>
           </Grid>
         </Grid>
@@ -210,11 +210,8 @@ function AddEditAlimento() {
           {item !== undefined && (
             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
               <Tab eventKey={1} title="Controles">
-                <Grid container justifyContent="center" 
-                  spacing={1}
-                  mt={2}
-                >
-                  <SubtitleForm subtitle="Datos de Lote" />
+                <Grid container justifyContent="center" spacing={1} mt={2}>
+                  <SubtitleForm subtitle="Datos de Engorde" />
                   <Grid container item xs={12} sm={12} md={12} spacing={4}>
                     <Grid item xs={12} sm={12} md={4}>
                       <DataView label="Código" text={item?.codigo || ''} />
@@ -241,28 +238,24 @@ function AddEditAlimento() {
                   <Grid container item xs={12} sm={12} md={12} spacing={4} mb={3}>
                     <Grid item xs={12} sm={12} md={4}>
                       <DataView
-                        label="Total de Cerdas"
-                        text={item?.totalCerdas || '0'}
+                        label="Total de Lechones"
+                        text={`${item && item.totalLechones || 0}`}
                       />
                     </Grid>
                     <Grid item xs={12} sm={12} md={4}>
                       <DataView
-                        label="Fecha Promedio Servicio"
-                        text={
-                          (item?.fechaPromServicio &&
-                            formatDate(item?.fechaPromServicio)) ||
-                          '-'
-                        }
+                        label="Fecha Promedio Nacimiento"
+                        text={ (item?.fechaPromNacimiento &&
+                          formatDate(item?.fechaPromNacimiento)) ||
+                        '-'}
                       />
                     </Grid>
                     <Grid item xs={12} sm={12} md={4}>
                       <DataView
-                        label="Fecha Promedio Parto"
-                        text={
-                          (item?.fechaPromParto &&
-                            formatDate(item?.fechaPromParto)) ||
-                          '-'
-                        }
+                        label="Fecha Promedio Destete"
+                        text={ (item?.fechaPromDestete &&
+                          formatDate(item?.fechaPromDestete)) ||
+                        '-'}
                       />
                     </Grid>
                   </Grid>
@@ -278,11 +271,10 @@ function AddEditAlimento() {
                       <DatePickerReadOnly
                         value={item?.proximaVacunaFecha || null}
                         label="Fecha de aplicación recomendada"
-                        inputName="proximaVacunaFecha"
+                        inputName="vacunaCCProbable"
                       />
                     </Grid>
                   </Grid>
-                  
                   <SubtitleForm subtitle="Listado de controles" list>
                     <Button
                       variant="contained"
@@ -388,63 +380,37 @@ function AddEditAlimento() {
                     mb={3}
                     mt={0}
                   >
-                    <SubtitleForm subtitle="Vacuna Coli-clostridium" />
+                    <SubtitleForm subtitle="Vacuna Mycoplasma y Circovirus" />
                     <Grid container spacing={2} ml={2} mt={1}>
                       <Grid item xs={12} sm={12} md={3}>
                         <InputFormReadOnly
-                          label="Días de gestación"
-                          value={(item?.vacunaCCProbable && item?.vacunaCCProbable?.dias) || '0'}
+                          label="Días de destete"
+                          value={(item?.vacunaMCProbable && item?.vacunaMCProbable?.dias) || '0'}
                         />
                       </Grid>
                       <Grid item xs={12} sm={12} md={3}>
                         <DatePickerReadOnly
-                          value={item?.vacunaCCProbable &&
-                            item?.vacunaCCProbable?.fechaAplicacion || null}
+                          value={item?.vacunaMCProbable &&
+                            item?.vacunaMCProbable?.fechaAplicacion || null}
                           label="Fecha de aplicación recomendada"
-                          inputName="vacunaCCProbable"
+                          inputName="vacunaMCProbable"
                         />
                       </Grid>
                     </Grid>
-                    <SubtitleForm subtitle="Vacuna Parvovirus-leptospirosis-erisipela" />
-                    <Grid container spacing={2} ml={2}>
-                      <Grid item xs={12} sm={12} md={12}>
-                        <Typography pt={2}>
-                         <b> Primera dosis recomendada </b>
-                        </Typography>
-                      </Grid>
+                    <SubtitleForm subtitle="Vacuna Cólera porcino" />
+                    <Grid container spacing={2} ml={2} mt={1}>
                       <Grid item xs={12} sm={12} md={3}>
                         <InputFormReadOnly
-                          label="Días de gestación"
-                          value={(item?.vacunaPLEPrimeraProbable && item?.vacunaPLEPrimeraProbable?.dias) || '0'}
+                          label="Días de vida"
+                          value={(item?.vacunaCPProbable && item?.vacunaCPProbable?.dias) || '0'}
                         />
                       </Grid>
                       <Grid item xs={12} sm={12} md={3}>
                         <DatePickerReadOnly
-                          value={item?.vacunaPLEPrimeraProbable &&
-                            item?.vacunaPLEPrimeraProbable?.fechaAplicacion || null}
+                          value={item?.vacunaCPProbable &&
+                            item?.vacunaCPProbable?.fechaAplicacion || null}
                           label="Fecha de aplicación recomendada"
-                          inputName="vacunaPLEPrimeraProbable"
-                        />
-                      </Grid>
-                    </Grid>
-                    <Grid container spacing={2} ml={2}>
-                      <Grid item xs={12} sm={12} md={12}>
-                        <Typography pt={2}>
-                         <b> Segunda dosis recomendada </b>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={12} md={3}>
-                        <InputFormReadOnly
-                          label="Días de lactancia"
-                          value={(item?.vacunaPLESegundaProbable && item?.vacunaPLESegundaProbable?.dias) || '0'}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={12} md={3}>
-                        <DatePickerReadOnly
-                          value={item?.vacunaPLESegundaProbable &&
-                            item?.vacunaPLESegundaProbable?.fechaAplicacion || null}
-                          label="Fecha de aplicación recomendada"
-                          inputName="vacunaPLESegundaProbable"
+                          inputName="vacunaCPProbable"
                         />
                       </Grid>
                     </Grid>
@@ -453,11 +419,6 @@ function AddEditAlimento() {
               </Tab>
             </Tabs>
           )}
-          {/* <Grid container justifyContent="center" spacing={2}>
-            <Alert severity="info">
-              Las fechas de vacunación son referenciales, ya que dependen de lo establecido por la marca
-            </Alert>
-          </Grid> */}
         </>
       </DialogContent>
       {controlModal && (
@@ -465,7 +426,7 @@ function AddEditAlimento() {
           open={controlModal}
           modalClose={closeControlModal}
           handleAction={agregarControl}
-          servicioId={item?.id}
+          engordeId={item?.id}
         />
       )}
       {openDelete && (

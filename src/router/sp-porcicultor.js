@@ -45,6 +45,9 @@ const AlimentoEngordeDetalle = Loader(lazy(() => import('src/content/porcicultor
 // Sanidad
 const SanidadCerdas = Loader(lazy(() => import('src/content/porcicultor/sanidad/controlCerda')));
 const SanidadCerdasLoteDetalle = Loader(lazy(() => import('src/content/porcicultor/sanidad/controlCerda/loteServicio')));
+const SanidadCerdasReempDetalle = Loader(lazy(() => import('src/content/porcicultor/sanidad/controlCerda/cerdaReemplazo')));
+const SanidadEngorde = Loader(lazy(() => import('src/content/porcicultor/sanidad/controlLechon')));
+const SanidadEngordeDetalle = Loader(lazy(() => import('src/content/porcicultor/sanidad/controlLechon/loteEngorde')));
 
 // Granja
 const Parametros = Loader(lazy(() => import('src/content/porcicultor/granja/parametros')));
@@ -151,6 +154,15 @@ const porcicultorRoutes = [
     },
     {path: 'sanidad/cerdas/lote-detalle',
      element: <SanidadCerdasLoteDetalle/>
+    },
+    {path: 'sanidad/cerdas/reemplazo-detalle',
+     element: <SanidadCerdasReempDetalle/>
+    },
+    {path: 'sanidad/engorde',
+     element: <SanidadEngorde/>
+    },
+    {path: 'sanidad/engorde/detalle',
+     element: <SanidadEngordeDetalle/>
     },
     {
       path: 'granja/parametros',
