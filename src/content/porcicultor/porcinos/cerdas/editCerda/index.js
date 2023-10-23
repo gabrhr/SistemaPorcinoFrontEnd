@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
+  cerdaDescartarAPI,
   cerdaFindByIdAPI,
   cerdaUpdateAPI,
   lineaQueryAllAPI
@@ -32,16 +33,21 @@ import { formatDate } from 'src/utils/dataFormat';
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
 import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
+import BackdropLoading from 'src/components/BackdropLoading';
+import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import DatePickerForm from 'src/components/Form/DatePickerForm';
 import InputForm from 'src/components/Form/InputForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import { errorMessage, successMessage } from 'src/utils/notifications';
+import DescarteModal from '../DescarteModal';
 
 function EditCerda() {
   const [item, setItem] = useState(undefined);
   const [editActive, setEditActive] = useState(false);
   const [lineas, setLineas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [openDescarte, setOpenDescarte] = useState(false)
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -105,21 +111,50 @@ function EditCerda() {
   // edit
   const editItemById = async (reqObj, resetForm) => {
     try {
+      setLoading(true)
       const response = await certifyAxios.post(cerdaUpdateAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         const request = {
           id: reqObj.id
         };
-        getItemById(request);
+        await getItemById(request);
+        setLoading(false)
         successMessage(response.data.userMsg?? "Se ha modificado satisfactoriamente")
       }
     } catch (error) {
+      setLoading(false)
       resetForm()
       console.error(error);
       showUserErrors(error, "No se ha podido editar. Inténtelo de nuevo")
     }
     setEditActive(false)
   };
+
+  const descarteModalClose = () => {
+    setOpenDescarte(false)
+  }
+
+  // descartar
+  const descartarById = async (reqObj) => {
+    setLoading(true)
+    try {
+      const response = await certifyAxios.post(cerdaDescartarAPI, reqObj);
+      if(response.data?.resultCode === resultCodeOk){
+        descarteModalClose()
+        const request = {
+          id: item.id,
+        };
+        await getItemById(request);
+        setLoading(false)
+        successMessage("La cerda ha sido descartada")
+      }
+    } catch (error) {
+      setLoading(false)
+      console.error(error)
+      showUserErrors(error, "No se ha podido descartar. Inténtelo de nuevo")
+    }
+  }
+
 
   // texto de dias no productivos
   const getDNPText = (estado, ordenParto = 0) => {
@@ -143,6 +178,7 @@ function EditCerda() {
       <Helmet>
         <title>Detalle Cerda</title>
       </Helmet>
+      {item === undefined && <CircularLoading/>}
       { item !== undefined &&
         <Formik
           enableReinitialize
@@ -160,8 +196,7 @@ function EditCerda() {
             fechaIngreso: Yup.string().required('La fecha de ingreso es obligatoria'),
             peso: Yup.number().typeError('El peso debe ser un número').required('El peso es obligatorio')
           })}
-          onSubmit={async (values, {resetForm, setSubmitting}) => {
-            setSubmitting(false)
+          onSubmit={async (values, {resetForm}) => {
             const request = {
               codigo: values.codigo,
               lineaGeneticaId: values.lineaGeneticaId,
@@ -173,7 +208,6 @@ function EditCerda() {
             if (editActive) {
               request.id = item.id;
               await editItemById(request, resetForm);
-              setSubmitting(false)
             }
           }}
         >
@@ -268,7 +302,7 @@ function EditCerda() {
                       size="small"
                       color="error"
                       onClick={() => {
-                        setEditActive(true);
+                        setOpenDescarte(true);
                       }}
                       sx={{marginRight: 1}}
                       >
@@ -288,6 +322,7 @@ function EditCerda() {
                   )}
                 </Grid>
               </PageTitleWrapper>
+              <BackdropLoading open={loading}/>
               <DialogContent
                   sx={{
                       py: theme.spacing(3),
@@ -498,6 +533,14 @@ function EditCerda() {
           )}
         </Formik>
       }
+      {/* Descartar */}
+      {openDescarte && <DescarteModal
+        openConfirmDelete={openDescarte}
+        closeConfirmDelete={descarteModalClose}
+        title="Descartar Cerda"
+        item={item}
+        handleDeleteCompleted={descartarById}
+      />}
     </>
   );
 }

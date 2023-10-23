@@ -45,7 +45,7 @@ import DeleteControlModal from './DeleteControlModal';
 
 const maxResults = 999;
 
-function AddEditAlimento() {
+function ControlServicioDetalle() {
   const [item, setItem] = useState(undefined);
   const [controlModal, setControlModal] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -176,7 +176,7 @@ function AddEditAlimento() {
   return (
     <>
       <Helmet>
-        <title>Control Lote</title>
+        <title>Control Servicio</title>
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
@@ -485,4 +485,4 @@ function AddEditAlimento() {
   );
 }
 
-export default AddEditAlimento;
+export default ControlServicioDetalle;

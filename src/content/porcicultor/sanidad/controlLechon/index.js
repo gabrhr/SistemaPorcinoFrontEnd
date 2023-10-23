@@ -14,7 +14,7 @@ import Results from './Results';
 
 const tituloPagina = "Control Sanitario de Lechones"
 
-function LineasGeneticasListado() {
+function SanidadLechonesListado() {
     const [itemListado, setItemListado] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -126,4 +126,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default SanidadLechonesListado;

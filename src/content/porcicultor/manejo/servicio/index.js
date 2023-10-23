@@ -103,7 +103,6 @@ function ServicioListado() {
     
     // edit
     const navigateToDetalle = (id, nombre) => {
-      console.log(id, nombre);
       navigate('/sp/porcicultor/manejo/servicio/lote-detalle', {state:{loteId: id, loteNombre:nombre }});
     };
 

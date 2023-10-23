@@ -81,14 +81,12 @@ function TerminarGestacionModal ({
             validationSchema={Yup.object().shape({
                 fechaParto: Yup.string().required('La fecha es requerida'),
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     id: loteCerdaServicioId,
                     fechaParto: values.fechaParto
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, values, handleSubmit, isSubmitting, dirty, isValid,setFieldValue}) => (

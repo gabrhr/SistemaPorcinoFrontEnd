@@ -51,6 +51,7 @@ const SanidadEngordeDetalle = Loader(lazy(() => import('src/content/porcicultor/
 
 // Granja
 const Parametros = Loader(lazy(() => import('src/content/porcicultor/granja/parametros')));
+const Perfil = Loader(lazy(() => import('src/content/porcicultor/granja/perfil')));
 
 
 
@@ -167,6 +168,10 @@ const porcicultorRoutes = [
     {
       path: 'granja/parametros',
       element: <Parametros />
+    },
+    {
+      path: 'perfil',
+      element: <Perfil />
     }
 ]
 

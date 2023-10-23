@@ -83,15 +83,13 @@ function TerminarMaternidadModal ({
             validationSchema={Yup.object().shape({
                 fechaDestete: Yup.string().required('La fecha es requerida')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     id: maternidadId,
                     fechaDestete: values.fechaDestete,
                     pesoActualizado: values.pesoCerda
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, values, handleSubmit, isSubmitting, dirty, isValid,setFieldValue, handleChange}) => (

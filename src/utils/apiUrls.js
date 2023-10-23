@@ -109,6 +109,11 @@ const urlParametros = "parametrogranja/"
 export const parametroFindByGranjaIdAPI = `${urlParametros}find`
 export const paramatroUpdateAPI = `${urlParametros}update`
 
+// Granja perfil
+const urlUser = "user/"
+export const perfilFindByGranjaIdAPI = `${urlUser}find`
+export const perfilUpdateAPI = `${urlUser}update`
+
 
 // Alimento
 const urlAlimento = "alimento/"

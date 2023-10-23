@@ -47,7 +47,7 @@ import DeleteControlModal from './DeleteControlModal';
 
 const maxResults = 999;
 
-function AddEditAlimento() {
+function ControlReemplazoDetalle() {
   const [item, setItem] = useState(undefined);
   const [controlModal, setControlModal] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -472,4 +472,4 @@ function AddEditAlimento() {
   );
 }
 
-export default AddEditAlimento;
+export default ControlReemplazoDetalle;

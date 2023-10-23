@@ -59,15 +59,13 @@ function AddCompraModal ({
                 .min(0, 'Debe ser mayor a 0')
                 .required('El peso es requerida')
             })}
-            onSubmit={async (values, { resetForm, setSubmitting }) => {
-              setSubmitting(true);
+            onSubmit={async (values, { resetForm }) => {
               const request = {
                 sexo: values.sexo,
                 pesoNacimiento: values.pesoNacimiento,
                 id: maternidadId
               };
               await handleAction(request, resetForm);
-              setSubmitting(false);
             }}
           >
             {({

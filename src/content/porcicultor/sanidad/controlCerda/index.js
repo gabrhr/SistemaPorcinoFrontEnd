@@ -16,7 +16,7 @@ import ResultsReemplazo from './ResultsReemplazo';
 
 const tituloPagina = "Control Sanitario de Cerdas"
 
-function LineasGeneticasListado() {
+function SanidadCerdasListado() {
     const [itemListado, setItemListado] = useState([])
     const [itemListadoReemp, setItemListadoReemp] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
@@ -150,7 +150,7 @@ function LineasGeneticasListado() {
     return(
         <>
             <Helmet>
-                <title>{tituloPagina}</title>
+                <title>Sanidad Cerdas</title>
             </Helmet>
             <PageTitleWrapper>
                 <Grid container justifyContent="space-between" alignItems="center">
@@ -209,4 +209,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default SanidadCerdasListado;

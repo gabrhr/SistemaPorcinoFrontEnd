@@ -18,7 +18,7 @@ const tituloPagina = "Detalle de Maternidad del Lote"
 
 const mainUrl = "/sp/porcicultor/manejo/maternidad"
 
-function LineasGeneticasListado() {
+function MaternidadLoteListado() {
     const [itemListado, setItemListado] = useState([])
     const [itemName, setItemName] = useState(null)
     const [loteInfo, setLoteInfo] = useState(null)
@@ -102,7 +102,7 @@ function LineasGeneticasListado() {
     return(
         <>
             <Helmet>
-                <title>{tituloPagina}</title>
+                <title>Maternidad Lote</title>
             </Helmet>
             <PageTitleWrapper>
                 <Grid container alignItems="center">
@@ -155,4 +155,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default MaternidadLoteListado;

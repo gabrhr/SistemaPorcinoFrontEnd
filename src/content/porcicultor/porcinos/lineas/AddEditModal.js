@@ -64,8 +64,7 @@ function AddEditModal ({
             validationSchema={Yup.object().shape({
                 nombre: Yup.string().required('El nombre es requerido')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {         
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {         
                 const request = {
                     
                     "nombre": values.nombre,
@@ -75,7 +74,6 @@ function AddEditModal ({
                     request.id = item.id
                 }
                 await handleCompleted(request, resetForm)
-                setSubmitting(false)
                 
             }}
           >

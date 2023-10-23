@@ -120,7 +120,6 @@ function AddControlModal ({
                 alimentoId: Yup.number().min(0, 'Seleccione el alimento').required('Seleccione el alimento')
             })}
             onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
                 const alimentoIndex = list.findIndex(e => e.id === values.alimentoId)
                 if(alimentoIndex !== -1){
                     const alimento = list[alimentoIndex]
@@ -138,7 +137,6 @@ function AddControlModal ({
                     id: cerdaId
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid, setFieldValue }) => (

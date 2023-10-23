@@ -105,13 +105,12 @@ function AddModal ({
             validationSchema={Yup.object().shape({
                 loteId: Yup.number().min(0, 'Seleccionar una línea').required('La línea es requerida')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     "loteId": values.loteId,
                     "granjaId": granjaId
                 }                
                 await handleCompleted(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid }) => (

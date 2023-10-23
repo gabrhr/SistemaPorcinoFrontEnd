@@ -17,7 +17,7 @@ import Results from './Results';
 const tituloPagina = "Engordes"
 const itemSingular = "Engorde"
 
-function LineasGeneticasListado() {
+function EngordesListado() {
     const [itemListado, setItemListado] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -160,4 +160,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default EngordesListado;

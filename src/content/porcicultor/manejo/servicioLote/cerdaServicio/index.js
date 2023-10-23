@@ -398,7 +398,7 @@ function ServicioCerdaDetalle() {
   return (
     <>
       <Helmet>
-        <title>Cerda Servicio</title>
+        <title>Servicio Cerda</title>
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">

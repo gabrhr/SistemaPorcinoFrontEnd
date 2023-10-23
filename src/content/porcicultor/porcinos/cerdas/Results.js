@@ -345,13 +345,13 @@ const Results = (props) => {
         handleDeleteCompleted={deleteItem}
       />}
       {/* Descartar */}
-      <DescarteModal
+      {openDescarte && <DescarteModal
         openConfirmDelete={openDescarte}
         closeConfirmDelete={descarteModalClose}
         title={`Descartar ${itemSingular}`}
         item={currentItem}
         handleDeleteCompleted={descartarCerda}
-      />
+      />}
     </>
   );
 };

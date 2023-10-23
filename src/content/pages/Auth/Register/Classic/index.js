@@ -101,7 +101,6 @@ function RegisterWizard() {
     };
 
     try {
-      console.log("registrando: ", user)
       const response = await axios.post(
         '/auth/register',
         user,
@@ -125,7 +124,6 @@ function RegisterWizard() {
     } catch (e) {
       setResult(false);
       setErrorMessage("Datos inválidos");
-      console.log(e);
     }
   };
 
@@ -158,8 +156,8 @@ function RegisterWizard() {
                 password: '',
                 password_confirm: '',
                 nombreGranja: '',
-                departamento: '',
-                direccion: 0
+                departamento: "none",
+                direccion: ''
               }}
               onSubmit={async (_values) => {
                 try {
@@ -193,24 +191,21 @@ function RegisterWizard() {
                   nombreGranja: Yup.string()
                   .max(255)
                   .required('El nombre es obligatorio'),
-                  departamento: Yup.string()
-                    .max(255)
-                    .required('El departamento obligatorios'),
+                  departamento: Yup.string().matches(/^(?!none\b)/i, 'Seleccionar un departamento')
+                  .required('El departamento es obligatorio'),
                   direccion: Yup.string()
                   .max(255)
-                  .required('El departamento obligatorios'),
+                  .required('La dirección es obligatoria')
                 })}
                 label="Información Personal"
               >
                 <Box p={4}>
-                  <Grid container spacing={3}>
+                <Grid container xs={12} sm={12} md={12} spacing={3}>
+                  <Grid container item xs={12} sm={12} md={6} spacing={3}>
                     <Grid item xs={12} md={6}>
                       Datos personales
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                      Datos de la granja
-                    </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={12}>
                       <Field
                         fullWidth
                         name="correo"
@@ -219,16 +214,7 @@ function RegisterWizard() {
                         placeholder="Correo electrónico"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Field
-                        fullWidth
-                        name="nombreGranja"
-                        component={TextField}
-                        label="Nombre de su Granja"
-                        placeholder="Nombre de su Granja"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={12}>
                       <Field
                         fullWidth
                         type="password"
@@ -238,22 +224,7 @@ function RegisterWizard() {
                         placeholder="Escribe tu contraseña aquí"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                      <FormControl sx={{ minWidth: 'calc(100%)' }}>
-                        <InputLabel>Departamento</InputLabel>
-                        <Field
-                          name="departamento"
-                          component={CustomizedSelectForFormik}
-                        >
-                          {departamentosPeru.map((type) => (
-                            <MenuItem key={type.key} value={type.key}>
-                              {type.value}
-                            </MenuItem>
-                          ))}
-                        </Field>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={12}>
                       <Field
                         fullWidth
                         type="password"
@@ -263,7 +234,39 @@ function RegisterWizard() {
                         placeholder="Confirma tu contraseña aquí"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                  </Grid>
+                  <Grid container item xs={12} sm={12} md={6} spacing={3}>
+                    <Grid item xs={12} md={12}>
+                      Datos de la granja
+                    </Grid>
+                    <Grid item xs={12} md={12}>
+                      <Field
+                        fullWidth
+                        name="nombreGranja"
+                        component={TextField}
+                        label="Nombre de su Granja"
+                        placeholder="Nombre de su Granja"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={12}>
+                      <FormControl sx={{ minWidth: 'calc(100%)' }}>
+                        <InputLabel>Departamento</InputLabel>
+                        <Field
+                          name="departamento"
+                          component={CustomizedSelectForFormik}
+                        >
+                          <MenuItem disabled value="none">
+                            <em style={{color:"gray"}}>Seleccionar</em>
+                          </MenuItem>
+                          {departamentosPeru.map((type) => (
+                            <MenuItem key={type.key} value={type.value}>
+                              {type.value}
+                            </MenuItem>
+                          ))}
+                        </Field>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={12}>
                       <Field
                         fullWidth
                         name="direccion"
@@ -273,6 +276,7 @@ function RegisterWizard() {
                       />
                     </Grid>
                   </Grid>
+                </Grid>
                 </Box>
               </FormikStep>
               

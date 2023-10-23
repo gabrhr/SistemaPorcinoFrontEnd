@@ -72,15 +72,13 @@ function AddFalloModal ({
                 descripcionFallo: Yup.string().required('La descripción es requerida'),
                 motivoFallo: Yup.string().matches(/^(?!none\b)/i, 'Seleccionar un motivo').required('El motivo es obligatorio'),
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     loteCerdaServicioId,
                     motivoFallo: values.motivoFallo,
                     descripcionFallo: values.descripcionFallo
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid }) => (

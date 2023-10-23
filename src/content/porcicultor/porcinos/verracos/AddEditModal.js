@@ -65,7 +65,7 @@ function AddEditModal ({
                 codigo: Yup.string().required('El codigo es requerido'),
                 lineaGeneticaId: Yup.number().min(0, 'Seleccionar una línea').required('La línea es requerida')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     "codigo": values.codigo,
                     "lineaGeneticaId": values.lineaGeneticaId,
@@ -75,7 +75,6 @@ function AddEditModal ({
                     request.id = item.id
                 }
                 await handleCompleted(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid }) => (

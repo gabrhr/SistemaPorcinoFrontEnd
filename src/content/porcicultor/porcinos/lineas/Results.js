@@ -83,7 +83,6 @@ const Results = (props) => {
 
 
   const openModal = (item, deleteAccion = false) => {
-    console.log(item)
     setCurrentItem(item)
     if(deleteAccion){
       setOpenDelete(true)      

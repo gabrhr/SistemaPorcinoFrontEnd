@@ -47,7 +47,7 @@ import DeleteDeteccionModal from './DeleteDeteccionModal';
 const mainUrl = '/sp/porcicultor/manejo/celo';
 const loteUrl = '/sp/porcicultor/manejo/celo/lote-detalle';
 
-function AddEditAlimento() {
+function CeloCerdaDetalle() {
   const [item, setItem] = useState(undefined);
   const [locationState, setLocationState] = useState({});
   const [editActive, setEditActive] = useState(false);
@@ -476,4 +476,4 @@ function AddEditAlimento() {
   );
 }
 
-export default AddEditAlimento;
+export default CeloCerdaDetalle;

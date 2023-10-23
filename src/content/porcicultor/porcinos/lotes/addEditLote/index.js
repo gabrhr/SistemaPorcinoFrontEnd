@@ -32,7 +32,9 @@ import {
 import { Formik } from 'formik';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BackdropLoading from 'src/components/BackdropLoading';
 import CerdaEstadoChip from 'src/components/CerdaEstadoChip';
+import CircularLoading from 'src/components/CircularLoading';
 import DataView from 'src/components/Form/DataView';
 import DatePickerForm from 'src/components/Form/DatePickerForm';
 import InputForm from 'src/components/Form/InputForm';
@@ -339,6 +341,8 @@ function AddEditLote() {
                   borderRadius: 2
                 }}
               >
+        {item === undefined && <CircularLoading/>}
+        <BackdropLoading open={loading}/>
         {item !== undefined && 
         <>
         <Formik
@@ -361,11 +365,11 @@ function AddEditLote() {
             };
             if (editMode && editActive) {
               request.id = item.id;
-              editItemById(request);
+              await editItemById(request);
             } else {
               request.tipo = tipoSelected
               request.fechaApertura = values.fechaApertura
-              addItem(request, resetForm);
+              await addItem(request, resetForm);
             }
           }}
         >

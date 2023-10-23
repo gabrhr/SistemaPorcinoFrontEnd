@@ -83,21 +83,19 @@ function DescarteModal({
           <Formik
             enableReinitialize
             initialValues={{
-              fechaDescarte: '',
+              fechaDescarte: new Date(),
               motivo: ''
             }}
             validationSchema={Yup.object().shape({
               fechaDescarte: Yup.string().required('La fecha es requerida'),
               motivo: Yup.string().required('El motivo es requerido')
             })}
-            onSubmit={async (values, {setSubmitting}) => {
-              setSubmitting(true)
+            onSubmit={async (values) => {
               const request = {
                 ...values,
                 id: item.id
               };
               await handleDeleteCompleted(request);
-              setSubmitting(false)
             }}
           >
             {({

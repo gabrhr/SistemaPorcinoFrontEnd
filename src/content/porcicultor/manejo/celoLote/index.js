@@ -18,7 +18,7 @@ const tituloPagina = "Detalle de Celo del Lote"
 
 const mainUrl = "/sp/porcicultor/manejo/celo"
 
-function LineasGeneticasListado() {
+function CeloLoteListado() {
     const [itemListado, setItemListado] = useState([])
     const [itemName, setItemName] = useState(null)
     const [statusHeaderCerda, setStatusHeaderCerda] = useState(true)
@@ -113,7 +113,7 @@ function LineasGeneticasListado() {
     return(
         <>
             <Helmet>
-                <title>{tituloPagina}</title>
+                <title>Celo Lote</title>
             </Helmet>
             <PageTitleWrapper>
                 <Grid container alignItems="center">
@@ -165,4 +165,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default CeloLoteListado;

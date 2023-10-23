@@ -62,8 +62,7 @@ function AddCompraModal ({
                 cantidad: Yup.number().min(0, 'Debe ser mayor a 0').required('La cantidad es requerida'),
                 precioUnitario: Yup.number().min(0, 'Debe ser mayor a 0').required('El precio unitario es requerida')
             })}
-            onSubmit={async (values, {resetForm, setSubmitting}) => {      
-                setSubmitting(true)
+            onSubmit={async (values, {resetForm}) => {      
                 const request = {
                     fechaCompra: values.fechaCompra,
                     cantidad: values.cantidad,
@@ -71,7 +70,6 @@ function AddCompraModal ({
                     alimentoId
                 }                
                 await handleAction(request, resetForm)
-                setSubmitting(false)   
             }}
           >
             {({ errors, touched, handleBlur, handleChange, values, handleSubmit, isSubmitting, dirty, isValid, setFieldValue }) => (

@@ -46,7 +46,7 @@ import AddCamadaModal from './AddCamadaModal';
 import LechonesCamadaModal from './LechonesCamadaModal';
 import TerminarEtapaModal from './TerminarEtapaModal';
 
-function AddEditLote() {
+function AddEditEngorde() {
   const [item, setItem] = useState(undefined);
   const [editMode, setEditMode] = useState(false);
   const [editActive, setEditActive] = useState(false);
@@ -1096,4 +1096,4 @@ function AddEditLote() {
   );
 }
 
-export default AddEditLote;
+export default AddEditEngorde;

@@ -18,7 +18,7 @@ import Results from './Results';
 const tituloPagina = "Detección Celo"
 const itemSingular = "Celo"
 
-function LineasGeneticasListado() {
+function CeloListado() {
     const [itemListado, setItemListado] = useState([])
     const [openAdd, setOpenAdd] = useState(false);
     const [numberOfResults, setNumberOfResults] = useState(0);
@@ -170,4 +170,4 @@ function LineasGeneticasListado() {
     
 }
 
-export default LineasGeneticasListado;
+export default CeloListado;

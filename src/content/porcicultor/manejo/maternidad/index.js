@@ -14,7 +14,7 @@ import Results from './Results';
 
 const tituloPagina = "Maternidad"
 
-function ServicioListado() {
+function MaternidadListado() {
     const [itemListado, setItemListado] = useState([])
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -78,7 +78,6 @@ function ServicioListado() {
     
     // edit
     const navigateToDetalle = (id, nombre) => {
-      console.log(id, nombre);
       navigate('/sp/porcicultor/manejo/maternidad/lote-detalle', {state:{loteId: id, loteNombre:nombre }});
     };
 
@@ -127,4 +126,4 @@ function ServicioListado() {
     
 }
 
-export default ServicioListado;
+export default MaternidadListado;

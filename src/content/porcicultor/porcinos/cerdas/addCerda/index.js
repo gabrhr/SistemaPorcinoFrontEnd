@@ -61,7 +61,6 @@ function AddCerda() {
 
   // add
   const addItem = async (reqObj) => {
-    console.log(reqObj)
     try {
       const response = await certifyAxios.post(cerdaRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
@@ -105,13 +104,12 @@ function AddCerda() {
             fechaIngreso: Yup.string().required('La fecha de ingreso es obligatoria'),
             peso: Yup.number().typeError('El peso debe ser un número').required('El peso es obligatorio')
           })}
-          onSubmit={async (values, {setSubmitting}) => {
+          onSubmit={async (values) => {
             const request = {
               ...values,
               granjaId: user.granjaId
             };
             await addItem(request);
-            setSubmitting(false)
           }}
         >
           {({

@@ -364,7 +364,7 @@ function EditMaternidad() {
   return (
     <>
       <Helmet>
-        <title>Cerda Maternidad</title>
+        <title>Maternidad Cerda</title>
       </Helmet>
       <PageTitleWrapper>
         <Grid container alignItems="center">
