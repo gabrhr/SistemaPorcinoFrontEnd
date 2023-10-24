@@ -254,7 +254,7 @@ function AddEditAlimento() {
       </Helmet>
       <PageTitleWrapper>
                 <Grid container alignItems="center">
-                  <Grid item xs={2} md={0.5} sm={0.5}>
+                  <Grid item xs={2} sm={1} md={0.5}>
                     <IconButton size="small" onClick={navigateToMain}>
                       <KeyboardArrowLeftRoundedIcon />
                     </IconButton>

@@ -1,35 +1,34 @@
-import { useState } from 'react';
-import { format } from 'date-fns';
-import numeral from 'numeral';
-import PropTypes from 'prop-types';
 import {
-  Tooltip,
-  Divider,
   Box,
-  FormControl,
-  InputLabel,
   Card,
+  CardHeader,
   Checkbox,
+  Divider,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
-  TableContainer,
-  Select,
-  MenuItem,
+  Tooltip,
   Typography,
-  useTheme,
-  CardHeader
+  useTheme
 } from '@mui/material';
+import { format } from 'date-fns';
+import numeral from 'numeral';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-import Label from 'src/components/Label';
-import { useTranslation } from 'react-i18next';
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import BulkActions from 'src/content/management/Products/BulkActions';
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import { useTranslation } from 'react-i18next';
+import Label from 'src/components/Label';
 
 const getStatusLabel = (cryptoOrderStatus) => {
   const map = {
@@ -155,11 +154,6 @@ const RecentOrdersTable = ({ cryptoOrders }) => {
 
   return (
     <Card>
-      {selectedBulkActions && (
-        <Box flex={1} p={2}>
-          <BulkActions />
-        </Box>
-      )}
       {!selectedBulkActions && (
         <CardHeader
           action={

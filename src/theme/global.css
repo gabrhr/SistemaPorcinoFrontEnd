@@ -72,3 +72,7 @@
 .text-toast{
     font-size: 13px;
 }
+
+.divider-bg {
+    background: #00000082 !important;
+}

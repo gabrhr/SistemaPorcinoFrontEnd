@@ -32,7 +32,6 @@ const HealthcareHospital = Loader(
   lazy(() => import('src/content/dashboards/Healthcare/HospitalView'))
 );
 const Helpdesk = Loader(lazy(() => import('src/content/dashboards/Helpdesk')));
-const Learning = Loader(lazy(() => import('src/content/dashboards/Learning')));
 const Monitoring = Loader(
   lazy(() => import('src/content/dashboards/Monitoring'))
 );
@@ -103,10 +102,6 @@ const dashboardsRoutes = [
   {
     path: 'helpdesk',
     element: <Helpdesk />
-  },
-  {
-    path: 'learning',
-    element: <Learning />
   },
   {
     path: 'monitoring',

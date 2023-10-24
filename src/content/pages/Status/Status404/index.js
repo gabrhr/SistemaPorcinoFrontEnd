@@ -1,19 +1,13 @@
 import {
   Box,
-  Card,
-  Typography,
-  Container,
-  Divider,
   Button,
-  FormControl,
-  OutlinedInput,
-  InputAdornment,
+  Card,
+  Container,
+  Typography,
   styled
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 
-import { useTranslation } from 'react-i18next';
 
 const MainContent = styled(Box)(
   () => `
@@ -27,49 +21,25 @@ const MainContent = styled(Box)(
 `
 );
 
-const OutlinedInputWrapper = styled(OutlinedInput)(
-  ({ theme }) => `
-    background-color: ${theme.colors.alpha.white[100]};
-`
-);
-
-const ButtonSearch = styled(Button)(
-  ({ theme }) => `
-    margin-right: -${theme.spacing(1)};
-`
-);
 
 function Status404() {
-  const { t } = useTranslation();
 
   return (
     <>
       <Helmet>
-        <title>Status - 404</title>
+        <title>Página No Existe</title>
       </Helmet>
       <MainContent>
         <Container maxWidth="md">
           <Box textAlign="center">
-            <img alt="404" height={180} src="/static/images/status/404.svg" />
+            <img alt="404" height={180} src="/static/images/status/500.svg" />
             <Typography
               variant="h2"
               sx={{
                 my: 2
               }}
             >
-              {t("The page you were looking for doesn't exist.")}
-            </Typography>
-            <Typography
-              variant="h4"
-              color="text.secondary"
-              fontWeight="normal"
-              sx={{
-                mb: 4
-              }}
-            >
-              {t(
-                "It's on us, we moved the content to a different page. The search below should help!"
-              )}
+              La página no existe
             </Typography>
           </Box>
           <Container maxWidth="sm">
@@ -80,33 +50,18 @@ function Status404() {
                 p: 4
               }}
             >
-              <FormControl variant="outlined" fullWidth>
-                <OutlinedInputWrapper
-                  type="text"
-                  placeholder={t('Search terms here...')}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <ButtonSearch variant="contained" size="small">
-                        {t('Search')}
-                      </ButtonSearch>
-                    </InputAdornment>
-                  }
-                  startAdornment={
-                    <InputAdornment position="start">
-                      <SearchTwoToneIcon />
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
-              <Divider
-                sx={{
-                  my: 4
-                }}
-              >
-                OR
-              </Divider>
+              <Typography
+                  variant="h4"
+                  color="text.secondary"
+                  fontWeight="normal"
+                  sx={{
+                    mb: 4
+                  }}
+                >
+                  La página que se busca no ha sido encontrada
+                </Typography>
               <Button href="/overview" variant="outlined">
-                {t('Go to homepage')}
+                Volver al inicio
               </Button>
             </Card>
           </Container>

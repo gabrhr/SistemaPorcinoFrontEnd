@@ -1,10 +1,11 @@
+import { Grid } from '@mui/material';
+import { Helmet } from 'react-helmet-async';
 import Footer from 'src/components/Footer';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import { Helmet } from 'react-helmet-async';
-import { Grid } from '@mui/material';
 import PageHeader from './PageHeader';
 
 import Block1 from './Block1';
+import Block10 from './Block10';
 import Block2 from './Block2';
 import Block3 from './Block3';
 import Block4 from './Block4';
@@ -13,7 +14,6 @@ import Block6 from './Block6';
 import Block7 from './Block7';
 import Block8 from './Block8';
 import Block9 from './Block9';
-import Block10 from './Block10';
 
 function DataDisplayStatistics() {
   return (

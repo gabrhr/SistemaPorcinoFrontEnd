@@ -43,7 +43,7 @@ import SelectForm from 'src/components/Form/SelectForm';
 import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { formatDate } from 'src/utils/dataFormat';
+import { differenciaEntreFechas, formatDate } from 'src/utils/dataFormat';
 import { lechonEstado, resultCodeOk } from 'src/utils/defaultValues';
 import { errorMessage, successMessage } from 'src/utils/notifications';
 import AddCompraModal from './AddCompraModal';
@@ -787,7 +787,7 @@ function EditMaternidad() {
                           </Typography>{' '}
                           <b>{item?.lechonesMuertosLactancia || 0}</b>
                         </Box>
-                        <Divider orientation="vertical" sx={{background:"#00000082"}}flexItem />
+                        <Divider orientation="vertical" className='divider-bg' flexItem />
                         <Box>
                           <Typography component="span" variant="subtitle1">
                             Promedio peso nacimiento:
@@ -910,7 +910,8 @@ function EditMaternidad() {
                           spacing={3}
                           mb={3}
                           mt={3}>
-                    <SubtitleForm subtitle="Fecha de Destete"/>
+                    <SubtitleForm subtitle="Fecha de Destete" 
+                    description='Se recomienda terminar la maternidad entre las siguientes fechas:'/>
                     <Grid container item xs={12} sm={12} md={12} spacing={3}>
                       <Grid item xs={12} sm={12} md={4}>
                         <DatePickerReadOnly
@@ -931,6 +932,11 @@ function EditMaternidad() {
                             />
                       </Grid>
                       <Grid container item xs={12} sm={12} md={12} spacing={3}>
+                      {item?.fechaDestete !== null && <Grid item xs={12} sm={12} md={12}>
+                        <Typography variant='body1' gutterBottom>
+                          {`Se culminó la lactancia a los ${differenciaEntreFechas(item.fechaParto, "days", item.fechaDestete)}`}
+                        </Typography>
+                      </Grid>}
                       <Grid item xs={12} sm={12} md={4}>
                          <DatePickerReadOnly
                               value={

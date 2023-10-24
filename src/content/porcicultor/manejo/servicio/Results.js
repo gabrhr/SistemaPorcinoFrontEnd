@@ -1,4 +1,5 @@
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Box, Card,
@@ -11,6 +12,7 @@ import {
   TableHead, TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery
 } from '@mui/material';
@@ -18,6 +20,7 @@ import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import StatusTable from 'src/components/Form/StatusTable';
 import LoteEstadoChip from 'src/components/LoteEstadoChip';
+import TableroServicioModal from 'src/components/TableroManejo/TableroServicioModal';
 import { formatDate } from 'src/utils/dataFormat';
 import { allStatus, listEstadoLotes } from 'src/utils/defaultValues';
 
@@ -30,6 +33,9 @@ const Results = (props) => {
   const statusRef = useRef(null);
   const [openStatus, setOpenStatus] = useState(false);
   const [status, setStatus] = useState(allStatus.text);
+  const [resultadoModal, setResultadoModal] = useState(false);
+  const [currentItem, setCurrentItem] = useState(false);
+
   const isRowBased = useMediaQuery('(min-width: 500px)');
 
   const handleQueryChange = (event) => {
@@ -234,6 +240,20 @@ const Results = (props) => {
                         </TableCell>
                         <TableCell align='center'>
                             {/* Actions */}
+                            <Tooltip title="Parámetros">
+                              <IconButton  
+                                  onClick={()=> {
+                                    setCurrentItem(element)
+                                    setResultadoModal(true)
+                                  }}
+                                  sx={{
+                                      borderRadius:30, 
+                                      marginRight:"15px"
+                                  }}
+                              >
+                                  <BarChartIcon/>
+                              </IconButton>
+                            </Tooltip>
                             <IconButton  
                                 onClick={()=> {editItem(element)}}
                                 sx={{
@@ -264,6 +284,13 @@ const Results = (props) => {
           </>
         }
       </Card>
+      {resultadoModal && 
+        <TableroServicioModal
+          open={resultadoModal}
+          modalClose={() => setResultadoModal(false)}
+          item={currentItem || null}
+        />
+      }
     </>
   );
 };
