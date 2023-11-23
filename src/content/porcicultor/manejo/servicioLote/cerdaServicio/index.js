@@ -621,8 +621,6 @@ function ServicioCerdaDetalle() {
                       setFieldValue
                     }) => (
                       <form noValidate onSubmit={handleSubmit}>
-                        {JSON.stringify(errors)}
-                            {JSON.stringify(touched)}
                         <Grid
                           container
                           justifyContent="center"
@@ -821,7 +819,8 @@ function ServicioCerdaDetalle() {
                       values,
                       handleChange,
                       handleSubmit,
-                      setFieldValue
+                      setFieldValue,
+                      handleBlur
                     }) => (
                       <form noValidate onSubmit={handleSubmit}>
                         <Grid
@@ -881,6 +880,7 @@ function ServicioCerdaDetalle() {
                                   errors={errors}
                                   touched={touched}
                                   disabled={!editActive || disablePrimeraVer}
+                                  handleBlur={handleBlur}
                                 />
                               </Grid>
                               <Grid item xs={12} sm={12} md={4}>
@@ -983,6 +983,7 @@ function ServicioCerdaDetalle() {
                                   errors={errors}
                                   touched={touched}
                                   disabled={!editActive || disableSegundaVer}
+                                  handleBlur={handleBlur}
                                 />
                               </Grid>
                               <Grid item xs={12} sm={12} md={4}>
@@ -1087,6 +1088,7 @@ function ServicioCerdaDetalle() {
                                   errors={errors}
                                   touched={touched}
                                   disabled={!editActive || disableTerceraVer}
+                                  handleBlur={handleBlur}
                                 />
                               </Grid>
                               <Grid item xs={12} sm={12} md={4}>
@@ -1156,7 +1158,8 @@ function ServicioCerdaDetalle() {
                       touched,
                       values,
                       handleSubmit,
-                      setFieldValue
+                      setFieldValue,
+                      handleBlur
                     }) => (
                       <form noValidate onSubmit={handleSubmit}>
                         <Grid
@@ -1201,6 +1204,7 @@ function ServicioCerdaDetalle() {
                                 errors={errors}
                                 touched={touched}
                                 disabled={!editActive || !enableGestTab}
+                                handleBlur={handleBlur}
                               />
                             </Grid>
                           </Grid>

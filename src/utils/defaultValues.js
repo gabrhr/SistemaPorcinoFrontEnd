@@ -192,7 +192,8 @@ export const listTiposVacunaServicio = () => {
   const obj = {
     cc: vacunaTipo.cc,
     ple: vacunaTipo.ple,
-    cp: vacunaTipo.cp
+    cp: vacunaTipo.cp,
+    otro: "Otro"
   }
 
   return generalList(obj)
@@ -202,7 +203,8 @@ export const listTiposVacunaReemp = () => {
 
   const obj = {
     cp: vacunaTipo.cp,
-    ple: vacunaTipo.ple
+    ple: vacunaTipo.ple,
+    otro: "Otro"
   }
 
   return generalList(obj)
@@ -213,10 +215,49 @@ export const listTiposVacunaEngorde = () => {
 
   const obj = {
     cp: vacunaTipo.cp,
-    myc: vacunaTipo.myc
+    myc: vacunaTipo.myc,
+    otro: "Otro"
   }
 
   return generalList(obj)
+}
+
+export const listadoCalendario = [
+  {
+    texto: "Vacunas",
+    color: "red",
+    value: "vacuna"
+  },
+  {
+    texto: "Partos probables",
+    color: "blue",
+    value: "parto"
+  },
+  {
+    texto: "Servicio verificación",
+    color: "orange",
+    value: "servicio"
+  },
+]
+
+export const listadoCalendarioFilter = {
+  all: true,
+  vacuna: true,
+  parto: true,
+  servicio: true
+}
+
+export const listadoCalendarioFilterFalse = {
+  all: false,
+  vacuna: false,
+  parto: false,
+  servicio: false
+}
+
+export const coloresCalendario = {
+  vacuna: "red",
+  parto: "blue",
+  servicio: "orange"
 }
 
 export const fertilidad = [

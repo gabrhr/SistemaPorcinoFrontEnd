@@ -76,3 +76,76 @@
 .divider-bg {
     background: #00000082 !important;
 }
+
+/*full calendar*/
+
+.fc{
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.fc-button.fc-button-primary{
+    background: white;
+    color: #0068DF;
+    border-color: #0068DF !important;
+    background-image: none;
+}
+
+.fc-button.fc-button-primary:hover{
+    background: white;
+    color: #0068DF;
+    border-color: #0068DF !important;
+    font-weight: 600;
+    background-image: none;
+}
+
+.fc-button.fc-button-primary:active, .fc-button.fc-button-primary:focus{
+    color: #fff !important;
+    background-color: #0068DF !important;
+    border-color: #0068DF !important;
+    box-shadow: none !important;
+}
+
+.fc-button.fc-button-active{
+    color: #fff !important;
+    background-color: #0068DF !important;
+    border-color: #0068DF !important;
+    box-shadow: none !important;
+}
+
+.fc-button.fc-button-primary:disabled{
+    opacity: 0.2;
+}
+
+.fc-button.fc-prev-button, .fc-button.fc-next-button{
+    color: gray !important;
+    border: none !important;
+}
+
+.fc-button.fc-prev-button:hover, .fc-button.fc-next-button:hover{
+    color: black !important;
+    background-color: rgba(128, 128, 128, 0.162) !important;
+    border: none !important;
+}
+
+.fc-button.fc-next-button:active, .fc-button.fc-next-button:focus, .fc-button.fc-prev-button:active, .fc-button.fc-prev-button:focus{
+    color: #0068DF !important;
+    background-color: #fff !important;
+}
+
+.fc-col-header-cell-cushion, .fc-daygrid-day-number{
+    text-decoration: none;
+    color: black;
+}
+
+.fc-toolbar-chunk{
+    display: inline-flex;
+}
+
+.fc-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number{
+    font-weight: 600;
+}
+
+.fc .fc-daygrid-day.fc-day-today{
+    background-color: #d9ecffa8 !important;
+}

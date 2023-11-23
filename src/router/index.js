@@ -4,7 +4,7 @@ import AccentHeaderLayout from 'src/layouts/AccentHeaderLayout';
 import BaseLayout from 'src/layouts/BaseLayout';
 import accountRoutes from './account';
 import baseRoutes from './base';
-import blocksRoutes from './blocks';
+import dashboardsRoutes from './dashboards';
 import adminRoutes from './sp-admin';
 import porcicultorRoutes from './sp-porcicultor';
 
@@ -20,9 +20,8 @@ const router = [
   },{
     path: '*',
     element: <BaseLayout />,
-    children: blocksRoutes
+    children: dashboardsRoutes
   },
-
   // Accent Header Layout
   {
     path: 'sp',

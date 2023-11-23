@@ -155,7 +155,7 @@ const ResultsReemplazo = (props) => {
             <Typography component="span" variant="subtitle1">
               Mostrando:
             </Typography>{' '}
-            <b>{paginatedObject.length}</b> <b>lote(s)</b> {/* change */}
+            <b>{paginatedObject.length}</b> <b>cerda(s)</b> {/* change */}
           </Box>
           <StatusTable
             actionRef = {statusRef}

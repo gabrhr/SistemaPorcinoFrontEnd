@@ -465,11 +465,11 @@ function AddEditLote() {
                         inputName="fechaApertura"
                         value={values.fechaApertura}
                         label="Fecha de apertura"
-                        disablePast
                         setFieldValue={setFieldValue}
                         errors={errors}
                         touched={touched}
                         disabled={editMode}
+                        handleBlur={handleBlur}
                       />
                     </Grid>
                   </Grid>

@@ -65,12 +65,12 @@ function AddCerda() {
       const response = await certifyAxios.post(cerdaRegisterAPI, reqObj);
       if (response.data?.resultCode === resultCodeOk) {
         successMessage(response.data.userMsg?? "Se agregó satisfactoriamente")
+        navigateToMain()
       }
     } catch (error) {
       console.error(error);
       showUserErrors(error, "No se ha podido agregar. Inténtelo de nuevo")
     }
-    navigateToMain()
   };
 
   // return

@@ -152,3 +152,8 @@ export const sanitarioEngordeQueryAPI = `${urlSanidad}engorde/query`
 export const sanitarioEngordeFindByIdAPI = `${urlSanidad}engorde/find`
 export const controlSanitarioRegisterAPI = `${urlSanidad}control/register`
 export const controlSanitarioDeleteAPI = `${urlSanidad}control/delete`
+
+// Calendario 
+const urlData = "data/"
+export const eventsFindAPI = `${urlData}calendar-date`
+export const estGeneralAPI = `${urlData}estadisticas`

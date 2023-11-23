@@ -85,3 +85,13 @@ export function getEstadoMaternidadNombre(nombre){
     }
     return nombre || ""
 }
+
+export function getPorcentajeFormato(val){
+    if(val !== null && val !== undefined && typeof val === "number"){
+        if(val > 0 && val < 1){
+            return val.toFixed(1)
+        }
+        return val.toFixed(0)
+    }
+    return 0
+}

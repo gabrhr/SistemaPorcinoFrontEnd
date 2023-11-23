@@ -67,11 +67,6 @@ const menuItems = [
             name: 'Control Lechones',
             link: '/sp/porcicultor/sanidad/engorde'
           }
-          /* ,
-          {
-            name: 'Calendario',
-            link: '/sp/porcicultor/sanidad/calendario'
-          } */
         ]
       },
       {
@@ -98,18 +93,23 @@ const menuItems = [
         icon: AssignmentIcon,
         link: '',
         items: [
-          /* {
+          {
+            name: 'Calendario',
+            link: '/sp/porcicultor/granja/calendario'
+          },
+          {
             name: 'Estadísticas',
             link: '/sp/porcicultor/granja/estadisticas'
-          }, */
+          },
           {
             name: 'Parámetros',
             link: '/sp/porcicultor/granja/parametros'
-          }/* ,
+          }
+           ,
           {
             name: 'Corrales',
             link: '/sp/porcicultor/granja/corrales'
-          } */
+          }
         ]
       }
     ]
