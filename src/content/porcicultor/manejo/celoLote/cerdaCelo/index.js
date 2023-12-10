@@ -70,13 +70,13 @@ function CeloCerdaDetalle() {
         const response = await certifyAxios.post(cerdaCeloFindByIdAPI, reqObj);
         if (isMountedRef.current) {
           if (response.status === 200 && response.data) {
-            setItem(response.data);
-            setDeteccionesList(response.data.deteccionCeloList || []);
             if (response.data.estado === celoEstado.enProceso) {
               setEditActive(true);
             } else {
               setEditActive(false)
             }
+            setItem(response.data);
+            setDeteccionesList(response.data.deteccionCeloList || []);
           }
         }
       } catch (err) {
@@ -469,6 +469,7 @@ function CeloCerdaDetalle() {
           closeConfirm={closeAptaModal}
           title="Apta para Servicio"
           itemName={` ${item?.cerda?.codigo || "" } como Apta para servicio`}
+          consideracion = "Considerar a la cerda como lista para servir luego de 3 celos detectados continuos."
           handleCompleted={aptaParaServicio}
         />
       )}

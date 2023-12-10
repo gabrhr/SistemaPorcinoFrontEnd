@@ -1,47 +1,36 @@
 import { Divider, Stack, useMediaQuery } from "@mui/material";
 import CardNumber from "./CardNumber";
 
-function TableroMaternidad({item = null, showPorc = true}) {
+function TableroCelo({item = null, showPorc = true}) {
 
   const isRowBased = useMediaQuery('(min-width: 500px)');
   
   const getPorcentaje = () => {
     if(item){
 
-      const paridas = item?.totalParidas?? 0
+      const aptas = item?.totalAptas?? 0
       const total = item?.totalCerdas?? 1
 
-      const porcentaje = (paridas / total) * 100;
-      return porcentaje.toFixed(1);
+      const porcentaje = (aptas / total) * 100;
+      return porcentaje.toFixed(0);
 
     }
 
     return 0;
   };
   
-
-  const getGestando = () => {
-    if(item){
-
-     if(item.totalGestando && item.totalGestando > 0){
-         return item.totalGestando
-     }
-    }
-
-    return 0
-  };
   
   return (
       <Stack
         direction={isRowBased? "row": "column"}
         justifyContent="space-between"
         alignItems="stretch"
-        divider={<Divider orientation="vertical" flexItem sx={{my: isRowBased? 2:0}}/>}
+        divider={<Divider orientation="vertical" flexItem sx={{my: 2}}/>}
         spacing={0}
       >
             {showPorc && <CardNumber
               valor={getPorcentaje()}
-              texto="Tasa de parición"
+              texto="Tasa de Aptas"
               background="#000000A6"
               porcentaje
             />}
@@ -51,18 +40,14 @@ function TableroMaternidad({item = null, showPorc = true}) {
               texto="Total Cerdas"
             />}
             <CardNumber
-              valor={getGestando()}
-              texto="Gestando"
-            />
-            <CardNumber
-              valor={item?.totalParidas?? 0}
+              valor={item?.totalAptas?? 0}
               background="#00BB8E"
-              texto="Paridas"
+              texto="Aptas para servir"
             />
             <CardNumber
-              valor={item?.totalDestetadas?? 0}
-              background="#FFA53A"
-              texto="Destetadas"
+              valor={item?.totalDescartadas?? 0}
+              background="error"
+              texto="Descartadas"
             />
       </Stack>
     )
@@ -71,4 +56,4 @@ function TableroMaternidad({item = null, showPorc = true}) {
 
 
 
-export default TableroMaternidad;
+export default TableroCelo;

@@ -1,24 +1,24 @@
-import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
+import { useRef, useState } from 'react';
 import Chart from 'react-apexcharts';
+import { useTranslation } from 'react-i18next';
 
 import {
+  Box,
   Button,
   Card,
-  Box,
+  CardActions,
   CardContent,
   CardHeader,
   Divider,
+  Grid,
   Menu,
   MenuItem,
-  CardActions,
-  Grid,
+  Tab,
+  Tabs,
   Typography,
   styled,
-  useTheme,
-  Tabs,
-  Tab
+  useTheme
 } from '@mui/material';
 
 const CardActionsWrapper = styled(CardActions)(
@@ -102,9 +102,10 @@ function TrafficSources() {
       mode: theme.palette.mode
     },
     chart: {
+      type: "bar",
       background: 'transparent',
       toolbar: {
-        show: false
+        show: true
       }
     },
     markers: {
@@ -125,7 +126,6 @@ function TrafficSources() {
     plotOptions: {
       bar: {
         horizontal: false,
-        borderRadius: 8,
         columnWidth: '25%'
       }
     },
@@ -185,6 +185,11 @@ function TrafficSources() {
   const chartData = [
     {
       name: 'Past Referrals',
+      type: 'column',
+      data: [1008, 940, 1010, 821, 1035, 1030, 957, 926, 993, 1021, 997, 879]
+    },
+    {
+      name: 'x',
       type: 'column',
       data: [1008, 940, 1010, 821, 1035, 1030, 957, 926, 993, 1021, 997, 879]
     },

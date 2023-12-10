@@ -17,10 +17,11 @@ import {
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import TableRowsLoader from 'src/components/Table/TableRowsLoader';
+import { getEstadoCorral, getTipoCorral } from 'src/utils/dataFormat';
 import AddEditModal from './AddEditModal';
 import DeleteModal from './DeleteModal';
 
-const itemSingular = "Verraco"
+const itemSingular = "Corral"
 
 const Results = (props) => {
   const [limit, setLimit] = useState(10); // page size
@@ -36,7 +37,7 @@ const Results = (props) => {
     if(event && event.target && event.target.value === ""){
       props.setPageNumber(0);
       const reqObj = {
-        "codigo": "",
+        "numCorral": 0,
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -45,7 +46,7 @@ const Results = (props) => {
     } else if(event?.target?.value && event.target.value.length >= 1){
       props.setPageNumber(0);
       const reqObj = {
-        "codigo": event.target.value,
+        "numCorral": event.target.value,
         "pageNumber": 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -58,7 +59,7 @@ const Results = (props) => {
     props.setPageNumber(newPage);
 
     const reqObj = {
-        "codigo": "",
+        "numCorral": 0,
         "pageNumber": newPage + 1,
         "maxResults": limit,
         "granjaId": props.granjaId
@@ -72,7 +73,7 @@ const Results = (props) => {
     props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
 
     const reqObj = {
-        "codigo": "",
+        "numCorral": 0,
         "pageNumber": 1,
         "maxResults": event.target.value,
         "granjaId": props.granjaId
@@ -114,7 +115,7 @@ const Results = (props) => {
   const deleteItem = () => {
     props.deleteById(currentItem.id, () => {
       props.setPageNumber(0) // Retorna a la pagina 1 cuando cambia de limit
-        deleteModalClose()
+      deleteModalClose()
     })
 
   }
@@ -125,7 +126,7 @@ const Results = (props) => {
     <>
         <Grid container spacing={0}>
           <Grid item xs={12}>
-            <Box p={1}>
+            <Box pt={0} pb={1}>
               <TextField
                 sx={{
                   mx: 0,
@@ -135,6 +136,7 @@ const Results = (props) => {
                   borderRadius:"10px"
                 }}
                 InputProps={{
+                  min: '0',
                   startAdornment: (
                     <InputAdornment position="start">
                       <SearchTwoToneIcon />
@@ -143,9 +145,10 @@ const Results = (props) => {
                 }}
                 size='small'
                 onChange={handleQueryChange}
-                placeholder="Busque por código"
+                placeholder="Busque por número de corral"
                 value={query}
                 variant="outlined"
+                type='number'
               />
             </Box>
           </Grid>
@@ -163,20 +166,21 @@ const Results = (props) => {
             <Typography component="span" variant="subtitle1">
               Mostrando:
             </Typography>{' '}
-            <b>{paginatedObject.length}</b> <b>verraco(s)</b>
+            <b>{paginatedObject.length}</b> <b>coral(es)</b>
           </Box>
         </Box>
         <Divider />
         
-        
-         <>
+          
+          <>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Código Verraco</TableCell>
-                    <TableCell align='center'>Línea genética</TableCell>
-                    <TableCell align='center'> fertilidad</TableCell>
+                    <TableCell>Número de corral</TableCell>
+                    <TableCell align='center'>Tipo de Corral</TableCell>
+                    <TableCell align='center'>Aforo</TableCell>
+                    <TableCell align='center'>Estado</TableCell>
                     <TableCell align='center'>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -185,26 +189,31 @@ const Results = (props) => {
                     <TableRowsLoader
                       rowsNum={5} 
                       action
-                      cellsNum={3}
+                      cellsNum={4}
                     />
                 }
-                {!props.loading && paginatedObject.length !== 0 &&
+                {!props.loading  && paginatedObject.length !== 0 &&
                   (paginatedObject.map((element, idx) => {
                     return (
                       <TableRow hover key={idx}>
                         <TableCell>
                           <Typography noWrap>
-                            {element && element.codigo || ""}
+                            {element && element.numCorral || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {element && element.lineaGeneticaNombre || ""}
+                            {element && element.tipo  && getTipoCorral(element.tipo) || "-"}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
                           <Typography noWrap>
-                            {`${element && element.fertilidad && element.fertilidad*100 || 0}%`}
+                          {`${element && element.aforoActual || "0"}/${element && element.capacidad || "0"}`}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align='center'>
+                          <Typography noWrap>
+                            {element && element.estado && getEstadoCorral(element.estado) || ""}
                           </Typography>
                         </TableCell>
                         <TableCell align='center'>
@@ -222,6 +231,7 @@ const Results = (props) => {
                             <IconButton color="error" 
                                 sx={{borderRadius:30}}
                                 onClick={()=> openModal(element, true)}
+                                disabled={element && element.estado !== "Disponible"}
                             >
                                 <DeleteRoundedIcon/>                          
                             </IconButton>
@@ -233,21 +243,21 @@ const Results = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {!props.loading && paginatedObject.length === 0 &&
-          <>
-            <Typography
-              sx={{
-                py: 10
-              }}
-              variant="h3"
-              fontWeight="normal"
-              color="text.secondary"
-              align="center"
-            >
-              No se encontraron verracos
-            </Typography>
-          </>
-        }
+            {!props.loading  && paginatedObject.length === 0 &&
+              <>
+                <Typography
+                  sx={{
+                    py: 10
+                  }}
+                  variant="h3"
+                  fontWeight="normal"
+                  color="text.secondary"
+                  align="center"
+                >
+                  No se encontraron líneas
+                </Typography>
+              </>
+              }
             <Box p={2}>
               <TablePagination
                 component="div"
@@ -270,14 +280,13 @@ const Results = (props) => {
         editMode
         handleCompleted={editItem}
         granjaId={props.granjaId}
-        lineas={props.lineas}
       />
       {/* Eliminar */}
       <DeleteModal
         openConfirmDelete={openDelete}
         closeConfirmDelete={deleteModalClose}
         title={`Eliminar ${itemSingular}`}
-        itemName={` el verraco ${currentItem?.nombre || "" }`}
+        itemName={` la línea ${currentItem?.nombre || "" }`}
         handleDeleteCompleted={deleteItem}
       />
     </>

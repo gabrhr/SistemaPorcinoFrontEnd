@@ -1,19 +1,19 @@
+import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 
 import {
+  Box,
   Button,
   Card,
-  Box,
+  CardActions,
   CardContent,
   CardHeader,
+  Divider,
+  Grid,
   Menu,
   MenuItem,
-  CardActions,
-  Grid,
   Typography,
-  Divider,
   styled,
   useTheme
 } from '@mui/material';
@@ -349,6 +349,13 @@ function AudienceOverview() {
                 name: 'New Users',
                 data: [
                   324, 315, 578, 576, 227, 459, 473, 282, 214, 623, 477, 401
+                ]
+              },
+              {
+                name: 'Users',
+                data: [
+                  467, 696, 495, 477, 422, 585, 691, 294, 508, 304, 499,
+                  390
                 ]
               }
             ]}

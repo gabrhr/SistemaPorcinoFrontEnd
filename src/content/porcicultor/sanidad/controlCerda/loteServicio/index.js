@@ -1,4 +1,5 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import DomainVerificationRoundedIcon from '@mui/icons-material/DomainVerificationRounded';
 import { useCallback, useEffect, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import {
@@ -13,6 +14,7 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   DialogContent,
   Divider,
   Grid,
@@ -269,17 +271,19 @@ function ControlServicioDetalle() {
                   <SubtitleForm subtitle="Próxima Vacuna Recomendada"/>
                   <Grid container item spacing={2}>
                     <Grid item xs={12} sm={12} md={4}>
-                      <InputFormReadOnly
+                      {item?.proximaVacunaFecha !== null && <InputFormReadOnly
                         label="Tipo de Vacuna"
                         value={(item?.proximaVacunaTipo && vacunaTipo[item?.proximaVacunaTipo]) || '-'}
-                      />
+                      />}
+                      {item?.proximaVacunaFecha === null &&
+                        <Chip label="Vacunas Completas" variant='outlined' color='success' icon={<DomainVerificationRoundedIcon/>}/>}
                     </Grid>
                     <Grid item xs={12} sm={12} md={4}>
-                      <DatePickerReadOnly
+                      {item?.proximaVacunaFecha !== null &&<DatePickerReadOnly
                         value={item?.proximaVacunaFecha || null}
                         label="Fecha de aplicación recomendada"
                         inputName="proximaVacunaFecha"
-                      />
+                      />}
                     </Grid>
                   </Grid>
                   

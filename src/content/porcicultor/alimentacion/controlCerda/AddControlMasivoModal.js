@@ -276,11 +276,11 @@ function AddControlMasivoModal ({
                         >
                             <Typography >
                                 Consumo recomendado por cerda:
-                                <b>{` ${getTextoAlimento(values.alimentoId)[0]} kg`}</b>
+                                <b>{` ${getTextoAlimento(values.alimentoId)[1]} kg`}</b>
                             </Typography>
                             <Typography >
                                 Cantidad disponible:
-                                <b>{` ${getTextoAlimento(values.alimentoId)[1]} kg`}</b>
+                                <b>{` ${getTextoAlimento(values.alimentoId)[0]} kg`}</b>
                             </Typography>
                         </Grid>
                         <Grid

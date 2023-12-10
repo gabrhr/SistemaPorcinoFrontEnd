@@ -1,7 +1,7 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import { loteFindByIdAPI, loteRegisterAPI, loteUpdateAPI } from 'src/utils/apiUrls';
+import { corralQueryAllAPI, loteFindByIdAPI, loteRegisterAPI, loteUpdateAPI } from 'src/utils/apiUrls';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 import * as Yup from 'yup';
 
@@ -56,6 +56,8 @@ function AddEditLote() {
   const [cerdaModal, setCerdaModal] = useState(false);
   const [removeList, setRemoveList] = useState([]);
   const [cerdasLote, setCerdasLote] = useState([]);  
+  const [corrales, setCorrales] = useState(undefined);
+  const [currentCorral, setCurrentCorral] = useState([]);
   const [tipoSelected, setTipoSelected] = useState("none");  
   const [touchedTipo, setTouchedTipo] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -77,9 +79,22 @@ function AddEditLote() {
             setItem(response.data);
             setCerdasLote(response.data.cerdas)
             setTipoSelected(response.data.tipo)
+            const corralActual = {id: response?.data?.corralId || 0, numCorral: response?.data?.numCorral || 0}
             if(response?.data?.estado && response?.data?.estado !== "Pendiente"){
               setShowAction(false);
-            } 
+              setCurrentCorral([{...corralActual}])
+            } else {
+              const listCorrales = await getCorralesList()
+              if(response.data.tipo === "Celo" && listCorrales.celo && listCorrales.celo.length > 0){
+                setCurrentCorral([...listCorrales.celo])
+
+              } else if(response.data.tipo === "Servicio" && listCorrales.servicio && listCorrales.servicio.length > 0){
+                setCurrentCorral([...listCorrales.servicio])
+              } else {
+                setCurrentCorral([])
+              }
+              setShowAction(true);
+            }
           }
         }
       } catch (err) {
@@ -98,6 +113,26 @@ function AddEditLote() {
     [isMountedRef]
   );
 
+  const getCorralesList = async () => {
+    const reqObj = {
+      fase: 0,
+      granjaId: user.granjaId
+    };
+    try {
+      const response = await certifyAxios.post(corralQueryAllAPI, reqObj);
+      if (response.status === 200 && response.data) {
+        setCorrales(response.data)
+        return response.data
+      }
+    } catch (err) {
+      console.error(err);
+      errorMessage("No se ha podido obtener el listado de corrales")
+      setCorrales([])
+      return []
+    }
+    return []
+  };
+
   useEffect(() => {
     if (location.state.loteId !== -1) {
       // id de navigate
@@ -109,6 +144,7 @@ function AddEditLote() {
     } else {
       setEditActive(true)
       setItem({});
+      getCorralesList()
     }
   }, [getItemById]);
 
@@ -205,6 +241,8 @@ function AddEditLote() {
 
   const changeTipoSelected = (tipo) => {
      setTipoSelected(tipo)
+     const listadoXTipo = corrales && corrales[tipo.toLowerCase()] || [] 
+     setCurrentCorral([... listadoXTipo])
      setCerdasLote([])
   };
   
@@ -350,7 +388,7 @@ function AddEditLote() {
           initialValues={{
             codigo: (editMode && item && item.codigo) || '',
             fechaApertura: (editMode && item && item.fechaApertura) || new Date(),
-            numCorral: (editMode && item && item.numCorral) || -1,
+            numCorral: (editMode && item && item.corralId) || -1,
           }}
           validationSchema={Yup.object().shape({
             codigo: Yup.string().required('El codigo es requerido'),
@@ -414,11 +452,15 @@ function AddEditLote() {
                       onChange={handleChange}
                       errors={errors}
                       touched={touched}
+                      disabled={(!editActive || currentCorral === undefined)}
                       number
+                      helper = {editActive}
+                      helperText='Elige un Tipo para listar los corrales'
                       >
-                        {[1,2,3,5].map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
+                        {currentCorral && currentCorral.length>0 
+                        && currentCorral.map((type, index) => (
+                          <MenuItem key={index} value={type.id}>
+                            {type.numCorral}
                           </MenuItem>
                         ))}
                       </SelectForm>

@@ -10,6 +10,7 @@ import { resultCodeOk } from 'src/utils/defaultValues';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
 
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import TableroCelo from 'src/components/TableroManejo/TableroCelo';
 import { celoLoteQueryAPI, cerdaCeloDescartarAPI } from 'src/utils/apiUrls';
 import { errorMessage, successMessage } from 'src/utils/notifications';
 import Results from './Results';
@@ -21,6 +22,7 @@ const mainUrl = "/sp/porcicultor/manejo/celo"
 function CeloLoteListado() {
     const [itemListado, setItemListado] = useState([])
     const [itemName, setItemName] = useState(null)
+    const [loteInfo, setLoteInfo] = useState(null)
     const [statusHeaderCerda, setStatusHeaderCerda] = useState(true)
     const [numberOfResults, setNumberOfResults] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ function CeloLoteListado() {
           const response = await certifyAxios.post(celoLoteQueryAPI, reqObj);
           if (isMountedRef.current) {
               setItemListado(response.data.list);
+              setLoteInfo(response.data.lote)
               setNumberOfResults(response.data.total);
           }
           setLoading(false)
@@ -130,11 +133,15 @@ function CeloLoteListado() {
                       <KeyboardArrowLeftRoundedIcon />
                     </IconButton>
                   </Grid>
-                <Grid item>
+                <Grid item xs={10} sm={6}  md={6}>
                     <Typography variant="h3" gutterBottom>
                         {tituloPagina} 
                         {` ${itemName || ""}`}
                     </Typography>
+                </Grid>
+                {/* Lote info cuadro */}
+                <Grid item xs={12} md={8} sm={12} my={1}>
+                  <TableroCelo item ={loteInfo}/>
                 </Grid>
                 </Grid>
             </PageTitleWrapper>

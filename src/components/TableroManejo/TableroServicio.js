@@ -19,6 +19,17 @@ function TableroServicio({item = null, showPorc = true}) {
     return 0;
   };
   
+  const getGestando = () => {
+     if(item){
+
+      if(item.totalGestando && item.totalGestando > 0){
+          return item.totalGestando
+      }
+      
+    }
+    return 0
+  };
+  
   
   return (
       <Stack
@@ -45,7 +56,7 @@ function TableroServicio({item = null, showPorc = true}) {
               texto="Servidas"
             />
             <CardNumber
-              valor={item?.totalGestando?? 0}
+              valor={getGestando()}
               texto="Gestando"
             />
             <CardNumber

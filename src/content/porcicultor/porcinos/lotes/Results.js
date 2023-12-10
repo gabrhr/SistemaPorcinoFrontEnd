@@ -1,3 +1,4 @@
+import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
@@ -244,14 +245,15 @@ const Results = (props) => {
                                 }}
                                 color='primary'
                             >
-                                <CreateRoundedIcon/>
+                                {(element && element.estado === "Pendiente")? 
+                                <CreateRoundedIcon/>: <AssignmentRoundedIcon/>}
                             </IconButton>
-                            <IconButton color="error" 
+                            {element && element.estado === "Pendiente" &&  <IconButton color="error" 
                                 sx={{borderRadius:30}}
                                 onClick={()=> openModal(element)}
                                 >
                                 <DeleteRoundedIcon/>                          
-                            </IconButton>
+                            </IconButton>}
                         </TableCell>
                       </TableRow>
                     );

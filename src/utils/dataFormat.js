@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { servicioEstado } from './defaultValues';
+import { corralEstado, corralTipo, servicioEstado } from './defaultValues';
 
 export const  generateRandomString = (num) => {
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -94,4 +94,19 @@ export function getPorcentajeFormato(val){
         return val.toFixed(0)
     }
     return 0
+}
+
+export function getEstadoCorral(nombre){
+    if(nombre){
+        const nombreLower = nombre.toLowerCase()
+        return corralEstado[nombreLower] || "-"
+    }
+    return nombre || ""
+}
+
+export function getTipoCorral(nombre){
+    if(nombre){
+        return corralTipo[nombre] || "-"
+    }
+    return nombre || ""
 }

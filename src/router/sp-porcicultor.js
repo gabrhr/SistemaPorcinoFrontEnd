@@ -54,13 +54,14 @@ const Parametros = Loader(lazy(() => import('src/content/porcicultor/granja/para
 const Perfil = Loader(lazy(() => import('src/content/porcicultor/granja/perfil')));
 const Calendar = Loader(lazy(() => import('src/content/porcicultor/granja/calendario')));
 const Estadistica = Loader(lazy(() => import('src/content/porcicultor/granja/estadisticas')));
+const Corrales = Loader(lazy(() => import('src/content/porcicultor/granja/corral')));
 
 
 
 const porcicultorRoutes = [
     {
         path: '/',
-        element: <Navigate to="porcinos/lineas" replace />
+        element: <Navigate to="granja/calendario" replace />
     },
     {
         path: 'porcinos/lineas',
@@ -182,6 +183,10 @@ const porcicultorRoutes = [
     {
       path: 'granja/estadisticas',
       element: <Estadistica />
+    },
+    {
+      path: 'granja/corrales',
+      element: <Corrales />
     }
 ]
 

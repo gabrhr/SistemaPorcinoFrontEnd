@@ -114,6 +114,14 @@ const urlUser = "user/"
 export const perfilFindByGranjaIdAPI = `${urlUser}find`
 export const perfilUpdateAPI = `${urlUser}update`
 
+// Granja corral
+const urlCorral = "corral/"
+export const corralQueryAPI = `${urlCorral}query`
+export const corralQueryAllAPI = `${urlCorral}query-all`
+export const corralRegisterAPI = `${urlCorral}register`
+export const corralUpdateAPI = `${urlCorral}update`
+export const corralDeleteAPI = `${urlCorral}delete`
+
 
 // Alimento
 const urlAlimento = "alimento/"
@@ -157,3 +165,5 @@ export const controlSanitarioDeleteAPI = `${urlSanidad}control/delete`
 const urlData = "data/"
 export const eventsFindAPI = `${urlData}calendar-date`
 export const estGeneralAPI = `${urlData}estadisticas`
+export const estCerdasAPI = `${urlData}est-cerdas`
+export const estLechonesAPI = `${urlData}est-lechones`

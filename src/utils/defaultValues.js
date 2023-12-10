@@ -101,6 +101,18 @@ export const vacunaTipo = {
   myc: "Mycoplasma y Circovirus"
 }
 
+export const corralTipo = {
+  engorde: "Engorde",
+  servicio: "Servicio",
+  celo: "Celo"
+}
+
+export const corralEstado = {
+  disponible: "Disponible",
+  ocupado: "Ocupado",
+  100: "Aforo al 100%"
+}
+
 // Obtener estados
 
 export const listEstadosCerda = () => {
@@ -222,15 +234,20 @@ export const listTiposVacunaEngorde = () => {
   return generalList(obj)
 }
 
+export const listTipoCorral = () => {
+  return generalList(corralTipo)
+}
+
+// Calendario
 export const listadoCalendario = [
   {
     texto: "Vacunas",
-    color: "red",
+    color: "#33b679",
     value: "vacuna"
   },
   {
     texto: "Partos probables",
-    color: "blue",
+    color: "#039be5",
     value: "parto"
   },
   {
@@ -255,10 +272,12 @@ export const listadoCalendarioFilterFalse = {
 }
 
 export const coloresCalendario = {
-  vacuna: "red",
-  parto: "blue",
+  vacuna: "#33b679",
+  parto: "#039be5",
   servicio: "orange"
 }
+
+
 
 export const fertilidad = [
   "99 %",

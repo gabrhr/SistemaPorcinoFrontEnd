@@ -11,7 +11,9 @@ import { estGeneralAPI } from 'src/utils/apiUrls';
 import { errorMessage } from 'src/utils/notifications';
 import certifyAxios from 'src/utils/spAxios';
 import CerdaEstados from './CerdasEstados';
+import CerdasReport from './CerdasReport';
 import LechonesEstados from './LechonesEstados';
+import LechonesReport from './LechonesReport';
 
 function EstadisticasGranja() {
   
@@ -94,10 +96,17 @@ function EstadisticasGranja() {
                 </Grid>
             </Tab>
             <Tab eventKey={2} title="Cerdas">
-                b
+                <CerdasReport 
+                  setLoading={setLoading} 
+                  promOrdenParto={general?.promOrdenParto?? 0} 
+                  totalCerdas={general?.totalCerdas?? 0}
+                  />
             </Tab>
             <Tab eventKey={3} title="Lechones">
-                a
+               <LechonesReport
+                setLoading={setLoading}
+                totalLechones={general?.totalLechones?? 0}
+               />
             </Tab>
           </Tabs>
         </Grid>

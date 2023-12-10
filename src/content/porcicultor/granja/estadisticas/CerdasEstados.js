@@ -12,7 +12,6 @@ import {
 import { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 import { getPorcentajeFormato } from 'src/utils/dataFormat';
-import { cerdaEstados } from 'src/utils/defaultValues';
 
 const DotLegend = styled('span')(
   ({ theme }) => `
@@ -24,11 +23,19 @@ const DotLegend = styled('span')(
 `
 );
 
-const estadosCerda = cerdaEstados;
+const estadosCerda = {
+  destetada: 'Destetada',
+  gestante:'Gestante',
+  lactante:'Lactante',
+  parida: 'Parida',
+  porservir: 'Por servir',
+  servida: 'Servida',
+  reemplazo: 'Reemplazo',
+  vacia:'Vacia'
+};
 
 const chartColors = {
   destetada: '#66c2a5',
-  descartada: '#fc8d62',
   gestante:'#a6d854',
   lactante:'#34b3e7',
   parida: '#e78ac3',

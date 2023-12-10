@@ -300,6 +300,11 @@ export const AimTheme = createTheme(
         main: colors.secondary.main,
         dark: colors.secondary.dark
       },
+      aa: {
+        light: colors.secondary.light,
+        main: colors.secondary.main,
+        dark: colors.secondary.dark
+      },
       error: {
         light: colors.error.light,
         main: colors.error.main,

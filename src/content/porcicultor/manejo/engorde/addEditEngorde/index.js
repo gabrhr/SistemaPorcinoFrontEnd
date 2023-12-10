@@ -37,7 +37,7 @@ import { SubtitleForm } from 'src/components/Form/SubtitleForm';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import useAuth from 'src/hooks/useAuth';
 import useRefMounted from 'src/hooks/useRefMounted';
-import { ceboTerminarAPI, engordeFindByIdAPI, engordeRegisterAPI, engordeUpdateAPI, pesosRegisterAPI, preceboTerminarAPI } from 'src/utils/apiUrls';
+import { ceboTerminarAPI, corralQueryAllAPI, engordeFindByIdAPI, engordeRegisterAPI, engordeUpdateAPI, pesosRegisterAPI, preceboTerminarAPI } from 'src/utils/apiUrls';
 import { engordeEstado, resultCodeOk } from 'src/utils/defaultValues';
 import { errorMessage, successMessage } from 'src/utils/notifications';
 import certifyAxios, { showUserErrors } from 'src/utils/spAxios';
@@ -64,6 +64,7 @@ function AddEditEngorde() {
   const [editPesosCebo, setEditPesosCebo] = useState(false);
   const [pesosList, setPesosList] = useState([]);  
   const [pesosListCebo, setPesosListCebo] = useState([]);  
+  const [corrales, setCorrales] = useState(undefined);
 
 
   const navigate = useNavigate();
@@ -94,9 +95,18 @@ function AddEditEngorde() {
             setItem(response.data);
             setCerdasLote(response.data.camadas)
             getPesosList(response.data.camadas)
+            const corralActual = {id: response?.data?.corralId || 0, numCorral: response?.data?.numCorral || 0}
             if(response?.data?.estado && response?.data?.estado === engordeEstado.finalizado){
               setShowAction(false);
+              setCorrales([{...corralActual}])
             } else {
+              const listCorrales = await getCorralesList()
+              if(listCorrales.engorde && listCorrales.engorde.length > 0){
+                setCorrales([...listCorrales.engorde])
+              } else {
+                setCorrales([])
+              }
+
               setShowAction(true)
             }
 
@@ -122,6 +132,26 @@ function AddEditEngorde() {
     [isMountedRef]
   );
 
+  const getCorralesList = async () => {
+    const reqObj = {
+      fase: 1,
+      granjaId: user.granjaId
+    };
+    try {
+      const response = await certifyAxios.post(corralQueryAllAPI, reqObj);
+      if (response.status === 200 && response.data) {
+        setCorrales(response?.data?.engorde??[])
+        return response.data
+      }
+    } catch (err) {
+      console.error(err);
+      errorMessage("No se ha podido obtener el listado de corrales")
+      setCorrales([])
+      return []
+    }
+    return []
+  };
+
   useEffect(() => {
     if (location.state.engordeId !== -1) {
       // id de navigate
@@ -134,6 +164,7 @@ function AddEditEngorde() {
     } else {
       setEditActive(true)
       setItem({});
+      getCorralesList()
     }
   }, [getItemById]);
 
@@ -520,7 +551,7 @@ function AddEditEngorde() {
                   innerRef={formLote}
                   initialValues={{
                     codigo: (editMode && item && item.codigo) || '',
-                    numCorral: (editMode && item && item.numCorral) || -1
+                    numCorral: (editMode && item && item.corralId) || -1
                   }}
                   validationSchema={Yup.object().shape({
                     codigo: Yup.string().required('El codigo es requerido')
@@ -676,13 +707,16 @@ function AddEditEngorde() {
                               value={values.numCorral}
                               onChange={handleChange}
                               errors={errors}
-                              disabled={!editActive}
+                              disabled={!editActive || corrales === undefined}
                               touched={touched}
+                              helper={editActive && corrales !== undefined && corrales.length === 0}
+                              helperText='No se han encontrado corrales de engorde'
                               number
                             >
-                              {[1, 2, 3, 5].map((type) => (
-                                <MenuItem key={type} value={type}>
-                                  {type}
+                              {corrales && corrales.length>0 &&
+                              corrales.map((type, index) => (
+                                <MenuItem key={index} value={type.id}>
+                                  {type.numCorral}
                                 </MenuItem>
                               ))}
                             </SelectForm>

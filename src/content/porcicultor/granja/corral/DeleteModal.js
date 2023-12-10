@@ -14,19 +14,20 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-function AptaServicioModal ({
-    open, 
-    closeConfirm,
+function DeleteModal ({
+    openConfirmDelete, 
+    closeConfirmDelete,
     title,
     itemName,
-    consideracion,
-    handleCompleted
+    handleDeleteCompleted,
+    children = null
 }){
     return (
         <DialogWrapper
-            open={open}
+            open={openConfirmDelete}
+            keepMounted
             TransitionComponent={Transition}
-            onClose={closeConfirm}
+            onClose={closeConfirmDelete}
             maxWidth="sm"
         >
         <Box
@@ -54,24 +55,22 @@ function AptaServicioModal ({
                 // px: 6
                 }}
                 fontWeight="normal"
-                color="text.primary"
+                color="text.secondary"
                 variant="h4"
             >
-                {`¿Seguro que desea desea modificar la cerda ${itemName}?`}
+                {`¿Seguro que desea eliminar ${itemName}?`}
             </Typography>
             <Typography
                 width="100%"
                 align="left"
                 sx={{
-                pt: 1,
                 pb: 1,
                 // px: 6
                 }}
                 fontWeight="normal"
                 color="text.secondary"
-                variant="h5"
             >
-                {`Recomendación: ${consideracion}`}
+                {children}
             </Typography>
             <Grid
                 sx={{
@@ -94,7 +93,7 @@ function AptaServicioModal ({
                     color:"red",
                     borderColor: "red"
                 }}
-                onClick={closeConfirm}
+                onClick={closeConfirmDelete}
                 >
                 Cancelar
                 </Button>
@@ -103,7 +102,7 @@ function AptaServicioModal ({
                 <Button
                 color="primary"
                 variant="outlined"
-                onClick={handleCompleted}
+                onClick={handleDeleteCompleted}
                 size="small"
                 sx={{
                     ml: 1,
@@ -119,4 +118,4 @@ function AptaServicioModal ({
     )
 }
 
-export default AptaServicioModal;
+export default DeleteModal;

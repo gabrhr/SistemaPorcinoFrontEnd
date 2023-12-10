@@ -82,7 +82,6 @@ function CalendarioDash() {
   const filterEvents = (info, newFilter) => {
 
     const val = newFilter;
-    console.log("FILTER: ", val);
     if(!val.all && !val.parto && !val.servicio && !val.vacuna){
       return { ...info, display: "none" };
     }
@@ -142,7 +141,7 @@ function CalendarioDash() {
   const handleDateSet = (info) => {
     const start = info.start;
     const end = info.end;
-    console.log("bbb", "start=", start, "end=",end, info)
+    console.log("changing...", "start=", start, "end=",end, info)
   };
 
   const handleEventClick = (clickInfo) => {
